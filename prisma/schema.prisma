@@ -1,0 +1,487 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+  binaryTargets   = ["native", "windows", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  directUrl  = env("DIRECT_URL")
+  extensions = [vector]
+}
+
+model User {
+  id              String   @id @default(cuid())
+  authUserId      String   @unique               // Links to supabase.auth.users.id
+  email           String   @unique
+  name            String
+  avatar          String?
+  role            String   @default("BUYER")     // BUYER | SELLER | ADMIN
+  isSeller        Boolean  @default(false)
+  isBanned        Boolean  @default(false)
+  bio             String?
+
+  bankName        String?
+  bankAccount     String?
+  bankIfsc        String?
+  upiId           String?
+  paypalEmail     String?
+  paymentMethod   String?
+
+  totalEarnings   Float    @default(0)
+  currentBalance  Float    @default(0)
+  totalSpent      Float    @default(0)
+
+  isVerified      Boolean  @default(false)
+  isActive        Boolean  @default(true)
+
+  lastLoginAt     DateTime?
+  isOnline        Boolean  @default(false)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  prompts         Prompt[]
+  orders          Order[]
+  reviews         Review[]
+  comments        Comment[]
+  likes           Like[]
+  wishlists       Wishlist[]
+  payouts         Payout[]
+  notifications   Notification[]
+  loginHistories  LoginHistory[]
+  searchLogs      SearchLog[]
+  sentMessages    ChatMessage[] @relation("SentMessages")
+  receivedMessages ChatMessage[] @relation("ReceivedMessages")
+  reports         Report[]
+  privacySettings PrivacySettings?
+  securitySettings SecuritySettings?
+  activityLogs    ActivityLog[]  @relation("ActivityLogs")
+
+  // E-commerce Ecosystem Relations
+  cart            Cart?
+  walletTxns      WalletTransaction[]
+  storefront      Storefront?
+  questionsAsked  QnA[] @relation("QuestionAuthor")
+  answersGiven    QnA[] @relation("AnswerAuthor")
+  securityCases   SecurityCase[]
+}
+
+model Category {
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
+  icon        String?
+  description String?
+  parentId    String?
+  sortOrder   Int        @default(0)
+  promptCount Int        @default(0)
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryHierarchy")
+  prompts     Prompt[]
+}
+
+model Prompt {
+  id              String     @id @default(cuid())
+  title           String
+  slug            String     @unique
+  description     String
+  promptText      String
+  sampleImages    String
+  categoryId      String
+  tags            String
+  recommendedAI   String
+  price           Float      @default(0)
+  isFree          Boolean    @default(false)
+  originalPrice   Float?
+  discount        Int        @default(0)
+  platformFee     Float      @default(0)
+  sellerId        String
+
+  likeCount       Int        @default(0)
+  downloadCount   Int        @default(0)
+  viewCount       Int        @default(0)
+  rating          Float      @default(0)
+  reviewCount     Int        @default(0)
+  liveViewers     Int        @default(0)
+
+  status          String     @default("PENDING")
+  isFeatured      Boolean    @default(false)
+  isTrending      Boolean    @default(false)
+  isPremium       Boolean    @default(false)
+  qualityScore    Float?
+  embedding       Unsupported("vector(384)")?
+
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  category        Category   @relation(fields: [categoryId], references: [id])
+  seller          User       @relation(fields: [sellerId], references: [id])
+  orders          Order[]
+  reviews         Review[]
+  comments        Comment[]
+  likes           Like[]
+  wishlists       Wishlist[]
+  reports         Report[]
+  flashDeal       FlashDeal?
+
+  // E-commerce Ecosystem Relations
+  cartItems       CartItem[]
+  qnas            QnA[]
+}
+
+model Order {
+  id              String   @id @default(cuid())
+  orderId         String   @unique
+  buyerId         String
+  promptId        String
+  sellerId        String
+  amount          Float
+  platformFee     Float
+  sellerAmount    Float
+  paymentMethod   String
+  paymentId       String?
+  currency        String   @default("USD")
+  status          String   @default("PENDING")
+  couponCode      String?
+
+  // Fee breakdown (like Amazon)
+  commissionRate  Float?   // % commission applied
+  commissionAmt   Float?   // Commission amount
+  gstRate         Float?   // GST rate applied (e.g. 18%)
+  gstAmt          Float?   // GST amount on fees
+  closingFee      Float?   // Fixed closing fee per order
+  paymentFeeRate  Float?   // Payment processing fee %
+  paymentFeeAmt   Float?   // Payment processing fee amount
+  totalFees       Float?   // Total deductions (commission+gst+closing+payment)
+  netAmount       Float?   // Final amount credited to seller
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  buyer           User     @relation(fields: [buyerId], references: [id])
+  prompt          Prompt   @relation(fields: [promptId], references: [id])
+  
+  payoutId        String?
+  payout          Payout?  @relation(fields: [payoutId], references: [id])
+  revenue         PlatformRevenue?
+}
+
+model PlatformRevenue {
+  id          String   @id @default(cuid())
+  orderId     String   @unique
+  commission  Float    @default(0)
+  gst         Float    @default(0)
+  closingFee  Float    @default(0)
+  paymentFee  Float    @default(0)
+  total       Float    @default(0)
+  currency    String   @default("USD")
+  createdAt   DateTime @default(now())
+
+  order       Order    @relation(fields: [orderId], references: [id])
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  userId      String
+  promptId    String
+  rating      Int
+  comment     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id])
+  prompt      Prompt   @relation(fields: [promptId], references: [id])
+}
+
+model Comment {
+  id          String    @id @default(cuid())
+  userId      String
+  promptId    String
+  content     String
+  parentId    String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user        User      @relation(fields: [userId], references: [id])
+  prompt      Prompt    @relation(fields: [promptId], references: [id])
+  parent      Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies     Comment[] @relation("CommentReplies")
+}
+
+model Like {
+  id          String   @id @default(cuid())
+  userId      String
+  promptId    String
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id])
+  prompt      Prompt   @relation(fields: [promptId], references: [id])
+
+  @@unique([userId, promptId])
+}
+
+model Wishlist {
+  id          String   @id @default(cuid())
+  userId      String
+  promptId    String
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id])
+  prompt      Prompt   @relation(fields: [promptId], references: [id])
+
+  @@unique([userId, promptId])
+}
+
+model Payout {
+  id              String   @id @default(cuid())
+  sellerId        String
+  amount          Float
+  periodStart     DateTime
+  periodEnd       DateTime
+  status          String   @default("PENDING")
+  transactionId   String?
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  seller          User     @relation(fields: [sellerId], references: [id])
+  orders          Order[]
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  message     String
+  type        String
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Coupon {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  discount    Int
+  maxUses     Int
+  usedCount   Int      @default(0)
+  minAmount   Float    @default(0)
+  expiresAt   DateTime?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model PlatformSettings {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  updatedAt   DateTime @updatedAt
+}
+
+
+
+model Report {
+  id          String   @id @default(cuid())
+  reporterId  String
+  promptId    String
+  reason      String
+  description String?
+  status      String   @default("PENDING")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  reporter    User     @relation(fields: [reporterId], references: [id])
+  prompt      Prompt   @relation(fields: [promptId], references: [id])
+}
+
+// ===== SECURITY MODELS =====
+
+model LoginHistory {
+  id          String   @id @default(cuid())
+  userId      String?
+  ipAddress   String?
+  userAgent   String?
+  device      String?
+  browser     String?
+  location    String?
+  status      String   @default("SUCCESS")
+  createdAt   DateTime @default(now())
+
+  user        User?    @relation(fields: [userId], references: [id])
+}
+
+model PrivacySettings {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  profilePublic   Boolean  @default(true)
+  showEmail       Boolean  @default(false)
+  showActivity    Boolean  @default(true)
+  showOnlineStatus Boolean @default(true)
+  allowMessages   Boolean  @default(true)
+  twoFactorNotify Boolean  @default(true)
+  loginNotify     Boolean  @default(true)
+  dataCollection  Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User     @relation(fields: [userId], references: [id])
+}
+
+model SecuritySettings {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  sessionTimeout        Int      @default(30)
+  maxLoginAttempts      Int      @default(5)
+  passwordMinLength     Int      @default(8)
+  requireUppercase      Boolean  @default(true)
+  requireNumbers        Boolean  @default(true)
+  requireSpecialChars   Boolean  @default(false)
+  lastPasswordChange    DateTime?
+  lastTwoFactorSetup    DateTime?
+  recoveryEmail         String?
+  recoveryPhone         String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  user                  User     @relation(fields: [userId], references: [id])
+}
+
+// ===== REAL-TIME MODELS =====
+
+model ChatMessage {
+  id          String   @id @default(cuid())
+  senderId    String
+  receiverId  String
+  promptId    String?
+  content     String
+  messageType String   @default("TEXT")
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id])
+  receiver    User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+}
+
+model FlashDeal {
+  id          String   @id @default(cuid())
+  promptId    String   @unique
+  discount    Int
+  startsAt    DateTime
+  endsAt      DateTime
+  isActive    Boolean  @default(true)
+  claimedCount Int     @default(0)
+  maxClaims   Int      @default(100)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  prompt      Prompt   @relation(fields: [promptId], references: [id])
+}
+
+model ActivityLog {
+  id          String   @id @default(cuid())
+  userId      String
+  action      String
+  details     String?
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+
+  user        User     @relation("ActivityLogs", fields: [userId], references: [id])
+}
+
+model SearchLog {
+  id           String   @id @default(cuid())
+  query        String
+  userId       String?
+  resultsCount Int      @default(0)
+  source       String   @default("NAVBAR")
+  createdAt    DateTime @default(now())
+
+  user         User?    @relation(fields: [userId], references: [id])
+
+  @@index([query])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model SecurityCase {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String                   // FRAUD
+  entityType  String                   // USER | PROMPT | REVIEW | TRANSACTION
+  entityId    String?
+  riskScore   Float
+  signals     String?                  // JSON of fraud signals
+  status      String   @default("OPEN") // OPEN | RESOLVED
+  resolution  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+// ===== E-COMMERCE ECOSYSTEM MODELS =====
+
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id])
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  promptId  String
+  prompt    Prompt   @relation(fields: [promptId], references: [id])
+  createdAt DateTime @default(now())
+  
+  @@unique([cartId, promptId])
+}
+
+model WalletTransaction {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  amount      Float
+  type        String   // e.g. "CREDIT", "DEBIT"
+  description String?
+  status      String   @default("COMPLETED") // PENDING, COMPLETED, FAILED
+  createdAt   DateTime @default(now())
+}
+
+model Storefront {
+  id          String   @id @default(cuid())
+  sellerId    String   @unique
+  seller      User     @relation(fields: [sellerId], references: [id])
+  brandName   String
+  bannerUrl   String?
+  logoUrl     String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model QnA {
+  id          String   @id @default(cuid())
+  promptId    String
+  prompt      Prompt   @relation(fields: [promptId], references: [id])
+  authorId    String
+  author      User     @relation("QuestionAuthor", fields: [authorId], references: [id])
+  question    String
+  answerId    String?
+  answer      User?    @relation("AnswerAuthor", fields: [answerId], references: [id])
+  answerText  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

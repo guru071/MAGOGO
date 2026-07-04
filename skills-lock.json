@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "skills": {
+    "android-clean-architecture": {
+      "source": "affaan-m/everything-claude-code",
+      "sourceType": "github",
+      "skillPath": "skills/android-clean-architecture/SKILL.md",
+      "computedHash": "8f7efca3efcc228560c39c366e846d4bf22e585f9847610634f53b7622f7795c"
+    },
+    "cross-border-ecommerce": {
+      "source": "nexscope-ai/ecommerce-skills",
+      "sourceType": "github",
+      "skillPath": "cross-border-ecommerce/SKILL.md",
+      "computedHash": "eb574cb6cfcc0e8715412a5f56e62d09b1a64f02ec4f126472a5a4df92569906"
+    },
+    "data-analysis": {
+      "source": "claude-office-skills/skills",
+      "sourceType": "github",
+      "skillPath": "data-analysis/SKILL.md",
+      "computedHash": "dee20c2c003730a1cf7a273805b45aa9ee42084cedfde3eaa4addd20d681abc8"
+    },
+    "fullstack-developer": {
+      "source": "shubhamsaboo/awesome-llm-apps",
+      "sourceType": "github",
+      "skillPath": "awesome_agent_skills/fullstack-developer/SKILL.md",
+      "computedHash": "d824d75875b289753740c12ba33c005a40f0d996f12d3424cabf1ef9ad4cd1a3"
+    },
+    "gtm-developer-ecosystem": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/gtm-developer-ecosystem/SKILL.md",
+      "computedHash": "7819e397036a1d7389408e46579fc8150e57b026a2fe43f97743afa6679a6cf4"
+    },
+    "machine-learning": {
+      "source": "mindrally/skills",
+      "sourceType": "github",
+      "skillPath": "machine-learning/SKILL.md",
+      "computedHash": "b0fe8b1636aa174bda1bab2aa3e4d287adc1888d79011d938e1319aee8fc6763"
+    },
+    "neon-postgres": {
+      "source": "neondatabase/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/neon-postgres/SKILL.md",
+      "computedHash": "7da7d922a0a8043a6ba896b81727182b88ff9ff62757643bdd942063774d105b"
+    },
+    "nodejs-core": {
+      "source": "mcollina/skills",
+      "sourceType": "github",
+      "skillPath": "skills/nodejs-core/SKILL.md",
+      "computedHash": "3d358d412d95e38d06bbfadab64b20da4aeafafd4dac8a95f3f3cad3bba40882"
+    },
+    "systematic-debugging": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "skillPath": "skills/systematic-debugging/SKILL.md",
+      "computedHash": "792a368e074981d7e3138edb439e138489b2ac247cd1e5739fab52af680fb17b"
+    },
+    "ui-ux-pro-max": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/ui-ux-pro-max/SKILL.md",
+      "computedHash": "c0e71f1ea9d80c74f710960c2b4d9ab0f8a6d14c331f8d361df2c28d1879846e"
+    },
+    "webapp-testing": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/webapp-testing/SKILL.md",
+      "computedHash": "ad5b1fc52807e9afa4635e59218a026b164dc58b6c3f41b0f7c644dcd6ccf572"
+    },
+    "write-coding-standards-from-file": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/write-coding-standards-from-file/SKILL.md",
+      "computedHash": "b87eddc73b6f759bafb4956bbe69838a961e0fd927145f612c4694d2cc65e07a"
+    }
+  }
+}

@@ -1,0 +1,251 @@
+    1  uname -r
+    2  sudo dnf upgrade --refresh
+    3  uname -r
+    4  sudo dnf copr enable @kernal-vanilla/stable
+    5  sudo dnf copr enable @kernel-vanilla/stable
+    6  sudo dnf upgrade --refresh
+    7  sudo reboot
+    8  uname -r
+    9  ls
+   10  sudo dnf update
+   11  sudo dnf upgrade -y
+   12  cls
+   13  clear
+   14  code
+   15  python
+   16  idle
+   17  clear
+   18  snap
+   19  sudo dnf install gnome-shell-extension-dash-to-dock
+   20  sudodnf upgrade --refresh
+   21  sudo dnf upgrade --refresh
+   22  sudo dnf install curl git
+   23  sudo dnf groupinstall "Development Tools"
+   24  sudo dnf group install "Development Tools"
+   25  sudo dnf copr enable lukenukem/asus-linux
+   26  sudodnf install asusctl supergfxctlrog-control-center
+   27  sudo dnf install asusctl supergfxctlrog-control-center
+   28  sudo dnf install asusctl supergfxctl rog-control-center
+   29  sudo dnf uninstall asusctl supergfxctl rog-control-center
+   30  sudo dnf remove asusctl supergfxctl rog-control-center
+   31  ls
+   32  cd Downloads/
+   33  ls
+   34  cd Antigravity\ IDE/
+   35  ls
+   36  ./*-ide
+   37  cd ..
+   38  pkexec dnf install -y python3-devel && cd "/run/media/guru/New Volume/crimetrack-main/python-ai" && python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt && python main.py~
+   39  [200~sudo bash -c 'echo "options iwlwifi power_save=0" > /etc/modprobe.d/iwlwifi.conf && nmcli connection modify "$(nmcli -t -f NAME,TYPE connection show --active | grep wireless | cut -d: -f1)" ipv6.method "disabled" && systemctl restart NetworkManager'
+   40   bash -c 'echo "options iwlwifi power_save=0" > /etc/modprobe.d/iwlwifi.conf && nmcli connection modify "$(nmcli -t -f NAME,TYPE connection show --active | grep wireless | cut -d: -f1)" ipv6.method "disabled" && systemctl restart NetworkManager'
+   41  sudo bash -c 'echo "options iwlwifi power_save=0" > /etc/modprobe.d/iwlwifi.conf && nmcli connection modify "$(nmcli -t -f NAME,TYPE connection show --active | grep wireless | cut -d: -f1)" ipv6.method "disabled" && systemctl restart NetworkManager'
+   42  sudo tee /etc/NetworkManager/conf.d/00-mac-randomization.conf <<EOF
+   43  [device]
+   44  wifi.scan-rand-mac-address=no
+   45  EOF
+   46  sudo systemctl restart NetworkManager
+   47  [200~cd "/run/media/guru/New Volume/crimetrack-main/python-ai"~
+   48  cd "/run/media/guru/New Volume/crimetrack-main/python-ai"~
+   49  ls
+   50  cd ..
+   51  ls
+   52  pip install -r requirements.txt
+   53  sudo apt
+   54  sudo apt update
+   55  sudo dnf update
+   56  sudo dnf upgrade
+   57  sudo dnf upgrade -y
+   58  python3
+   59  clear
+   60  vi
+   61  ls -lstra
+   62  clear
+   63  exit
+   64  exit
+   65  ls\
+   66  ls
+   67  vi bill.html
+   68  ls
+   69  nano
+   70  nano bill.html
+   71  curl -fsSL https://opencode.ai/install | bash
+   72  opencode
+   73  ls
+   74  ls flutter
+   75  opencode
+   76  mkdir farming
+   77  ls
+   78  cd farming
+   79  opendoce
+   80  export PATH="$HOME/.local/bin:$PATH"
+   81  opencode --version
+   82  find ~ -name "opencode" -type f -executable 2>/dev/null
+   83  echo 'export PATH="$HOME/.opencode/bin:$PATH"' >> ~/.bashrc
+   84  source ~/.bashrc
+   85  clear
+   86  opencode
+   87  cd ..
+   88  ls
+   89  cd ..
+   90  ls
+   91  cd ..
+   92  ls
+   93  cd
+   94  ls -a
+   95  ls .codexx
+   96  ls .codex
+   97  cat goals_1.sqlite
+   98  cd .codex
+   99  cat goals_1.sqlite 
+  100  clear
+  101  ls .codex
+  102  ls
+  103  cd ..
+  104  ls
+  105  ls -alstr
+  106  chown
+  107  uname -r
+  108  clear
+  109  whoami
+  110  version
+  111  clear
+  112  python idle
+  113  idle
+  114  shoutdown
+  115  sudo poweroff
+  116  sudo dnf update
+  117  exit
+  118  cd ..
+  119  ls
+  120  python3
+  121  exit
+  122  cd Downloads/
+  123  ls
+  124  opencode goat_billing_v2.html*v2.html
+  125  opencode 
+  126  sudo dnf update
+  127  opencode goat_billing_v2.html*v2.html
+  128  clear
+  129  ls
+  130  pip install pydantic
+  131  pip install pandas
+  132  cd ..
+  133  ls
+  134  nano sample.csv
+  135  python3
+  136  exit
+  137  sudo dnf copr enable lukenukem/asus-linux
+  138  sudo dnf update --refresh
+  139  sudo dnf install asusctl supergfxctl rog-control-center
+  140  sudo systemctl daemon-reload
+  141  sudo systemctl enable --now asusd.service
+  142  sudo systemctl status asusd.service
+  143  asusctl profile -g
+  144  asusctl profile -p Performance
+  145  asusctl profile show
+  146  asusctl profile set --profile Performance
+  147  asusctl profile --help
+  148  asusctl profile get
+  149  asusctl profile list
+  150  .asusctl profile set Performance
+  151  asusctl profile set Performance
+  152  sensors
+  153  asusctl profile set Performance
+  154  sensors
+  155  sudo asus-fan-control
+  156  sudo dnf install git lm_sensors
+  157  git clone https://github.com
+  158  cd asus-fan-control
+  159  sudo ./install.sh
+  160  ls /sys/devices/platform/asus-nb-wmi/hwmon/
+  161  sudo sh -c "echo 0 > /sys/devices/platform/asus-nb-wmi/hwmon/hwmon6/pwm1_enable"
+  162  sudo -i
+  163  poweroff
+  164  sudo dnf update
+  165  sudo dnf upgrade -y
+  166  sudo dnf update
+  167  clear
+  168  sudo restart
+  169  restart
+  170  sudo dnf update
+  171  exit
+  172  sudo dnf update
+  173  npx skills add https://github.com/shubhamsaboo/awesome-llm-apps --skill fullstack-developer
+  174  npx skills add https://github.com/mcollina/skills --skill nodejs-core
+  175  npx skills add https://github.com/mindrally/skills --skill machine-learning
+  176  npx skills add https://github.com/claude-office-skills/skills --skill data-analysis
+  177  npx skills add https://github.com/affaan-m/everything-claude-code --skill android-clean-architecture
+  178  npx skills add https://github.com/nextlevelbuilder/ui-ux-pro-max-skill --skill ui-ux-pro-max
+  179  npx skills add https://github.com/neondatabase/agent-skills --skill neon-postgres
+  180  npx skills add https://github.com/github/awesome-copilot --skill write-coding-standards-from-file
+  181  npx skills add https://github.com/anthropics/skills --skill webapp-testing
+  182  npx skills add https://github.com/obra/superpowers --skill systematic-debugging
+  183  cleaar
+  184  clear
+  185  ls
+  186  ls -a
+  187  ls .agents/
+  188  ls
+  189  cd ..
+  190  ls
+  191  opencode
+  192  ls
+  193  ls -a
+  194  caat .env
+  195  cat .env
+  196  cat .env.example
+  197  nano .env.example
+  198  opencode
+  199  npm run dev
+  200  ls -alstrRVLD
+  201  ls -alstrRvLD
+  202  clear
+  203  ls -alstrRv
+  204  clear
+  205  ls
+  206  ./start.sh
+  207  .\start.sh
+  208  ./start.sh
+  209  clear
+  210  pip install pandas
+  211  python3
+  212  pythondocs
+  213  idledocs
+  214  docs
+  215  python3 -m pydoc -b
+  216  [200~sudo dnf install python3-docs
+  217  sudo dnf install python3-docs
+  218  xdg-open /usr/share/doc/python3-docs/html/index.html
+  219  [200~npx prisma db push
+  220  npx prisma db push
+  221  npx prisma db push --force-reset
+  222  npm run dev
+  223  npx tsx make-admin.ts
+  224  npm run dev
+  225  clear
+  226  npx skills add https://github.com/github/awesome-copilot --skill gtm-developer-ecosystem
+  227  npx skills add https://github.com/nexscope-ai/ecommerce-skills --skill cross-border-ecommerce
+  228  clear
+  229  ls
+  230  ls -a1
+  231  ls -a2
+  232  ls -alstr
+  233  ls -alstrR
+  234  cleaar
+  235  clear
+  236  npm run dev
+  237  opencode
+  238  opencode -s ses_0e8a68272ffebcSwpxdVBhQ0ry
+  239  opencode
+  240  cd src/ai && uvicorn main:app --host 0.0.0.0 --port 8000 
+  241  cd Downloads/
+  242  ls
+  243  cd workspace*(1)
+  244  cd workspace-be1e7206-b5c6-4688-a3c4-0f25f20b014d(1)
+  245  cd 'workspace-be1e7206-b5c6-4688-a3c4-0f25f20b014d(1)'
+  246  ls
+  247  npm run dev
+  248  ls
+  249  ./start.sh
+  250  history
+  251  history >> history.txt
