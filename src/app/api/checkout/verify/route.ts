@@ -2,20 +2,16 @@ import { db } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth-helpers';
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyPayment } from '@/lib/razorpay';
-import { getFeeConfig, calculateFees } from '@/lib/fees';
 
 export async function POST(req: NextRequest) {
   try {
     const user = await getCurrentUser();
     if (!user || !user.id) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
 
-    const { razorpayOrderId, razorpayPaymentId, razorpaySignature, promptIds, couponCode, currency } = await req.json();
+    const { razorpayOrderId, razorpayPaymentId, razorpaySignature } = await req.json();
 
     if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
       return NextResponse.json({ success: false, error: 'Missing Razorpay payment details' }, { status: 400 });
-    }
-    if (!promptIds || !Array.isArray(promptIds) || promptIds.length === 0) {
-      return NextResponse.json({ success: false, error: 'No prompts provided' }, { status: 400 });
     }
 
     // Verify Signature
@@ -24,63 +20,45 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Invalid payment signature' }, { status: 400 });
     }
 
-    const feeConfig = await getFeeConfig();
     const processedOrders: any[] = [];
 
     // Process orders inside a transaction
     const result = await db.$transaction(async (tx) => {
+      
+      // CRITICAL SECURITY FIX: Fetch PENDING orders created during the checkout initialization
+      // We explicitly ignore any prompt IDs sent from the frontend to prevent ID swapping.
+      const pendingOrders = await tx.order.findMany({
+        where: {
+          buyerId: user.id!,
+          paymentId: razorpayOrderId,
+          status: 'PENDING'
+        },
+        include: { prompt: true }
+      });
+
+      if (pendingOrders.length === 0) {
+        throw new Error('No pending orders found for this payment');
+      }
+
       let totalAmountPaid = 0;
 
-      for (const promptId of promptIds) {
-        const prompt = await tx.prompt.findUnique({ 
-          where: { id: promptId },
-          include: { category: true }
-        });
-        
-        if (!prompt || prompt.status !== 'APPROVED') continue;
-        if (prompt.sellerId === user.id) continue;
-
-        const existing = await tx.order.findFirst({ where: { buyerId: user.id, promptId, status: 'COMPLETED' } });
-        if (existing) continue;
-
-        let amount = prompt.isFree ? 0 : prompt.price;
-        
-        if (couponCode && amount > 0) {
-          const coupon = await tx.coupon.findUnique({ where: { code: couponCode.toUpperCase() } });
-          if (coupon && coupon.isActive && coupon.usedCount < coupon.maxUses && (!coupon.expiresAt || coupon.expiresAt > new Date()) && amount >= coupon.minAmount) {
-            const discountAmt = amount * coupon.discount / 100;
-            amount -= discountAmt;
+      for (const order of pendingOrders) {
+        // If the coupon was used, increment its count
+        if (order.couponCode) {
+          const coupon = await tx.coupon.findUnique({ where: { code: order.couponCode.toUpperCase() } });
+          if (coupon) {
             await tx.coupon.update({ where: { id: coupon.id }, data: { usedCount: { increment: 1 } } });
           }
         }
 
-        totalAmountPaid += amount;
+        totalAmountPaid += order.amount;
 
-        const feeBreakdown = calculateFees(amount, feeConfig, prompt.promptText.length, prompt.category?.name);
-
-        const order = await tx.order.create({
+        // Mark as completed
+        const updatedOrder = await tx.order.update({
+          where: { id: order.id },
           data: {
-            orderId: `ORD-${Date.now().toString(36).toUpperCase()}-${Math.floor(Math.random()*1000)}`,
-            buyerId: user.id!,
-            promptId,
-            sellerId: prompt.sellerId,
-            amount,
-            platformFee: feeBreakdown.totalFees,
-            sellerAmount: feeBreakdown.netAmount,
-            commissionRate: feeBreakdown.commissionRate,
-            commissionAmt: feeBreakdown.commissionAmt,
-            gstRate: feeBreakdown.gstRate,
-            gstAmt: feeBreakdown.gstAmt,
-            closingFee: feeBreakdown.closingFee,
-            paymentFeeRate: feeBreakdown.paymentFeeRate,
-            paymentFeeAmt: feeBreakdown.paymentFeeAmt,
-            totalFees: feeBreakdown.totalFees,
-            netAmount: feeBreakdown.netAmount,
-            paymentMethod: 'RAZORPAY',
-            paymentId: razorpayPaymentId,
-            currency: currency || 'USD',
             status: 'COMPLETED',
-            couponCode: couponCode || null,
+            paymentId: razorpayPaymentId,
           },
           include: { prompt: true, revenue: true }
         });
@@ -88,24 +66,24 @@ export async function POST(req: NextRequest) {
         // Create platform revenue record
         await tx.platformRevenue.create({
           data: {
-            orderId: order.id,
-            commission: feeBreakdown.commissionAmt,
-            gst: feeBreakdown.gstAmt,
-            closingFee: feeBreakdown.closingFee,
-            paymentFee: feeBreakdown.paymentFeeAmt,
-            total: feeBreakdown.totalFees,
-            currency: currency || 'USD',
+            orderId: updatedOrder.id,
+            commission: updatedOrder.commissionAmt || 0,
+            gst: updatedOrder.gstAmt || 0,
+            closingFee: updatedOrder.closingFee || 0,
+            paymentFee: updatedOrder.paymentFeeAmt || 0,
+            total: updatedOrder.totalFees || 0,
+            currency: updatedOrder.currency || 'USD',
           }
         });
 
-        await tx.prompt.update({ where: { id: promptId }, data: { downloadCount: { increment: 1 } } });
+        await tx.prompt.update({ where: { id: order.promptId }, data: { downloadCount: { increment: 1 } } });
         
         // Credit the seller
         await tx.user.update({ 
-          where: { id: prompt.sellerId }, 
+          where: { id: order.sellerId }, 
           data: { 
-            totalEarnings: { increment: feeBreakdown.netAmount }, 
-            currentBalance: { increment: feeBreakdown.netAmount } 
+            totalEarnings: { increment: updatedOrder.sellerAmount }, 
+            currentBalance: { increment: updatedOrder.sellerAmount } 
           } 
         });
         
@@ -113,28 +91,28 @@ export async function POST(req: NextRequest) {
         await tx.user.update({ 
           where: { id: user.id! }, 
           data: { 
-            totalSpent: { increment: amount }
+            totalSpent: { increment: order.amount }
           } 
         });
 
-        if (amount > 0) {
+        if (order.amount > 0) {
           // Record Direct External Payment for the buyer
           await tx.walletTransaction.create({
             data: {
               userId: user.id!,
-              amount: amount,
+              amount: order.amount,
               type: 'DEBIT',
-              description: `Direct Payment for Order ${order.orderId} via Razorpay`,
+              description: `Direct Payment for Order ${updatedOrder.orderId} via Razorpay`,
               status: 'COMPLETED'
             }
           });
           // Record Credit for the seller
           await tx.walletTransaction.create({
             data: {
-              userId: prompt.sellerId,
-              amount: feeBreakdown.netAmount,
+              userId: order.sellerId,
+              amount: updatedOrder.sellerAmount,
               type: 'CREDIT',
-              description: `Earnings from Order ${order.orderId}`,
+              description: `Earnings from Order ${updatedOrder.orderId}`,
               status: 'COMPLETED'
             }
           });
@@ -142,14 +120,14 @@ export async function POST(req: NextRequest) {
         
         await tx.notification.create({ 
           data: { 
-            userId: prompt.sellerId, 
+            userId: order.sellerId, 
             title: 'New Sale!', 
-            message: `Your prompt "${prompt.title}" was purchased for $${amount.toFixed(2)} (net: $${feeBreakdown.netAmount.toFixed(2)} after fees)`, 
+            message: `Your prompt "${order.prompt.title}" was purchased for $${order.amount.toFixed(2)} (net: $${updatedOrder.sellerAmount.toFixed(2)} after fees)`, 
             type: 'ORDER' 
           } 
         });
 
-        processedOrders.push(order);
+        processedOrders.push(updatedOrder);
       }
       return processedOrders;
     });
