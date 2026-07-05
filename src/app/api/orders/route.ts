@@ -22,9 +22,9 @@ export async function POST(req: NextRequest) {
     const { promptId, paymentMethod, couponCode, currency } = await req.json();
     
     // Validate payment method
-    const validMethods = ['WALLET', 'STRIPE', 'RAZORPAY', 'PAYPAL', 'PLAY_STORE', 'FIAT'];
+    const validMethods = ['WALLET'];
     if (!paymentMethod || !validMethods.includes(paymentMethod)) {
-      return NextResponse.json({ success: false, error: `Invalid payment method. Must be one of: ${validMethods.join(', ')}` }, { status: 400 });
+      return NextResponse.json({ success: false, error: `Invalid direct payment method. Must be one of: ${validMethods.join(', ')}. Use dedicated checkout routes for external gateways.` }, { status: 400 });
     }
     
     const prompt = await db.prompt.findUnique({ 
