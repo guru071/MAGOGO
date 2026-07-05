@@ -70,76 +70,76 @@ export default function AccountSettingsPage() {
   if (!user) return null
 
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
-      <Link href="/account" className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-[#0066CC] mb-6">
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12 relative z-10">
+      <Link href="/account" className="inline-flex items-center gap-1.5 text-sm text-white/50 hover:text-white mb-8 transition-colors glass-panel px-4 py-2 rounded-full border-white/10">
         <ArrowLeft className="h-4 w-4" /> Back to Account
       </Link>
 
-      <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-6">Account Settings</h1>
+      <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-8 tracking-tight drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">Account Settings</h1>
 
-      <Card className="p-6">
-        <form onSubmit={handleSubmit} className="space-y-6">
+      <Card className="p-8 neon-border glass-panel-heavy border-white/10 rounded-3xl">
+        <form onSubmit={handleSubmit} className="space-y-8">
           
-          <div className="space-y-4">
-            <h2 className="text-lg font-bold text-slate-800 border-b pb-2">Profile Information</h2>
-            <div>
-              <Label htmlFor="name">Full Name</Label>
-              <Input id="name" value={form.name} onChange={e => handleChange('name', e.target.value)} required />
+          <div className="space-y-5">
+            <h2 className="text-xl font-bold text-white border-b border-white/10 pb-3">Profile Information</h2>
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-white/70">Full Name</Label>
+              <Input id="name" value={form.name} onChange={e => handleChange('name', e.target.value)} required className="bg-white/5 border-white/20 text-white focus:border-neon-blue h-12 rounded-xl" />
             </div>
-            <div>
-              <Label htmlFor="bio">Bio</Label>
-              <Input id="bio" value={form.bio} onChange={e => handleChange('bio', e.target.value)} />
+            <div className="space-y-2">
+              <Label htmlFor="bio" className="text-white/70">Bio</Label>
+              <Input id="bio" value={form.bio} onChange={e => handleChange('bio', e.target.value)} className="bg-white/5 border-white/20 text-white focus:border-neon-blue h-12 rounded-xl" />
             </div>
           </div>
 
           {user.isSeller && (
-            <div className="space-y-4 pt-4">
-              <h2 className="text-lg font-bold text-slate-800 border-b pb-2">Payout Details (RazorpayX)</h2>
-              <p className="text-xs text-slate-500">
+            <div className="space-y-5 pt-6 mt-6 border-t border-white/10">
+              <h2 className="text-xl font-bold text-white border-b border-white/10 pb-3">Payout Details (RazorpayX)</h2>
+              <p className="text-sm text-white/50">
                 Provide your bank details to receive automated 10-day payouts via RazorpayX.
               </p>
               
-              <div>
-                <Label>Preferred Payout Method</Label>
-                <div className="flex gap-3 mt-1">
-                  <button type="button" onClick={() => handleChange('paymentMethod', 'BANK_TRANSFER')} className={`flex-1 p-3 rounded-lg border-2 text-sm font-medium transition-colors ${form.paymentMethod === 'BANK_TRANSFER' ? 'border-[#0066CC] bg-blue-50 text-[#0066CC]' : 'border-slate-200 text-slate-600 hover:border-slate-300'}`}>
+              <div className="space-y-2">
+                <Label className="text-white/70">Preferred Payout Method</Label>
+                <div className="flex gap-4 mt-2">
+                  <button type="button" onClick={() => handleChange('paymentMethod', 'BANK_TRANSFER')} className={`flex-1 p-4 rounded-xl border-2 text-sm font-bold transition-all ${form.paymentMethod === 'BANK_TRANSFER' ? 'border-neon-blue bg-neon-blue/10 text-neon-blue shadow-[0_0_15px_rgba(0,210,255,0.2)]' : 'border-white/10 text-white/50 hover:border-white/30 hover:text-white glass-panel'}`}>
                     Bank Transfer (IMPS/NEFT)
                   </button>
-                  <button type="button" onClick={() => handleChange('paymentMethod', 'UPI')} className={`flex-1 p-3 rounded-lg border-2 text-sm font-medium transition-colors ${form.paymentMethod === 'UPI' ? 'border-[#0066CC] bg-blue-50 text-[#0066CC]' : 'border-slate-200 text-slate-600 hover:border-slate-300'}`}>
+                  <button type="button" onClick={() => handleChange('paymentMethod', 'UPI')} className={`flex-1 p-4 rounded-xl border-2 text-sm font-bold transition-all ${form.paymentMethod === 'UPI' ? 'border-neon-blue bg-neon-blue/10 text-neon-blue shadow-[0_0_15px_rgba(0,210,255,0.2)]' : 'border-white/10 text-white/50 hover:border-white/30 hover:text-white glass-panel'}`}>
                     UPI
                   </button>
                 </div>
               </div>
 
               {form.paymentMethod === 'BANK_TRANSFER' && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="sm:col-span-2">
-                    <Label htmlFor="bankName">Bank Name (Beneficiary Name)</Label>
-                    <Input id="bankName" value={form.bankName} onChange={e => handleChange('bankName', e.target.value)} placeholder="John Doe" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-4">
+                  <div className="sm:col-span-2 space-y-2">
+                    <Label htmlFor="bankName" className="text-white/70">Bank Name (Beneficiary Name)</Label>
+                    <Input id="bankName" value={form.bankName} onChange={e => handleChange('bankName', e.target.value)} placeholder="John Doe" className="bg-white/5 border-white/20 text-white focus:border-neon-blue h-12 rounded-xl" />
                   </div>
-                  <div>
-                    <Label htmlFor="bankAccount">Account Number</Label>
-                    <Input id="bankAccount" value={form.bankAccount} onChange={e => handleChange('bankAccount', e.target.value)} placeholder="01234567890" />
+                  <div className="space-y-2">
+                    <Label htmlFor="bankAccount" className="text-white/70">Account Number</Label>
+                    <Input id="bankAccount" value={form.bankAccount} onChange={e => handleChange('bankAccount', e.target.value)} placeholder="01234567890" className="bg-white/5 border-white/20 text-white focus:border-neon-blue h-12 rounded-xl" />
                   </div>
-                  <div>
-                    <Label htmlFor="bankIfsc">IFSC Code</Label>
-                    <Input id="bankIfsc" value={form.bankIfsc} onChange={e => handleChange('bankIfsc', e.target.value)} placeholder="HDFC0001234" />
+                  <div className="space-y-2">
+                    <Label htmlFor="bankIfsc" className="text-white/70">IFSC Code</Label>
+                    <Input id="bankIfsc" value={form.bankIfsc} onChange={e => handleChange('bankIfsc', e.target.value)} placeholder="HDFC0001234" className="bg-white/5 border-white/20 text-white focus:border-neon-blue h-12 rounded-xl" />
                   </div>
                 </div>
               )}
 
               {form.paymentMethod === 'UPI' && (
-                <div>
-                  <Label htmlFor="upiId">UPI ID</Label>
-                  <Input id="upiId" value={form.upiId} onChange={e => handleChange('upiId', e.target.value)} placeholder="john@upi" />
+                <div className="space-y-2 mt-4">
+                  <Label htmlFor="upiId" className="text-white/70">UPI ID</Label>
+                  <Input id="upiId" value={form.upiId} onChange={e => handleChange('upiId', e.target.value)} placeholder="john@upi" className="bg-white/5 border-white/20 text-white focus:border-neon-blue h-12 rounded-xl" />
                 </div>
               )}
             </div>
           )}
 
-          <Button type="submit" disabled={loading} className="w-full bg-[#0066CC] hover:bg-[#0055AA] text-white font-semibold h-11 mt-4">
-            {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-            <Save className="h-4 w-4 mr-2" /> Save Settings
+          <Button type="submit" disabled={loading} className="w-full bg-neon-blue hover:bg-neon-blue/80 text-black font-bold h-14 rounded-full mt-8 shadow-[0_0_15px_rgba(0,210,255,0.4)] hover:shadow-[0_0_25px_rgba(0,210,255,0.6)] transition-all">
+            {loading && <Loader2 className="h-5 w-5 mr-2 animate-spin" />}
+            <Save className="h-5 w-5 mr-2" /> Save Settings
           </Button>
         </form>
       </Card>

@@ -103,7 +103,7 @@ function applySecurityHeaders(response: NextResponse): NextResponse {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
   response.headers.set(
     'Content-Security-Policy',
-    `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: ${supabaseUrl} https://res.cloudinary.com https://images.unsplash.com https://api.dicebear.com; font-src 'self' data:; connect-src 'self' ws: wss: ${supabaseUrl};`
+    `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: ${supabaseUrl} https://res.cloudinary.com https://images.unsplash.com https://api.dicebear.com; font-src 'self' data:; connect-src 'self' ws: wss: ${supabaseUrl} https://api.razorpay.com; frame-src 'self' https://api.razorpay.com;`
   );
   return response;
 }

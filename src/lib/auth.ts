@@ -2,7 +2,7 @@ import { createSupabaseAdminClient } from './supabase-admin'
 import { createSupabaseServerClient } from './supabase-server'
 import { db } from './db'
 
-export async function signupWithSupabase(email: string, password: string, name: string) {
+export async function signupWithSupabase(email: string, password: string, name: string, country: string = 'INDIA') {
   // First check if local profile already exists
   const existingLocal = await db.user.findUnique({ where: { email } })
   if (existingLocal) {
@@ -29,6 +29,7 @@ export async function signupWithSupabase(email: string, password: string, name: 
             authUserId: signInData.user.id,
             email,
             name,
+            country,
             role: 'BUYER',
           },
         })
@@ -44,6 +45,7 @@ export async function signupWithSupabase(email: string, password: string, name: 
       authUserId: data.user.id,
       email,
       name,
+      country,
       role: 'BUYER',
     },
   })

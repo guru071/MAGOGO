@@ -24,11 +24,11 @@ interface Tx {
 }
 
 const CATEGORY_STYLES: Record<TxType, { label: string; bg: string; text: string; icon: any }> = {
-  SALE: { label: 'SALE', bg: 'bg-emerald-50 border-emerald-200', text: 'text-emerald-700', icon: ArrowDownLeft },
-  DEPOSIT: { label: 'DEPOSIT', bg: 'bg-blue-50 border-blue-200', text: 'text-blue-700', icon: ArrowDownLeft },
-  WITHDRAWAL: { label: 'WITHDRAWAL', bg: 'bg-red-50 border-red-200', text: 'text-red-700', icon: ArrowUpRight },
-  REFUND: { label: 'REFUND', bg: 'bg-purple-50 border-purple-200', text: 'text-purple-700', icon: ArrowDownLeft },
-  FEE: { label: 'FEE', bg: 'bg-amber-50 border-amber-200', text: 'text-amber-700', icon: ArrowUpRight },
+  SALE: { label: 'SALE', bg: 'bg-emerald-500/20 border-emerald-500/30', text: 'text-emerald-400', icon: ArrowDownLeft },
+  DEPOSIT: { label: 'DEPOSIT', bg: 'bg-neon-blue/20 border-neon-blue/30', text: 'text-neon-blue', icon: ArrowDownLeft },
+  WITHDRAWAL: { label: 'WITHDRAWAL', bg: 'bg-neon-pink/20 border-neon-pink/30', text: 'text-neon-pink', icon: ArrowUpRight },
+  REFUND: { label: 'REFUND', bg: 'bg-purple-500/20 border-purple-500/30', text: 'text-purple-400', icon: ArrowDownLeft },
+  FEE: { label: 'FEE', bg: 'bg-amber-500/20 border-amber-500/30', text: 'text-amber-400', icon: ArrowUpRight },
 }
 
 function categorizeTx(tx: Tx): TxType {
@@ -47,7 +47,7 @@ function generateReference(id: string): string {
   return `TXN-${id.slice(0, 8).toUpperCase()}`
 }
 
-const PIE_COLORS = ['#10B981', '#3B82F6', '#EF4444', '#8B5CF6', '#F59E0B']
+const PIE_COLORS = ['#00d2ff', '#ff0080', '#00ffaa', '#8a2be2', '#f59e0b']
 
 export default function WalletPage() {
   const { user, selectedCurrency, setSelectedCurrency } = useStore()
@@ -212,117 +212,120 @@ export default function WalletPage() {
 
   if (!user) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-20 text-center">
-        <WalletIcon className="h-16 w-16 text-slate-300 mx-auto mb-4" />
-        <h2 className="text-xl font-bold text-slate-700">Sign in to access your wallet</h2>
-        <p className="text-slate-400 text-sm mt-2">Manage deposits, track earnings, and withdraw funds</p>
-        <Button className="mt-4 bg-[#0066CC] text-white" onClick={() => useStore.getState().setShowAuthModal(true)}>Sign In</Button>
+      <div className="max-w-2xl mx-auto px-4 py-20 text-center glass-panel border-white/10 rounded-3xl mt-12">
+        <WalletIcon className="h-16 w-16 text-white/20 mx-auto mb-6" />
+        <h2 className="text-2xl font-bold text-white">Sign in to access your wallet</h2>
+        <p className="text-white/50 text-sm mt-2 mb-8">Manage deposits, track earnings, and withdraw funds</p>
+        <Button className="bg-neon-blue hover:bg-neon-blue/80 text-black font-bold h-12 px-8 rounded-full shadow-[0_0_15px_rgba(0,210,255,0.5)] transition-all" onClick={() => useStore.getState().setShowAuthModal(true)}>Sign In</Button>
       </div>
     )
   }
 
   if (loading) {
-    return <div className="max-w-6xl mx-auto px-4 py-20 text-center"><Loader2 className="h-8 w-8 animate-spin text-[#0066CC] mx-auto" /></div>
+    return <div className="max-w-6xl mx-auto px-4 py-20 text-center"><Loader2 className="h-8 w-8 animate-spin text-neon-blue mx-auto" /></div>
   }
 
   const balance = wallet?.balance || 0
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 relative z-10">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-        <h1 className="text-3xl font-extrabold text-slate-900 flex items-center gap-3">
-          <WalletIcon className="h-8 w-8 text-[#0066CC]" /> Wallet
+        <h1 className="text-3xl font-extrabold text-white flex items-center gap-3 drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
+          <WalletIcon className="h-8 w-8 text-neon-blue drop-shadow-[0_0_10px_rgba(0,210,255,0.5)]" /> Wallet
         </h1>
         <div className="flex items-center gap-3">
           <select
             value={selectedCurrency}
             onChange={e => { setSelectedCurrency(e.target.value); localStorage.setItem('pb_currency', e.target.value) }}
-            className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white text-slate-700"
+            className="text-sm border border-white/20 rounded-xl px-3 py-2 bg-black/40 text-white focus:outline-none focus:border-neon-blue transition-colors"
           >
             {CURRENCIES.map(c => (
-              <option key={c.code} value={c.code}>{c.flag} {c.code} ({c.symbol})</option>
+              <option key={c.code} value={c.code} className="bg-black text-white">{c.flag} {c.code} ({c.symbol})</option>
             ))}
           </select>
-          <Button variant="outline" size="sm" className="gap-1.5" onClick={fetchWallet}>
+          <Button variant="outline" size="sm" className="gap-1.5 glass-panel border-white/20 text-white hover:bg-white/10 rounded-xl" onClick={fetchWallet}>
             <RefreshCw className="h-4 w-4" /> Refresh
           </Button>
         </div>
       </div>
 
       <Tabs value={tab} onValueChange={setTab} className="mb-8">
-        <TabsList className="bg-slate-100 p-1">
-          <TabsTrigger value="main" className="gap-2"><WalletIcon className="h-4 w-4" /> Main Wallet</TabsTrigger>
-          <TabsTrigger value="earnings" className="gap-2"><TrendingUp className="h-4 w-4" /> Earnings</TabsTrigger>
-          <TabsTrigger value="withdrawals" className="gap-2"><ArrowUpRight className="h-4 w-4" /> Withdrawals</TabsTrigger>
+        <TabsList className="bg-white/5 p-1 rounded-xl border border-white/10 inline-flex">
+          <TabsTrigger value="main" className="gap-2 rounded-lg data-[state=active]:bg-neon-blue data-[state=active]:text-black data-[state=active]:shadow-[0_0_10px_rgba(0,210,255,0.3)] text-white/70 hover:text-white transition-all px-4 py-2"><WalletIcon className="h-4 w-4" /> Main Wallet</TabsTrigger>
+          <TabsTrigger value="earnings" className="gap-2 rounded-lg data-[state=active]:bg-neon-pink data-[state=active]:text-white data-[state=active]:shadow-[0_0_10px_rgba(255,0,128,0.3)] text-white/70 hover:text-white transition-all px-4 py-2"><TrendingUp className="h-4 w-4" /> Earnings</TabsTrigger>
+          <TabsTrigger value="withdrawals" className="gap-2 rounded-lg data-[state=active]:bg-white data-[state=active]:text-black text-white/70 hover:text-white transition-all px-4 py-2"><ArrowUpRight className="h-4 w-4" /> Withdrawals</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="main" className="mt-6 space-y-6">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card className="p-5 border-slate-200 shadow-sm bg-gradient-to-br from-[#0066CC] to-[#004C99] text-white">
-              <p className="text-sm font-medium opacity-80">Current Balance</p>
-              <p className="text-3xl font-black mt-1">{formatPrice(balance, selectedCurrency)}</p>
-              <p className="text-xs opacity-60 mt-1">Available for use</p>
-            </Card>
-            <Card className="p-5 border-slate-200 shadow-sm">
-              <div className="flex items-center gap-2 text-emerald-600 mb-1">
-                <TrendingUp className="h-4 w-4" />
-                <p className="text-xs font-semibold uppercase tracking-wide">Total Earned</p>
+        <TabsContent value="main" className="mt-8 space-y-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card className="p-6 neon-border glass-panel-heavy border-white/10 text-white rounded-3xl relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-br from-neon-blue/20 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="relative z-10">
+                <p className="text-sm font-bold text-white/60">Current Balance</p>
+                <p className="text-4xl font-black mt-2 drop-shadow-[0_0_10px_rgba(0,210,255,0.5)] text-neon-blue">{formatPrice(balance, selectedCurrency)}</p>
+                <p className="text-xs font-medium text-white/40 mt-2 uppercase tracking-widest">Available for use</p>
               </div>
-              <p className="text-2xl font-bold text-slate-800">{formatPrice(stats.totalEarned, selectedCurrency)}</p>
-              <p className="text-xs text-slate-400 mt-1">All time earnings</p>
             </Card>
-            <Card className="p-5 border-slate-200 shadow-sm">
-              <div className="flex items-center gap-2 text-red-500 mb-1">
-                <TrendingDown className="h-4 w-4" />
-                <p className="text-xs font-semibold uppercase tracking-wide">Total Spent</p>
+            <Card className="p-6 glass-panel border-white/10 rounded-3xl">
+              <div className="flex items-center gap-2 text-emerald-400 mb-2">
+                <TrendingUp className="h-5 w-5 drop-shadow-[0_0_5px_rgba(52,211,153,0.5)]" />
+                <p className="text-xs font-bold uppercase tracking-widest text-white/50">Total Earned</p>
               </div>
-              <p className="text-2xl font-bold text-slate-800">{formatPrice(stats.totalSpent, selectedCurrency)}</p>
-              <p className="text-xs text-slate-400 mt-1">Fees + withdrawals</p>
+              <p className="text-2xl font-black text-white">{formatPrice(stats.totalEarned, selectedCurrency)}</p>
+              <p className="text-xs text-white/40 mt-2 font-medium">All time earnings</p>
             </Card>
-            <Card className="p-5 border-slate-200 shadow-sm">
-              <div className="flex items-center gap-2 text-amber-600 mb-1">
-                <Clock className="h-4 w-4" />
-                <p className="text-xs font-semibold uppercase tracking-wide">Pending</p>
+            <Card className="p-6 glass-panel border-white/10 rounded-3xl">
+              <div className="flex items-center gap-2 text-neon-pink mb-2">
+                <TrendingDown className="h-5 w-5 drop-shadow-[0_0_5px_rgba(255,0,128,0.5)]" />
+                <p className="text-xs font-bold uppercase tracking-widest text-white/50">Total Spent</p>
               </div>
-              <p className="text-2xl font-bold text-slate-800">{formatPrice(stats.pendingW, selectedCurrency)}</p>
-              <p className="text-xs text-slate-400 mt-1">Awaiting clearance</p>
+              <p className="text-2xl font-black text-white">{formatPrice(stats.totalSpent, selectedCurrency)}</p>
+              <p className="text-xs text-white/40 mt-2 font-medium">Fees + withdrawals</p>
+            </Card>
+            <Card className="p-6 glass-panel border-white/10 rounded-3xl">
+              <div className="flex items-center gap-2 text-amber-400 mb-2">
+                <Clock className="h-5 w-5 drop-shadow-[0_0_5px_rgba(251,191,36,0.5)]" />
+                <p className="text-xs font-bold uppercase tracking-widest text-white/50">Pending</p>
+              </div>
+              <p className="text-2xl font-black text-white">{formatPrice(stats.pendingW, selectedCurrency)}</p>
+              <p className="text-xs text-white/40 mt-2 font-medium">Awaiting clearance</p>
             </Card>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-6">
-            <Card className="lg:col-span-2 p-5 border-slate-200 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-slate-800 flex items-center gap-2 text-sm">
-                  <TrendingUp className="h-4 w-4 text-[#0066CC]" /> Balance Trend (30 days)
+            <Card className="lg:col-span-2 p-6 glass-panel border-white/10 rounded-3xl">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="font-bold text-white flex items-center gap-2 text-lg">
+                  <TrendingUp className="h-5 w-5 text-neon-blue drop-shadow-[0_0_5px_rgba(0,210,255,0.5)]" /> Balance Trend (30 days)
                 </h3>
               </div>
               {areaChartData.length > 0 ? (
-                <div className="h-48">
+                <div className="h-56">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={areaChartData}>
                       <defs>
                         <linearGradient id="balanceGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#0066CC" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="#0066CC" stopOpacity={0} />
+                          <stop offset="5%" stopColor="#00d2ff" stopOpacity={0.4} />
+                          <stop offset="95%" stopColor="#00d2ff" stopOpacity={0} />
                         </linearGradient>
                       </defs>
                       <RTooltip
-                        contentStyle={{ borderRadius: 8, border: '1px solid #e2e8f0', fontSize: 12 }}
+                        contentStyle={{ borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', fontSize: 12, backgroundColor: 'rgba(0,0,0,0.8)', color: 'white', backdropFilter: 'blur(10px)' }}
                         formatter={(value: number) => [formatPrice(value, selectedCurrency), 'Balance']}
                       />
-                      <Area type="monotone" dataKey="balance" stroke="#0066CC" fill="url(#balanceGrad)" strokeWidth={2} />
+                      <Area type="monotone" dataKey="balance" stroke="#00d2ff" fill="url(#balanceGrad)" strokeWidth={3} />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
               ) : (
-                <div className="h-48 flex items-center justify-center text-slate-400 text-sm">No data yet</div>
+                <div className="h-56 flex items-center justify-center text-white/30 text-sm font-medium">No data yet</div>
               )}
             </Card>
 
-            <Card className="p-5 border-slate-200 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-slate-800 flex items-center gap-2 text-sm">
-                  <PieChart className="h-4 w-4 text-[#0066CC]" /> Breakdown
+            <Card className="p-6 glass-panel border-white/10 rounded-3xl">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="font-bold text-white flex items-center gap-2 text-lg">
+                  <PieChart className="h-5 w-5 text-neon-pink drop-shadow-[0_0_5px_rgba(255,0,128,0.5)]" /> Breakdown
                 </h3>
               </div>
               {pieData.length > 0 ? (
@@ -335,76 +338,79 @@ export default function WalletPage() {
                         ))}
                       </Pie>
                       <RTooltip
-                        contentStyle={{ borderRadius: 8, border: '1px solid #e2e8f0', fontSize: 12 }}
+                        contentStyle={{ borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', fontSize: 12, backgroundColor: 'rgba(0,0,0,0.8)', color: 'white', backdropFilter: 'blur(10px)' }}
                         formatter={(value: number, name: string) => [formatPrice(value, selectedCurrency), name]}
                       />
                     </RPieChart>
                   </ResponsiveContainer>
-                  <div className="flex flex-wrap justify-center gap-3 mt-1">
+                  <div className="flex flex-wrap justify-center gap-4 mt-2">
                     {pieData.map((d, i) => (
-                      <div key={d.name} className="flex items-center gap-1.5 text-xs">
-                        <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }} />
+                      <div key={d.name} className="flex items-center gap-2 text-xs font-bold text-white/70">
+                        <span className="w-3 h-3 rounded-full shadow-[0_0_5px_currentColor]" style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length], color: PIE_COLORS[i % PIE_COLORS.length] }} />
                         {d.name}
                       </div>
                     ))}
                   </div>
                 </div>
               ) : (
-                <div className="h-56 flex items-center justify-center text-slate-400 text-sm">No data</div>
+                <div className="h-56 flex items-center justify-center text-white/30 text-sm font-medium">No data</div>
               )}
             </Card>
           </div>
 
-          <Card className="p-5 border-slate-200 shadow-sm">
-            <h3 className="font-semibold text-slate-800 mb-3">Deposit Funds</h3>
-            <div className="flex gap-2">
-              <Input
-                type="number"
-                min="1"
-                step="0.01"
-                placeholder="Amount"
-                value={depositAmount}
-                onChange={e => setDepositAmount(e.target.value)}
-                className="flex-1 max-w-xs"
-              />
-              <Button
-                onClick={handleDeposit}
-                disabled={submitting || !depositAmount}
-                className="bg-[#0066CC] text-white shrink-0"
-              >
-                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-                Add
-              </Button>
-            </div>
-            <div className="flex gap-2 mt-3 flex-wrap">
-              {[10, 25, 50, 100].map(amt => (
-                <Button key={amt} variant="outline" size="sm" className="text-xs h-8" onClick={() => setDepositAmount(String(amt))}>
-                  {formatPrice(amt, selectedCurrency)}
+          <Card className="p-6 glass-panel neon-border border-white/10 rounded-3xl relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-r from-neon-blue/10 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="relative z-10">
+              <h3 className="font-bold text-white mb-4 text-lg">Deposit Funds</h3>
+              <div className="flex gap-3">
+                <Input
+                  type="number"
+                  min="1"
+                  step="0.01"
+                  placeholder="Amount"
+                  value={depositAmount}
+                  onChange={e => setDepositAmount(e.target.value)}
+                  className="flex-1 max-w-xs bg-black/40 border-white/20 text-white focus:border-neon-blue h-12 rounded-xl text-lg font-bold"
+                />
+                <Button
+                  onClick={handleDeposit}
+                  disabled={submitting || !depositAmount}
+                  className="bg-neon-blue hover:bg-neon-blue/80 text-black font-bold h-12 px-6 rounded-xl shadow-[0_0_15px_rgba(0,210,255,0.5)] transition-all shrink-0"
+                >
+                  {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Plus className="h-5 w-5 mr-1.5" />}
+                  Add Funds
                 </Button>
-              ))}
+              </div>
+              <div className="flex gap-3 mt-4 flex-wrap">
+                {[10, 25, 50, 100].map(amt => (
+                  <Button key={amt} variant="outline" size="sm" className="h-10 px-4 rounded-xl border-white/20 text-white hover:bg-white/10 font-bold glass-panel" onClick={() => setDepositAmount(String(amt))}>
+                    {formatPrice(amt, selectedCurrency)}
+                  </Button>
+                ))}
+              </div>
             </div>
           </Card>
 
-          <Card className="border-slate-200 shadow-sm">
-            <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <h2 className="font-bold text-slate-800 flex items-center gap-2 text-sm">
-                <History className="h-5 w-5 text-[#0066CC]" /> Transactions
-                <Badge variant="outline" className="text-[10px] ml-1">{filteredTxs.length}</Badge>
+          <Card className="glass-panel border-white/10 rounded-3xl overflow-hidden">
+            <div className="p-6 border-b border-white/10 bg-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <h2 className="font-bold text-white flex items-center gap-2 text-lg">
+                <History className="h-5 w-5 text-neon-blue drop-shadow-[0_0_5px_rgba(0,210,255,0.5)]" /> Transactions
+                <Badge variant="outline" className="text-xs ml-2 border-white/20 bg-white/5 text-white">{filteredTxs.length}</Badge>
               </h2>
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-3 flex-wrap">
                 <div className="relative">
-                  <Search className="h-3.5 w-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
                   <Input
                     placeholder="Search..."
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
-                    className="pl-8 h-8 text-xs w-36"
+                    className="pl-9 h-10 bg-black/40 border-white/20 text-white focus:border-neon-blue rounded-xl text-sm w-40"
                   />
                 </div>
                 <select
                   value={typeFilter}
                   onChange={e => setTypeFilter(e.target.value as TxType | 'ALL')}
-                  className="text-xs border border-slate-200 rounded-lg px-2 h-8 bg-white text-slate-600"
+                  className="text-sm border border-white/20 rounded-xl px-3 h-10 bg-black/40 text-white focus:outline-none focus:border-neon-blue"
                 >
                   <option value="ALL">All Types</option>
                   <option value="SALE">Sales</option>
@@ -417,71 +423,71 @@ export default function WalletPage() {
                   type="date"
                   value={dateRange[0]}
                   onChange={e => setDateRange([e.target.value, dateRange[1]])}
-                  className="h-8 text-xs w-32"
+                  className="h-10 text-sm w-36 bg-black/40 border-white/20 text-white focus:border-neon-blue rounded-xl"
                   placeholder="From"
                 />
                 <Input
                   type="date"
                   value={dateRange[1]}
                   onChange={e => setDateRange([dateRange[0], e.target.value])}
-                  className="h-8 text-xs w-32"
+                  className="h-10 text-sm w-36 bg-black/40 border-white/20 text-white focus:border-neon-blue rounded-xl"
                   placeholder="To"
                 />
-                <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={exportCSV}>
-                  <Download className="h-3.5 w-3.5" /> CSV
+                <Button variant="outline" size="sm" className="h-10 px-4 gap-2 glass-panel border-white/20 text-white hover:bg-white/10 rounded-xl" onClick={exportCSV}>
+                  <Download className="h-4 w-4" /> CSV
                 </Button>
               </div>
             </div>
-            <div className="p-5">
+            <div className="p-6">
               {filteredTxs.length === 0 ? (
-                <div className="text-center py-10 text-sm text-slate-400">
-                  <FileText className="h-10 w-10 text-slate-300 mx-auto mb-3" />
-                  <p>No transactions found</p>
-                  {transactions.length === 0 && <p className="text-xs mt-1">Try adding funds to get started</p>}
+                <div className="text-center py-16 text-sm text-white/40">
+                  <FileText className="h-12 w-12 text-white/10 mx-auto mb-4" />
+                  <p className="text-base font-bold text-white/60">No transactions found</p>
+                  {transactions.length === 0 && <p className="mt-1">Try adding funds to get started</p>}
                 </div>
               ) : (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {filteredTxs.map((tx: Tx, i: number) => {
                     const cat = CATEGORY_STYLES[tx.category!] || CATEGORY_STYLES.DEPOSIT
                     const Icon = cat.icon
                     const isCredit = tx.category === 'SALE' || tx.category === 'DEPOSIT' || tx.category === 'REFUND'
                     return (
-                      <div key={tx.id || i} className="flex items-center justify-between p-3 rounded-xl border border-slate-100 hover:bg-slate-50/80 transition-colors">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className={`h-10 w-10 rounded-lg flex items-center justify-center shrink-0 ${isCredit ? 'bg-emerald-50' : 'bg-red-50'}`}>
+                      <div key={tx.id || i} className="flex items-center justify-between p-4 rounded-2xl glass-panel border border-white/5 hover:border-white/20 transition-all hover:bg-white/5 group">
+                        <div className="flex items-center gap-4 min-w-0">
+                          <div className={`h-12 w-12 rounded-xl flex items-center justify-center shrink-0 border ${cat.bg}`}>
                             {isCredit
-                              ? <ArrowDownLeft className="h-5 w-5 text-emerald-600" />
-                              : <ArrowUpRight className="h-5 w-5 text-red-500" />}
+                              ? <ArrowDownLeft className={`h-6 w-6 ${cat.text} drop-shadow-[0_0_5px_currentColor]`} />
+                              : <ArrowUpRight className={`h-6 w-6 ${cat.text} drop-shadow-[0_0_5px_currentColor]`} />}
                           </div>
                           <div className="min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <p className="font-medium text-sm text-slate-800 truncate">{tx.description || tx.type || 'Transaction'}</p>
-                              <Badge className={`text-[10px] border px-1.5 py-0 ${cat.bg} ${cat.text}`}>
+                            <div className="flex items-center gap-3 flex-wrap">
+                              <p className="font-bold text-base text-white truncate group-hover:text-neon-blue transition-colors">{tx.description || tx.type || 'Transaction'}</p>
+                              <Badge className={`text-[10px] font-black tracking-widest px-2 py-0.5 ${cat.bg} ${cat.text}`}>
                                 {cat.label}
                               </Badge>
                             </div>
-                            <div className="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
+                            <div className="flex items-center gap-2 text-xs font-medium text-white/40 mt-1 uppercase tracking-wider">
                               <span>{new Date(tx.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                              <span className="text-slate-300">|</span>
+                              <span className="text-white/20">|</span>
                               <span className="font-mono">{tx.reference}</span>
                             </div>
                           </div>
                         </div>
-                        <div className="text-right shrink-0 ml-3">
-                          <p className={`font-bold text-sm ${isCredit ? 'text-emerald-600' : 'text-red-500'}`}>
+                        <div className="text-right shrink-0 ml-4">
+                          <p className={`font-black text-lg ${isCredit ? 'text-emerald-400 drop-shadow-[0_0_5px_rgba(52,211,153,0.5)]' : 'text-neon-pink drop-shadow-[0_0_5px_rgba(255,0,128,0.5)]'}`}>
                             {isCredit ? '+' : '-'}{formatPrice(Math.abs(tx.amount), selectedCurrency)}
                           </p>
                           {tx.status === 'COMPLETED' ? (
-                            <div className="flex items-center gap-1 justify-end text-[10px] text-green-600">
-                              <CheckCircle className="h-3 w-3" /> Completed
+                            <div className="flex items-center gap-1.5 justify-end text-xs font-bold text-emerald-400 mt-1">
+                              <CheckCircle className="h-3.5 w-3.5" /> Completed
                             </div>
                           ) : tx.status === 'PENDING' ? (
-                            <div className="flex items-center gap-1 justify-end text-[10px] text-amber-600">
-                              <Clock className="h-3 w-3" /> Pending
+                            <div className="flex items-center gap-1.5 justify-end text-xs font-bold text-amber-400 mt-1">
+                              <Clock className="h-3.5 w-3.5" /> Pending
                             </div>
                           ) : (
-                            <div className="flex items-center gap-1 justify-end text-[10px] text-red-500">
-                              <XCircle className="h-3 w-3" /> {tx.status}
+                            <div className="flex items-center gap-1.5 justify-end text-xs font-bold text-neon-pink mt-1">
+                              <XCircle className="h-3.5 w-3.5" /> {tx.status}
                             </div>
                           )}
                         </div>
@@ -494,73 +500,77 @@ export default function WalletPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="earnings" className="mt-6 space-y-6">
-          <div className="grid sm:grid-cols-3 gap-4">
-            <Card className="p-5 border-slate-200 shadow-sm bg-gradient-to-br from-emerald-500 to-emerald-700 text-white">
-              <p className="text-sm font-medium opacity-80">Total Earnings</p>
-              <p className="text-3xl font-black mt-1">{formatPrice(stats.totalEarned, selectedCurrency)}</p>
-            </Card>
-            <Card className="p-5 border-slate-200 shadow-sm">
-              <div className="flex items-center gap-2 text-emerald-600 mb-1">
-                <DollarSign className="h-4 w-4" />
-                <p className="text-xs font-semibold uppercase tracking-wide">Available for Payout</p>
+        <TabsContent value="earnings" className="mt-8 space-y-8">
+          <div className="grid sm:grid-cols-3 gap-6">
+            <Card className="p-6 neon-border glass-panel-heavy border-white/10 text-white rounded-3xl relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="relative z-10">
+                <p className="text-sm font-bold text-white/60">Total Earnings</p>
+                <p className="text-4xl font-black mt-2 drop-shadow-[0_0_10px_rgba(52,211,153,0.5)] text-emerald-400">{formatPrice(stats.totalEarned, selectedCurrency)}</p>
               </div>
-              <p className="text-2xl font-bold text-slate-800">{formatPrice(stats.available, selectedCurrency)}</p>
             </Card>
-            <Card className="p-5 border-slate-200 shadow-sm">
-              <div className="flex items-center gap-2 text-amber-600 mb-1">
-                <Clock className="h-4 w-4" />
-                <p className="text-xs font-semibold uppercase tracking-wide">Pending Withdrawals</p>
+            <Card className="p-6 glass-panel border-white/10 rounded-3xl">
+              <div className="flex items-center gap-2 text-neon-blue mb-2">
+                <DollarSign className="h-5 w-5 drop-shadow-[0_0_5px_rgba(0,210,255,0.5)]" />
+                <p className="text-xs font-bold uppercase tracking-widest text-white/50">Available for Payout</p>
               </div>
-              <p className="text-2xl font-bold text-slate-800">{formatPrice(stats.pendingW, selectedCurrency)}</p>
+              <p className="text-2xl font-black text-white">{formatPrice(stats.available, selectedCurrency)}</p>
+            </Card>
+            <Card className="p-6 glass-panel border-white/10 rounded-3xl">
+              <div className="flex items-center gap-2 text-amber-400 mb-2">
+                <Clock className="h-5 w-5 drop-shadow-[0_0_5px_rgba(251,191,36,0.5)]" />
+                <p className="text-xs font-bold uppercase tracking-widest text-white/50">Pending Withdrawals</p>
+              </div>
+              <p className="text-2xl font-black text-white">{formatPrice(stats.pendingW, selectedCurrency)}</p>
             </Card>
           </div>
 
           {user?.isSeller && payoutEstimate && (
-            <Card className="p-5 border-slate-200 shadow-sm border-l-4 border-l-amber-400">
-              <div className="flex items-start justify-between">
+            <Card className="p-6 glass-panel border-amber-400/30 rounded-3xl relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-transparent opacity-50" />
+              <div className="relative z-10 flex items-start justify-between">
                 <div>
-                  <h3 className="font-semibold text-slate-800 flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-amber-600" /> Upcoming Payout
+                  <h3 className="font-bold text-white flex items-center gap-2 text-lg mb-2">
+                    <Calendar className="h-5 w-5 text-amber-400 drop-shadow-[0_0_5px_rgba(251,191,36,0.5)]" /> Upcoming Payout
                   </h3>
-                  <p className="text-2xl font-bold text-slate-800 mt-1">{formatPrice(payoutEstimate.amount, selectedCurrency)}</p>
-                  <p className="text-sm text-slate-500">Estimated clearance: {payoutEstimate.clearance}</p>
+                  <p className="text-3xl font-black text-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.5)] mt-2">{formatPrice(payoutEstimate.amount, selectedCurrency)}</p>
+                  <p className="text-sm font-medium text-white/50 mt-1">Estimated clearance: {payoutEstimate.clearance}</p>
                 </div>
-                <Badge className="bg-amber-50 text-amber-700 border-amber-200">{payoutEstimate.status}</Badge>
+                <Badge className="bg-amber-500/20 text-amber-400 border border-amber-500/30 px-3 py-1 font-bold">{payoutEstimate.status}</Badge>
               </div>
-              <div className="mt-3 flex items-center gap-2 text-xs text-slate-400">
-                <Clock className="h-3 w-3" /> Payouts are processed every 7 days
+              <div className="relative z-10 mt-6 flex items-center gap-2 text-xs font-medium text-white/40 uppercase tracking-wider">
+                <Clock className="h-3.5 w-3.5" /> Payouts are processed every 7 days
               </div>
             </Card>
           )}
 
-          <Card className="border-slate-200 shadow-sm">
-            <div className="p-5 border-b border-slate-100 bg-slate-50/50">
-              <h3 className="font-bold text-slate-800 flex items-center gap-2 text-sm">
-                <TrendingUp className="h-5 w-5 text-emerald-500" /> Earnings History
+          <Card className="glass-panel border-white/10 rounded-3xl overflow-hidden">
+            <div className="p-6 border-b border-white/10 bg-black/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <h3 className="font-bold text-white flex items-center gap-2 text-lg">
+                <TrendingUp className="h-5 w-5 text-emerald-400 drop-shadow-[0_0_5px_rgba(52,211,153,0.5)]" /> Earnings History
               </h3>
             </div>
-            <div className="p-5">
+            <div className="p-6">
               {filteredTxs.filter(tx => tx.category === 'SALE').length === 0 ? (
-                <div className="text-center py-10 text-sm text-slate-400">
-                  <DollarSign className="h-10 w-10 text-slate-300 mx-auto mb-3" />
-                  <p>No earnings yet</p>
-                  {user?.isSeller ? <p className="text-xs mt-1">Start selling prompts to earn!</p> : <p className="text-xs mt-1">Become a seller to start earning</p>}
+                <div className="text-center py-16 text-sm text-white/40">
+                  <DollarSign className="h-12 w-12 text-white/10 mx-auto mb-4" />
+                  <p className="text-base font-bold text-white/60">No earnings yet</p>
+                  {user?.isSeller ? <p className="mt-1">Start selling prompts to earn!</p> : <p className="mt-1">Become a seller to start earning</p>}
                 </div>
               ) : (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {filteredTxs.filter(tx => tx.category === 'SALE').map((tx: Tx, i: number) => (
-                    <div key={tx.id || i} className="flex items-center justify-between p-3 rounded-xl border border-slate-100 hover:bg-slate-50/80 transition-colors">
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="h-10 w-10 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
-                          <ArrowDownLeft className="h-5 w-5 text-emerald-600" />
+                    <div key={tx.id || i} className="flex items-center justify-between p-4 rounded-2xl glass-panel border border-white/5 hover:border-white/20 transition-all hover:bg-white/5 group">
+                      <div className="flex items-center gap-4 min-w-0">
+                        <div className="h-12 w-12 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                          <ArrowDownLeft className="h-6 w-6 text-emerald-400 drop-shadow-[0_0_5px_currentColor]" />
                         </div>
                         <div className="min-w-0">
-                          <p className="font-medium text-sm text-slate-800 truncate">{tx.description || 'Sale'}</p>
-                          <p className="text-xs text-slate-400">{new Date(tx.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                          <p className="font-bold text-base text-white truncate group-hover:text-neon-blue transition-colors">{tx.description || 'Sale'}</p>
+                          <p className="text-xs font-medium text-white/40 mt-1 uppercase tracking-wider">{new Date(tx.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
                         </div>
                       </div>
-                      <p className="font-bold text-sm text-emerald-600 shrink-0">+{formatPrice(tx.amount, selectedCurrency)}</p>
+                      <p className="font-black text-lg text-emerald-400 drop-shadow-[0_0_5px_rgba(52,211,153,0.5)] shrink-0">+{formatPrice(tx.amount, selectedCurrency)}</p>
                     </div>
                   ))}
                 </div>
@@ -569,82 +579,86 @@ export default function WalletPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="withdrawals" className="mt-6 space-y-6">
-          <div className="grid sm:grid-cols-2 gap-4">
-            <Card className="p-5 border-slate-200 shadow-sm bg-gradient-to-br from-red-500 to-red-700 text-white">
-              <p className="text-sm font-medium opacity-80">Total Withdrawn</p>
-              <p className="text-3xl font-black mt-1">{formatPrice(stats.totalSpent, selectedCurrency)}</p>
-            </Card>
-            <Card className="p-5 border-slate-200 shadow-sm">
-              <div className="flex items-center gap-2 text-amber-600 mb-1">
-                <Clock className="h-4 w-4" />
-                <p className="text-xs font-semibold uppercase tracking-wide">Pending Clearance</p>
+        <TabsContent value="withdrawals" className="mt-8 space-y-8">
+          <div className="grid sm:grid-cols-2 gap-6">
+            <Card className="p-6 neon-border glass-panel-heavy border-white/10 text-white rounded-3xl relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-br from-neon-pink/20 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="relative z-10">
+                <p className="text-sm font-bold text-white/60">Total Withdrawn</p>
+                <p className="text-4xl font-black mt-2 drop-shadow-[0_0_10px_rgba(255,0,128,0.5)] text-neon-pink">{formatPrice(stats.totalSpent, selectedCurrency)}</p>
               </div>
-              <p className="text-2xl font-bold text-slate-800">{formatPrice(stats.pendingW, selectedCurrency)}</p>
-              <p className="text-xs text-slate-400 mt-1">Estimated 3-5 business days</p>
+            </Card>
+            <Card className="p-6 glass-panel border-white/10 rounded-3xl">
+              <div className="flex items-center gap-2 text-amber-400 mb-2">
+                <Clock className="h-5 w-5 drop-shadow-[0_0_5px_rgba(251,191,36,0.5)]" />
+                <p className="text-xs font-bold uppercase tracking-widest text-white/50">Pending Clearance</p>
+              </div>
+              <p className="text-2xl font-black text-white">{formatPrice(stats.pendingW, selectedCurrency)}</p>
+              <p className="text-xs font-medium text-white/40 mt-2">Estimated 3-5 business days</p>
             </Card>
           </div>
 
           {user?.isSeller && payoutEstimate && (
-            <Card className="p-5 border-slate-200 shadow-sm border-l-4 border-l-blue-400">
-              <div className="flex items-start justify-between">
+            <Card className="p-6 glass-panel border-neon-blue/30 rounded-3xl relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-r from-neon-blue/10 to-transparent opacity-50" />
+              <div className="relative z-10 flex items-start justify-between">
                 <div>
-                  <h3 className="font-semibold text-slate-800 flex items-center gap-2">
-                    <CreditCard className="h-4 w-4 text-blue-600" /> Next Scheduled Payout
+                  <h3 className="font-bold text-white flex items-center gap-2 text-lg mb-2">
+                    <CreditCard className="h-5 w-5 text-neon-blue drop-shadow-[0_0_5px_rgba(0,210,255,0.5)]" /> Next Scheduled Payout
                   </h3>
-                  <p className="text-2xl font-bold text-slate-800 mt-1">{formatPrice(payoutEstimate.amount, selectedCurrency)}</p>
-                  <p className="text-sm text-slate-500">Clearance date: {payoutEstimate.clearance}</p>
+                  <p className="text-3xl font-black text-neon-blue drop-shadow-[0_0_10px_rgba(0,210,255,0.5)] mt-2">{formatPrice(payoutEstimate.amount, selectedCurrency)}</p>
+                  <p className="text-sm font-medium text-white/50 mt-1">Clearance date: {payoutEstimate.clearance}</p>
                 </div>
-                <Badge className="bg-blue-50 text-blue-700 border-blue-200">PROCESSING</Badge>
+                <Badge className="bg-neon-blue/20 text-neon-blue border border-neon-blue/30 px-3 py-1 font-bold">PROCESSING</Badge>
               </div>
-              <div className="mt-3 p-3 bg-slate-50 rounded-lg text-xs text-slate-500">
+              <div className="relative z-10 mt-6 p-4 glass-panel border-white/10 rounded-xl text-xs font-medium text-white/60">
                 <p>Funds will be transferred to your linked bank account / UPI ID. Update your payment details in Settings.</p>
               </div>
             </Card>
           )}
 
-          <Card className="border-slate-200 shadow-sm">
-            <div className="p-5 border-b border-slate-100 bg-slate-50/50">
-              <h3 className="font-bold text-slate-800 flex items-center gap-2 text-sm">
-                <ArrowUpRight className="h-5 w-5 text-red-500" /> Withdrawal History
+          <Card className="glass-panel border-white/10 rounded-3xl overflow-hidden">
+            <div className="p-6 border-b border-white/10 bg-black/40">
+              <h3 className="font-bold text-white flex items-center gap-2 text-lg">
+                <ArrowUpRight className="h-5 w-5 text-neon-pink drop-shadow-[0_0_5px_rgba(255,0,128,0.5)]" /> Withdrawal History
               </h3>
             </div>
-            <div className="p-5">
+            <div className="p-6">
               {filteredTxs.filter(tx => tx.category === 'WITHDRAWAL' || tx.category === 'FEE').length === 0 ? (
-                <div className="text-center py-10 text-sm text-slate-400">
-                  <ArrowUpRight className="h-10 w-10 text-slate-300 mx-auto mb-3" />
-                  <p>No withdrawals made yet</p>
+                <div className="text-center py-16 text-sm text-white/40">
+                  <ArrowUpRight className="h-12 w-12 text-white/10 mx-auto mb-4" />
+                  <p className="text-base font-bold text-white/60">No withdrawals made yet</p>
                 </div>
               ) : (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {filteredTxs.filter(tx => tx.category === 'WITHDRAWAL' || tx.category === 'FEE').map((tx: Tx, i: number) => (
-                    <div key={tx.id || i} className="flex items-center justify-between p-3 rounded-xl border border-slate-100 hover:bg-slate-50/80 transition-colors">
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="h-10 w-10 rounded-lg bg-red-50 flex items-center justify-center shrink-0">
-                          <ArrowUpRight className="h-5 w-5 text-red-500" />
+                    <div key={tx.id || i} className="flex items-center justify-between p-4 rounded-2xl glass-panel border border-white/5 hover:border-white/20 transition-all hover:bg-white/5 group">
+                      <div className="flex items-center gap-4 min-w-0">
+                        <div className="h-12 w-12 rounded-xl bg-neon-pink/20 border border-neon-pink/30 flex items-center justify-center shrink-0">
+                          <ArrowUpRight className="h-6 w-6 text-neon-pink drop-shadow-[0_0_5px_currentColor]" />
                         </div>
                         <div className="min-w-0">
-                          <p className="font-medium text-sm text-slate-800 truncate">{tx.description || tx.type || 'Withdrawal'}</p>
-                          <div className="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
+                          <p className="font-bold text-base text-white truncate group-hover:text-neon-blue transition-colors">{tx.description || tx.type || 'Withdrawal'}</p>
+                          <div className="flex items-center gap-2 text-xs font-medium text-white/40 mt-1 uppercase tracking-wider">
                             <span>{new Date(tx.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                            <span className="text-slate-300">|</span>
+                            <span className="text-white/20">|</span>
                             <span className="font-mono">{tx.reference}</span>
                           </div>
                         </div>
                       </div>
-                      <div className="text-right shrink-0 ml-3">
-                        <p className="font-bold text-sm text-red-500">-{formatPrice(Math.abs(tx.amount), selectedCurrency)}</p>
+                      <div className="text-right shrink-0 ml-4">
+                        <p className="font-black text-lg text-neon-pink drop-shadow-[0_0_5px_rgba(255,0,128,0.5)]">-{formatPrice(Math.abs(tx.amount), selectedCurrency)}</p>
                         {tx.status === 'COMPLETED' ? (
-                          <div className="flex items-center gap-1 justify-end text-[10px] text-green-600">
-                            <CheckCircle className="h-3 w-3" /> Completed
+                          <div className="flex items-center gap-1.5 justify-end text-xs font-bold text-emerald-400 mt-1">
+                            <CheckCircle className="h-3.5 w-3.5" /> Completed
                           </div>
                         ) : tx.status === 'PENDING' ? (
-                          <div className="flex items-center gap-1 justify-end text-[10px] text-amber-600">
-                            <Clock className="h-3 w-3" /> Pending
+                          <div className="flex items-center gap-1.5 justify-end text-xs font-bold text-amber-400 mt-1">
+                            <Clock className="h-3.5 w-3.5" /> Pending
                           </div>
                         ) : (
-                          <div className="flex items-center gap-1 justify-end text-[10px] text-red-500">
-                            <XCircle className="h-3 w-3" /> {tx.status}
+                          <div className="flex items-center gap-1.5 justify-end text-xs font-bold text-neon-pink mt-1">
+                            <XCircle className="h-3.5 w-3.5" /> {tx.status}
                           </div>
                         )}
                       </div>

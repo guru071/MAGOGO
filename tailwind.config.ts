@@ -50,13 +50,67 @@ const config: Config = {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
-  			}
+  			},
+        // Universe neon colors
+        'neon-blue': '#00d2ff',
+        'neon-purple': '#3a7bd5',
+        'neon-pink': '#ff0080',
+        'glass': 'rgba(255, 255, 255, 0.05)',
+        'glass-border': 'rgba(255, 255, 255, 0.1)',
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
+  		},
+      animation: {
+        'float': 'float 6s ease-in-out infinite',
+        'pulse-glow': 'pulseGlow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'gradient-x': 'gradient-x 15s ease infinite',
+        'gradient-y': 'gradient-y 15s ease infinite',
+        'gradient-xy': 'gradient-xy 15s ease infinite',
+        'shimmer-fast': 'shimmer 1s infinite',
+      },
+      keyframes: {
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+        pulseGlow: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '.5' },
+        },
+        'gradient-y': {
+          '0%, 100%': {
+              'background-size': '400% 400%',
+              'background-position': 'center top'
+          },
+          '50%': {
+              'background-size': '200% 200%',
+              'background-position': 'center center'
+          }
+        },
+        'gradient-x': {
+          '0%, 100%': {
+              'background-size': '200% 200%',
+              'background-position': 'left center'
+          },
+          '50%': {
+              'background-size': '200% 200%',
+              'background-position': 'right center'
+          }
+        },
+        'gradient-xy': {
+          '0%, 100%': {
+              'background-size': '400% 400%',
+              'background-position': 'left center'
+          },
+          '50%': {
+              'background-size': '200% 200%',
+              'background-position': 'right center'
+          }
+        }
+      }
   	}
   },
   plugins: [tailwindcssAnimate],

@@ -41,8 +41,8 @@ export default function InvoicePage() {
   if (error || !order) {
     return (
       <div className="max-w-4xl mx-auto p-8 text-center">
-        <h2 className="text-2xl font-bold text-red-500 mb-4">Invoice Not Found</h2>
-        <p className="text-slate-600 mb-6">{error}</p>
+        <h2 className="text-2xl font-bold text-neon-pink mb-4">Invoice Not Found</h2>
+        <p className="text-white/70 mb-6">{error}</p>
         <Button onClick={() => router.push('/')}>Return Home</Button>
       </div>
     )
@@ -53,39 +53,39 @@ export default function InvoicePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 py-8 px-4 sm:px-6 lg:px-8 print:bg-white print:p-0">
+    <div className="min-h-screen bg-black/40 py-8 px-4 sm:px-6 lg:px-8 print:bg-white print:p-0">
       <div className="max-w-4xl mx-auto">
         
         {/* Controls - Hidden in print */}
         <div className="flex items-center justify-between mb-6 print:hidden">
-          <Button variant="ghost" onClick={() => router.back()} className="text-slate-500 hover:text-slate-900">
+          <Button variant="ghost" onClick={() => router.back()} className="text-white/50 hover:text-white">
             <ArrowLeft className="h-4 w-4 mr-2" /> Back
           </Button>
           <div className="flex gap-3">
-            <Button onClick={handlePrint} className="bg-slate-900 text-white">
+            <Button onClick={handlePrint} className="bg-neon-blue text-white">
               <Printer className="h-4 w-4 mr-2" /> Print Invoice
             </Button>
           </div>
         </div>
 
         {/* Printable Invoice Card */}
-        <Card className="p-8 sm:p-12 bg-white shadow-xl border-slate-100 print:shadow-none print:border-0 print:p-0">
+        <Card className="p-8 sm:p-12 glass-panel neon-border border-white/10 rounded-3xl border-white/10 print:shadow-none print:border-0 print:p-0">
           
           {/* Header */}
-          <div className="flex justify-between items-start border-b border-slate-200 pb-8 mb-8">
+          <div className="flex justify-between items-start border-b border-white/20 pb-8 mb-8">
             <div>
-              <h1 className="text-3xl font-black text-slate-900 tracking-tight">INVOICE</h1>
-              <p className="text-slate-500 mt-2 font-mono">#{order.orderId}</p>
-              <div className="flex items-center gap-2 mt-4 text-green-600 font-medium">
+              <h1 className="text-3xl font-black text-white tracking-tight">INVOICE</h1>
+              <p className="text-white/50 mt-2 font-mono">#{order.orderId}</p>
+              <div className="flex items-center gap-2 mt-4 text-emerald-400 font-medium">
                 <CheckCircle2 className="h-5 w-5" />
                 Payment Successful
               </div>
             </div>
             <div className="text-right">
-              <div className="text-2xl font-black text-[#0066CC] tracking-tighter">AI PROMPT HUB</div>
-              <p className="text-slate-500 mt-1 text-sm">123 Marketplace Ave, Suite 100</p>
-              <p className="text-slate-500 text-sm">San Francisco, CA 94107</p>
-              <p className="text-slate-500 text-sm mt-4 font-medium">
+              <div className="text-2xl font-black text-neon-blue drop-shadow-[0_0_10px_rgba(0,210,255,0.5)] tracking-tighter">AI PROMPT HUB</div>
+              <p className="text-white/50 mt-1 text-sm">123 Marketplace Ave, Suite 100</p>
+              <p className="text-white/50 text-sm">San Francisco, CA 94107</p>
+              <p className="text-white/50 text-sm mt-4 font-medium">
                 Date: {new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
               </p>
             </div>
@@ -94,42 +94,42 @@ export default function InvoicePage() {
           {/* Billing Info */}
           <div className="grid grid-cols-2 gap-8 mb-12">
             <div>
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Billed To</h3>
-              <p className="text-slate-900 font-bold">{order.buyer?.name || 'Customer'}</p>
-              <p className="text-slate-600">{order.buyer?.email}</p>
+              <h3 className="text-xs font-bold text-white/40 uppercase tracking-wider mb-3">Billed To</h3>
+              <p className="text-white font-bold">{order.buyer?.name || 'Customer'}</p>
+              <p className="text-white/70">{order.buyer?.email}</p>
             </div>
             <div>
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Seller Details</h3>
-              <p className="text-slate-900 font-bold">{order.prompt?.seller?.name || 'Third-Party Seller'}</p>
-              <p className="text-slate-600">{order.prompt?.seller?.email}</p>
+              <h3 className="text-xs font-bold text-white/40 uppercase tracking-wider mb-3">Seller Details</h3>
+              <p className="text-white font-bold">{order.prompt?.seller?.name || 'Third-Party Seller'}</p>
+              <p className="text-white/70">{order.prompt?.seller?.email}</p>
             </div>
           </div>
 
           {/* Line Items */}
-          <div className="border border-slate-200 rounded-xl overflow-hidden mb-8">
-            <table className="w-full text-left border-collapse">
+          <div className="border border-white/20 rounded-xl overflow-hidden mb-8">
+            <table className="w-full text-left border-collapse bg-black/40">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200">
-                  <th className="py-4 px-6 font-bold text-slate-700">Description</th>
-                  <th className="py-4 px-6 font-bold text-slate-700 w-32 text-right">Amount</th>
+                <tr className="bg-black/40 border-b border-white/20">
+                  <th className="py-4 px-6 font-bold text-white/90">Description</th>
+                  <th className="py-4 px-6 font-bold text-white/90 w-32 text-right">Amount</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 <tr>
                   <td className="py-5 px-6">
-                    <p className="font-bold text-slate-900">{order.prompt?.title || 'AI Prompt'}</p>
-                    <p className="text-sm text-slate-500 mt-1">Digital Goods - Instant Access</p>
+                    <p className="font-bold text-white">{order.prompt?.title || 'AI Prompt'}</p>
+                    <p className="text-sm text-white/50 mt-1">Digital Goods - Instant Access</p>
                   </td>
-                  <td className="py-5 px-6 text-right font-medium text-slate-900">
+                  <td className="py-5 px-6 text-right font-medium text-white">
                     ${(order.amount + (order.discountAmt || 0)).toFixed(2)}
                   </td>
                 </tr>
                 {order.couponCode && (
                   <tr>
-                    <td className="py-4 px-6 text-slate-600">
-                      Discount applied (Coupon: <span className="font-mono bg-slate-100 px-1 py-0.5 rounded text-xs">{order.couponCode}</span>)
+                    <td className="py-4 px-6 text-white/70">
+                      Discount applied (Coupon: <span className="font-mono bg-white/5 px-1 py-0.5 rounded text-xs">{order.couponCode}</span>)
                     </td>
-                    <td className="py-4 px-6 text-right text-red-500 font-medium">
+                    <td className="py-4 px-6 text-right text-neon-pink font-medium">
                       -${(order.amount * 0).toFixed(2)} {/* Placeholder since discount isn't explicitly saved as a field natively, it's baked into amount. If you added discountAmt, use it. */}
                     </td>
                   </tr>
@@ -141,19 +141,19 @@ export default function InvoicePage() {
           {/* Totals */}
           <div className="flex justify-end">
             <div className="w-1/2 min-w-[250px] space-y-3 text-sm">
-              <div className="flex justify-between text-slate-600">
+              <div className="flex justify-between text-white/70">
                 <span>Subtotal</span>
                 <span className="font-medium">${order.amount.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-slate-600">
+              <div className="flex justify-between text-white/70">
                 <span>Platform Fee & Taxes</span>
                 <span className="font-medium">Included</span>
               </div>
-              <div className="flex justify-between border-t border-slate-200 pt-3 text-lg font-black text-slate-900">
+              <div className="flex justify-between border-t border-white/20 pt-3 text-lg font-black text-white">
                 <span>Total Paid</span>
                 <span>${order.amount.toFixed(2)} {order.currency}</span>
               </div>
-              <div className="flex justify-between text-slate-500 text-xs pt-1">
+              <div className="flex justify-between text-white/50 text-xs pt-1">
                 <span>Payment Method</span>
                 <span className="uppercase">{order.paymentMethod}</span>
               </div>
@@ -161,8 +161,8 @@ export default function InvoicePage() {
           </div>
 
           {/* Footer */}
-          <div className="border-t border-slate-200 mt-16 pt-8 text-center text-slate-500 text-sm">
-            <p className="font-medium text-slate-700">Thank you for your purchase!</p>
+          <div className="border-t border-white/20 mt-16 pt-8 text-center text-white/50 text-sm">
+            <p className="font-medium text-white/90">Thank you for your purchase!</p>
             <p className="mt-1">If you have any questions about this invoice, please contact support@aiprompthub.com</p>
           </div>
           

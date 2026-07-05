@@ -75,46 +75,43 @@ export default function LandingPage() {
   }, [])
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col bg-transparent">
       {/* HERO */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full bg-[#0066CC]/[0.04] blur-3xl" />
-          <div className="absolute top-20 right-0 w-[400px] h-[400px] rounded-full bg-[#FF6600]/[0.04] blur-3xl" />
-        </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-20 pb-24 sm:pt-28 sm:pb-32 text-center">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0066CC]/[0.07] text-[#0066CC] text-xs font-semibold mb-6">
-              <Star className="h-3.5 w-3.5 fill-[#0066CC]" /> The Ultimate AI Prompt Ecosystem
+      <section className="relative overflow-hidden pt-20 pb-24 sm:pt-32 sm:pb-32 text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" }}>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel border border-neon-blue/30 text-neon-blue text-xs font-semibold mb-8 shadow-[0_0_15px_rgba(0,210,255,0.2)]">
+              <Star className="h-3.5 w-3.5 fill-neon-blue animate-pulse" /> The Ultimate AI Prompt Ecosystem
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight text-slate-900 max-w-4xl mx-auto leading-[1.1]">
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white max-w-5xl mx-auto leading-[1.15]">
               Premium AI Prompts for{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0066CC] to-[#FF6600]">Every Tool</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-blue via-neon-purple to-neon-pink animate-gradient-x">Every Tool</span>
             </h1>
-            <p className="mt-6 text-lg sm:text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed">
-              Discover, buy and sell expertly crafted prompts. Experience the world's most advanced digital marketplace for ChatGPT, Midjourney, Claude, Gemini and more.
+            <p className="mt-8 text-lg sm:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
+              Discover, buy and sell expertly crafted prompts. Experience the world's most advanced digital marketplace built on the dark universe aesthetic.
             </p>
-            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/browse">
-                <Button size="lg" className="bg-[#0066CC] hover:bg-[#0055AA] text-white font-semibold h-12 px-8 text-base shadow-lg shadow-[#0066CC]/20 hover:shadow-xl hover:shadow-[#0066CC]/25 transition-all">
+                <Button size="lg" className="bg-gradient-to-r from-neon-blue to-neon-purple text-white font-bold h-14 px-8 text-base rounded-full shadow-[0_0_20px_rgba(0,210,255,0.4)] hover:shadow-[0_0_30px_rgba(0,210,255,0.6)] hover:scale-105 transition-all">
                   Explore Ecosystem <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               </Link>
               <Link href="/seller">
-                <Button variant="outline" size="lg" className="h-12 px-8 text-base border-slate-200 text-slate-700 hover:bg-slate-50 font-medium">
+                <Button variant="outline" size="lg" className="glass-panel text-white hover:bg-white/10 font-medium h-14 px-8 rounded-full border-white/20 transition-all hover:scale-105">
                   Become a Seller
                 </Button>
               </Link>
             </div>
-            <div className="mt-16 flex flex-wrap items-center justify-center gap-8 sm:gap-16 text-center">
+            <div className="mt-20 flex flex-wrap items-center justify-center gap-10 sm:gap-20 text-center glass-panel-heavy p-8 rounded-[3rem] max-w-4xl mx-auto border-white/10 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-neon-blue/10 to-neon-pink/10 opacity-50 blur-xl"></div>
               {[
                 { value: loading ? '-' : `${stats.categories}+`, label: 'Categories' },
                 { value: loading ? '-' : `${stats.prompts}+`, label: 'Verified Prompts' },
                 { value: loading ? '-' : `${stats.sellers}+`, label: 'Active Sellers' },
               ].map((s) => (
-                <div key={s.label}>
-                  <p className="text-2xl sm:text-3xl font-extrabold text-[#0066CC]">{s.value}</p>
-                  <p className="text-sm text-slate-500 mt-1">{s.label}</p>
+                <div key={s.label} className="relative z-10">
+                  <p className="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-white to-white/70">{s.value}</p>
+                  <p className="text-sm text-neon-blue/80 mt-1 uppercase tracking-widest font-semibold">{s.label}</p>
                 </div>
               ))}
             </div>
@@ -122,68 +119,68 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* TRENDING PROMPTS - E-Commerce Style */}
-      <section className="py-16 sm:py-20 bg-white">
+      {/* TRENDING PROMPTS */}
+      <section className="py-16 sm:py-24 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 flex items-center gap-2">
-              <Flame className="h-6 w-6 text-red-500" /> Trending Prompts
+          <div className="flex items-center justify-between mb-10">
+            <h2 className="text-3xl font-extrabold text-white flex items-center gap-3">
+              <Flame className="h-8 w-8 text-neon-pink animate-pulse" /> Trending Now
             </h2>
-            <Link href="/browse?sort=popular" className="text-sm font-semibold text-[#0066CC] hover:underline">
-              View all
+            <Link href="/browse?sort=popular" className="text-sm font-semibold text-neon-blue hover:text-white transition-colors">
+              View all &rarr;
             </Link>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {loading ? (
-              <div className="col-span-full py-12 text-center"><Loader2 className="h-6 w-6 animate-spin text-[#0066CC] mx-auto" /></div>
+              <div className="col-span-full py-12 text-center"><Loader2 className="h-8 w-8 animate-spin text-neon-blue mx-auto" /></div>
             ) : prompts.length === 0 ? (
-              <div className="col-span-full py-16 text-center">
-                <Sparkles className="h-12 w-12 text-slate-200 mx-auto mb-4" />
-                <p className="text-slate-500 font-medium mb-2">No prompts listed yet</p>
-                <p className="text-sm text-slate-400 mb-6">Be the first to sell a prompt on MAGHGO!</p>
+              <div className="col-span-full py-16 text-center glass-panel rounded-3xl">
+                <Sparkles className="h-12 w-12 text-white/20 mx-auto mb-4" />
+                <p className="text-white/60 font-medium mb-2">No prompts listed yet</p>
                 <Link href="/seller">
-                  <Button className="bg-[#FF6600] hover:bg-[#E65C00] text-white font-semibold">Start Selling</Button>
+                  <Button className="bg-neon-pink text-white rounded-full">Start Selling</Button>
                 </Link>
               </div>
             ) : prompts.slice(0, 4).map(prompt => (
               <Link key={prompt.id} href={`/prompt/${prompt.id}`}>
-                <Card className="group overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer h-full border-slate-100 flex flex-col">
-                  <div className="relative h-48 bg-gradient-to-br from-slate-100 to-slate-50 flex items-center justify-center overflow-hidden">
-                    {getCoverImage(prompt) ? (
-                      <img src={getCoverImage(prompt)} alt={prompt.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    ) : (
-                      <Sparkles className="h-16 w-16 text-slate-200 group-hover:scale-110 transition-transform duration-500" />
-                    )}
-                    <div className="absolute top-2 right-2 flex flex-col gap-1">
-                      {prompt.isFree && <Badge className="bg-green-500 text-white border-0 shadow-sm">Free</Badge>}
-                      {prompt.discount > 0 && <Badge variant="destructive" className="shadow-sm">-{prompt.discount}%</Badge>}
-                    </div>
-                  </div>
-                  <div className="p-4 flex flex-col flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="secondary" className="text-[10px] bg-slate-100 text-slate-600">{prompt.recommendedAI || 'General'}</Badge>
-                      {(prompt as any).qualityScore && <Badge className={`text-[10px] border-0 ${(prompt as any).qualityScore >= 0.8 ? 'bg-emerald-100 text-emerald-700' : (prompt as any).qualityScore >= 0.5 ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'}`}>Q: {Math.round((prompt as any).qualityScore * 100)}</Badge>}
-                      <span className="text-[10px] text-slate-400 flex items-center gap-1"><Star className="h-3 w-3 text-amber-400 fill-amber-400" /> {prompt.rating.toFixed(1)}</span>
-                    </div>
-                    <h3 className="font-bold text-slate-800 text-sm line-clamp-2 mb-1 group-hover:text-[#0066CC] transition-colors">{prompt.title}</h3>
-                    <p className="text-xs text-slate-500 line-clamp-2 flex-1">{prompt.description}</p>
-                    
-                    <div className="mt-4 flex items-center justify-between pt-3 border-t border-slate-50">
-                      <div className="flex flex-col">
-                        <span className="text-xs text-slate-400 line-through">
-                          {prompt.originalPrice && prompt.originalPrice > prompt.price ? formatPrice(prompt.originalPrice, selectedCurrency) : ''}
-                        </span>
-                        <span className="font-extrabold text-slate-900 text-lg">
-                          {prompt.isFree ? 'FREE' : formatPrice(prompt.price, selectedCurrency)}
-                        </span>
+                <motion.div whileHover={{ y: -10 }} transition={{ type: "spring", stiffness: 300 }}>
+                  <Card className="neon-border glass-panel overflow-hidden h-full flex flex-col border-white/10 rounded-3xl group bg-black/40">
+                    <div className="relative h-48 flex items-center justify-center overflow-hidden bg-black/40">
+                      {getCoverImage(prompt) ? (
+                        <img src={getCoverImage(prompt)} alt={prompt.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80 group-hover:opacity-100" />
+                      ) : (
+                        <Sparkles className="h-16 w-16 text-white/10 group-hover:scale-110 transition-transform duration-700 group-hover:text-neon-blue/50" />
+                      )}
+                      <div className="absolute top-3 right-3 flex flex-col gap-2">
+                        {prompt.isFree && <Badge className="bg-neon-blue text-black font-bold border-0 shadow-[0_0_10px_rgba(0,210,255,0.8)] backdrop-blur-md">FREE</Badge>}
+                        {prompt.discount > 0 && <Badge className="bg-neon-pink text-white font-bold border-0 shadow-[0_0_10px_rgba(255,0,128,0.8)] backdrop-blur-md">-{prompt.discount}%</Badge>}
                       </div>
-                      <Button size="sm" className="bg-slate-900 text-white hover:bg-[#0066CC] rounded-full h-8 w-8 p-0 shrink-0">
-                        <ShoppingCart className="h-4 w-4" />
-                      </Button>
                     </div>
-                  </div>
-                </Card>
+                    <div className="p-5 flex flex-col flex-1 relative z-10">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Badge variant="outline" className="text-[10px] bg-white/5 border-white/10 text-white/70 backdrop-blur-md">{prompt.recommendedAI || 'General'}</Badge>
+                        <span className="text-[10px] text-white/50 flex items-center gap-1"><Star className="h-3 w-3 text-neon-blue fill-neon-blue shadow-[0_0_5px_rgba(0,210,255,0.8)]" /> {prompt.rating.toFixed(1)}</span>
+                      </div>
+                      <h3 className="font-bold text-white text-base line-clamp-2 mb-2 group-hover:text-neon-blue transition-colors">{prompt.title}</h3>
+                      <p className="text-xs text-white/50 line-clamp-2 flex-1">{prompt.description}</p>
+                      
+                      <div className="mt-5 flex items-center justify-between pt-4 border-t border-white/10">
+                        <div className="flex flex-col">
+                          <span className="text-[10px] text-white/30 line-through">
+                            {prompt.originalPrice && prompt.originalPrice > prompt.price ? formatPrice(prompt.originalPrice, selectedCurrency) : ''}
+                          </span>
+                          <span className="font-extrabold text-white text-xl drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
+                            {prompt.isFree ? 'FREE' : formatPrice(prompt.price, selectedCurrency)}
+                          </span>
+                        </div>
+                        <Button size="icon" className="bg-white/10 text-white hover:bg-neon-blue hover:text-black hover:shadow-[0_0_15px_rgba(0,210,255,0.8)] rounded-full h-10 w-10 shrink-0 transition-all">
+                          <ShoppingCart className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                </motion.div>
               </Link>
             ))}
           </div>
@@ -191,29 +188,30 @@ export default function LandingPage() {
       </section>
 
       {/* CATEGORIES */}
-      <section id="categories" className="py-16 sm:py-20 bg-slate-50">
+      <section id="categories" className="py-16 sm:py-24 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} className="text-center mb-10">
-            <motion.h2 variants={fadeUp} custom={0} className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Browse by Category</motion.h2>
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} className="text-center mb-12">
+            <motion.h2 variants={fadeUp} custom={0} className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">Browse by Category</motion.h2>
           </motion.div>
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}
-            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
             {loading ? (
-              <div className="col-span-full py-12 text-center"><Loader2 className="h-6 w-6 animate-spin text-[#0066CC] mx-auto" /></div>
+              <div className="col-span-full py-12 text-center"><Loader2 className="h-8 w-8 animate-spin text-neon-purple mx-auto" /></div>
             ) : categories.length === 0 ? (
-              <div className="col-span-full py-12 text-center text-slate-400">No categories available</div>
+              <div className="col-span-full py-12 text-center text-white/40">No categories available</div>
             ) : categories.slice(0, 12).map((cat: any, i: number) => {
-              const style = CATEGORY_STYLES[cat.slug] || { icon: Sparkles, color: 'bg-slate-100 text-slate-700' };
+              const style = CATEGORY_STYLES[cat.slug] || { icon: Sparkles, color: 'text-white' };
               const Icon = style.icon;
               return (
                 <motion.div key={cat.id} variants={fadeUp} custom={i + 2}>
                   <Link href={`/browse?category=${cat.slug}`}
-                    className="group w-full flex flex-col items-center justify-center p-6 rounded-2xl bg-white border border-slate-100 hover:border-[#0066CC]/20 hover:shadow-lg hover:shadow-[#0066CC]/10 transition-all duration-300 text-center">
-                    <div className={`h-12 w-12 rounded-full mb-3 flex items-center justify-center ${style.color}`}>
-                      <Icon className="h-6 w-6" />
+                    className="neon-border group w-full flex flex-col items-center justify-center p-6 rounded-3xl glass-panel hover:bg-white/10 transition-all duration-300 text-center relative overflow-hidden bg-black/40">
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className={`h-14 w-14 rounded-full mb-4 flex items-center justify-center bg-white/5 border border-white/10 group-hover:scale-110 transition-transform ${style.color}`}>
+                      <Icon className="h-7 w-7 drop-shadow-md group-hover:drop-shadow-[0_0_10px_currentColor]" />
                     </div>
-                    <p className="font-semibold text-sm text-slate-800 group-hover:text-[#0066CC] transition-colors">{cat.name}</p>
-                    <p className="text-[10px] text-slate-400 mt-1 uppercase font-medium tracking-wider">{cat.promptCount || 0} items</p>
+                    <p className="font-semibold text-sm text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-neon-blue group-hover:to-neon-pink transition-all">{cat.name}</p>
+                    <p className="text-[10px] text-white/40 mt-1 uppercase font-semibold tracking-widest">{cat.promptCount || 0} items</p>
                   </Link>
                 </motion.div>
               );
@@ -223,26 +221,26 @@ export default function LandingPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 sm:py-24">
+      <section className="py-24 sm:py-32 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <motion.div initial={{ opacity: 0, scale: 0.97 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5 }}
-            className="relative overflow-hidden rounded-[2.5rem] bg-slate-900 p-10 sm:p-20 text-center shadow-2xl">
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-gradient-to-r from-[#0066CC]/20 to-[#FF6600]/20 blur-3xl opacity-50" />
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.7 }}
+            className="relative overflow-hidden rounded-[3rem] glass-panel-heavy p-12 sm:p-24 text-center shadow-[0_0_50px_rgba(0,0,0,0.8)] border-white/10">
+            <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-[conic-gradient(var(--tw-gradient-stops))] from-neon-blue/40 via-neon-purple/40 to-neon-pink/40 blur-3xl opacity-30 animate-[spin_10s_linear_infinite]" />
             </div>
             <div className="relative z-10">
-              <h2 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight mb-6">Unleash AI Potential</h2>
-              <p className="text-slate-300 text-lg sm:text-xl max-w-2xl mx-auto mb-10 font-light">
+              <h2 className="text-4xl sm:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/50 tracking-tight mb-6">Unleash AI Potential</h2>
+              <p className="text-white/70 text-lg sm:text-xl max-w-2xl mx-auto mb-10 font-light">
                 Join the MAGHGO ecosystem today. Transform your workflow with world-class digital AI prompts, or start monetizing your prompt engineering skills.
               </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                 <Link href="/browse">
-                  <Button size="lg" className="bg-[#FF6600] hover:bg-[#E65C00] text-white font-bold h-14 px-10 text-lg rounded-full shadow-lg shadow-[#FF6600]/25 hover:shadow-xl hover:-translate-y-0.5 transition-all w-full sm:w-auto">
+                  <Button size="lg" className="bg-white text-black hover:bg-white/90 font-bold h-14 px-10 text-lg rounded-full shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:scale-105 transition-all w-full sm:w-auto">
                     Start Exploring <ArrowRight className="h-5 w-5 ml-2" />
                   </Button>
                 </Link>
                 <Link href="/seller">
-                  <Button size="lg" variant="outline" className="h-14 px-10 text-lg border-white/20 text-white hover:bg-white/10 font-medium rounded-full w-full sm:w-auto">
+                  <Button size="lg" variant="outline" className="h-14 px-10 text-lg border-white/20 text-white hover:bg-white/10 glass-panel font-medium rounded-full w-full sm:w-auto hover:scale-105 transition-all">
                     Seller Central
                   </Button>
                 </Link>

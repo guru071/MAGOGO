@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
     const user = await getCurrentUser();
     if (!user) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     const body = await req.json();
-    const { title, description, promptText, sampleImages, categoryId, tags, recommendedAI, price, isFree, discount } = body;
+    const { title, description, promptText, sampleImages, categoryId, tags, recommendedAI, price, isFree, discount, razorpayPaymentId, razorpayOrderId, razorpaySignature } = body;
     if (!title || !description || !promptText || !categoryId) return NextResponse.json({ success: false, error: 'Missing required fields' }, { status: 400 });
 
     const { getFeeConfig, calculateFees } = await import('@/lib/fees');
@@ -90,9 +90,6 @@ export async function POST(req: NextRequest) {
         if (cat) categoryName = cat.name;
       }
       const feeBreakdown = calculateFees(finalPrice, feeConfig, promptText.length, categoryName);
-      listingFee = feeBreakdown.netAmount > 0 ? feeBreakdown.totalFees : 0; 
-      // Wait, calculateFees uses the price as `amount`. If they sell for $10, we charge them $1.50 upfront.
-      // We'll use totalFees as the listing fee.
       listingFee = feeBreakdown.totalFees;
     }
 
@@ -101,28 +98,57 @@ export async function POST(req: NextRequest) {
       listingFee = 0;
     }
 
-    // Check balance for sellers
-    if (listingFee > 0) {
-      const dbUser = await db.user.findUnique({ where: { id: user.id! } });
-      if (!dbUser || dbUser.currentBalance < listingFee) {
-        return NextResponse.json({ 
-          success: false, 
-          error: `Insufficient balance. You need $${listingFee.toFixed(2)} in your wallet to list this prompt.` 
-        }, { status: 400 });
+    let isDirectRazorpay = false;
+
+    // Check direct Razorpay payment first
+    if (listingFee > 0 && razorpayPaymentId && razorpayOrderId && razorpaySignature) {
+      const { verifyPayment } = await import('@/lib/razorpay');
+      if (verifyPayment(razorpayOrderId, razorpayPaymentId, razorpaySignature)) {
+        isDirectRazorpay = true;
+      } else {
+        return NextResponse.json({ success: false, error: 'Invalid Razorpay payment signature' }, { status: 400 });
       }
     }
 
-    const prompt = await db.$transaction(async (tx) => {
-      // Deduct fee if applicable
-      if (listingFee > 0) {
+    const promptResult = await db.$transaction(async (tx) => {
+      // Check balance for sellers if not using direct Razorpay (inside transaction to prevent race conditions)
+      if (listingFee > 0 && !isDirectRazorpay) {
+        const dbUser = await tx.user.findUnique({ where: { id: user.id! } });
+        if (!dbUser || dbUser.currentBalance < listingFee) {
+          return { error: `Insufficient balance. You need $${listingFee.toFixed(2)} in your wallet to list this prompt.` };
+        }
+        
         await tx.user.update({
           where: { id: user.id! },
           data: { currentBalance: { decrement: listingFee } }
         });
         
+        await tx.walletTransaction.create({
+          data: {
+            userId: user.id!,
+            amount: listingFee,
+            type: 'DEBIT',
+            description: 'Prompt Upload Fee paid via Wallet Balance',
+            status: 'COMPLETED'
+          }
+        });
+      }
+      
+      // Optionally record transaction if it was paid via Razorpay
+      if (listingFee > 0 && isDirectRazorpay) {
+         await tx.walletTransaction.create({
+           data: {
+             userId: user.id!,
+             amount: listingFee,
+             type: 'DEBIT',
+             paymentId: razorpayPaymentId,
+             description: `Prompt Upload Fee paid directly via Razorpay (${razorpayPaymentId})`,
+             status: 'COMPLETED'
+           }
+         });
       }
 
-      return await tx.prompt.create({
+      const p = await tx.prompt.create({
         data: {
           title, slug: slugify(title), description, promptText,
           sampleImages: JSON.stringify(sampleImages || []), categoryId,
@@ -133,17 +159,24 @@ export async function POST(req: NextRequest) {
           status: 'APPROVED'
         }
       });
+      return { prompt: p };
     });
+
+    if (promptResult.error) {
+      return NextResponse.json({ success: false, error: promptResult.error }, { status: 400 });
+    }
+    const prompt = promptResult.prompt;
+
 
     // AI fraud check (non-blocking)
     ai.fraud.checkPrompt({
-      id: prompt.id, title, description, promptText, tags,
+      id: prompt!.id, title, description, promptText, tags,
       categoryId, price: finalPrice, isFree, discount,
     }).catch(e => { console.error('[prompts] fraud check error', e); });
 
     // AI quality scoring (non-blocking)
     ai.quality.score({
-      id: prompt.id, title, description, promptText, tags,
+      id: prompt!.id, title, description, promptText, tags,
       categoryId, price: finalPrice, isFree, discount,
       seller: { id: user.id, isVerified: user.isVerified, isSeller: user.isSeller, totalEarnings: user.totalEarnings },
     }).catch(e => { console.error('[prompts] quality score error', e); });
@@ -153,7 +186,7 @@ export async function POST(req: NextRequest) {
     ai.search.embed(textToEmbed).then(async (res) => {
       if (res.success && res.data) {
         try {
-          await db.$executeRawUnsafe(`UPDATE "Prompt" SET embedding = '[${res.data.join(',')}]'::vector WHERE id = $1`, prompt.id);
+          await db.$executeRawUnsafe(`UPDATE "Prompt" SET embedding = '[${res.data.join(',')}]'::vector WHERE id = $1`, prompt!.id);
         } catch (dbErr) {
           console.error('[prompts] failed to save embedding to db', dbErr);
         }
@@ -164,20 +197,20 @@ export async function POST(req: NextRequest) {
     fetch(`${process.env.AI_SERVICE_URL || 'http://localhost:8000'}/api/quality`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: `${title} ${description}`, promptId: prompt.id }),
+      body: JSON.stringify({ text: `${title} ${description}`, promptId: prompt!.id }),
     }).then(async qRes => {
       if (!qRes.ok) return;
       const qData = await qRes.json();
       if (qData && qData.score !== undefined) {
-        await db.prompt.update({ where: { id: prompt.id }, data: { qualityScore: qData.score } });
+        await db.prompt.update({ where: { id: prompt!.id }, data: { qualityScore: qData.score } });
         const settings = await db.platformSettings.findFirst({ where: { key: 'quality_config' } });
         if (settings?.value) {
           const config = JSON.parse(settings.value as string);
           if (config.enabled) {
             if (qData.score < config.autoRejectThreshold) {
-              await db.prompt.update({ where: { id: prompt.id }, data: { status: 'REJECTED' } });
+              await db.prompt.update({ where: { id: prompt!.id }, data: { status: 'REJECTED' } });
             } else if (qData.score >= config.autoApproveThreshold) {
-              await db.prompt.update({ where: { id: prompt.id }, data: { status: 'APPROVED' } });
+              await db.prompt.update({ where: { id: prompt!.id }, data: { status: 'APPROVED' } });
             }
           }
         }

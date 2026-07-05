@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
+  },
   allowedDevOrigins: [
     "preview-chat-be1e7206-b5c6-4688-a3c4-0f25f20b014d.space-z.ai",
     "localhost",
@@ -9,10 +12,8 @@ const nextConfig: NextConfig = {
   ],
   images: {
     remotePatterns: [
-      { protocol: 'https', hostname: 'res.cloudinary.com' },
-      { protocol: 'https', hostname: 'images.unsplash.com' },
-      { protocol: 'https', hostname: 'api.dicebear.com' },
-      { protocol: 'https', hostname: '*.supabase.co' }
+      { protocol: 'https', hostname: '**' },
+      { protocol: 'http', hostname: '**' }
     ]
   }
 };

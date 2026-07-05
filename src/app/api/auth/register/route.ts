@@ -5,7 +5,7 @@ import { ai } from '@/lib/ai-client';
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password, name } = await req.json();
+    const { email, password, name, country } = await req.json();
     if (!email || !password || !name) {
       return NextResponse.json({ success: false, error: 'Email, password, and name required' }, { status: 400 });
     }
@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Password must be at least 6 characters' }, { status: 400 });
     }
 
-    const { user, profile } = await signupWithSupabase(email, password, name);
+    const { user, profile } = await signupWithSupabase(email, password, name, country);
 
     // AI Fraud check with auto-blocking
     ai.fraud.checkUser({

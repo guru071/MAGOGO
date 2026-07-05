@@ -46,7 +46,12 @@ export function verifyPayment(orderId: string, paymentId: string, signature: str
     .createHmac('sha256', RAZORPAY_KEY_SECRET)
     .update(`${orderId}|${paymentId}`)
     .digest('hex');
-  return expected === signature;
+    
+  const expectedBuffer = Buffer.from(expected, 'hex');
+  const signatureBuffer = Buffer.from(signature, 'hex');
+  
+  if (expectedBuffer.length !== signatureBuffer.length) return false;
+  return crypto.timingSafeEqual(expectedBuffer, signatureBuffer);
 }
 
 /** Fetch a payment by ID */

@@ -15,6 +15,7 @@ import {
 import { toast } from 'sonner'
 import { Loader2, CreditCard, Lock, ShoppingBag, Smartphone } from 'lucide-react'
 import Link from 'next/link'
+import Script from 'next/script'
 
 export default function CheckoutPage() {
   const router = useRouter()
@@ -31,8 +32,7 @@ export default function CheckoutPage() {
   }, [])
 
   const total = cart.reduce((sum, p) => sum + p.price, 0)
-  const platformFee = total * 0.1
-  const grandTotal = total + platformFee
+  const grandTotal = total
 
   const handleCheckout = async () => {
     if (!user) { setShowAuthModal(true); return }
@@ -61,6 +61,65 @@ export default function CheckoutPage() {
         setLoading(false)
         return
       }
+      if (paymentMethod === 'RAZORPAY') {
+        const rzRes = await fetch('/api/checkout/razorpay', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ promptIds: cart.map(p => p.id), couponCode: code || undefined })
+        })
+        const rzJson = await rzRes.json()
+        if (!rzJson.success) {
+          toast.error(rzJson.error || 'Failed to initialize Razorpay')
+          setLoading(false); return
+        }
+
+        const options = {
+          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+          amount: Math.round(rzJson.amount * 8350),
+          currency: 'INR',
+          name: 'MAGHGO',
+          description: 'Prompt Purchase',
+          order_id: rzJson.orderId,
+          handler: async function (response: any) {
+            toast.loading('Verifying payment...')
+            const verifyRes = await fetch('/api/checkout/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
+                promptIds: cart.map(p => p.id),
+                couponCode: code || undefined,
+                currency: selectedCurrency
+              })
+            })
+            const verifyJson = await verifyRes.json()
+            if (!verifyJson.success) {
+              toast.error(verifyJson.error || 'Payment verification failed')
+              setLoading(false)
+            } else {
+              toast.success('Payment successful! Order placed.')
+              useStore.getState().clearCart()
+              router.push('/account/orders')
+            }
+          },
+          prefill: {
+            name: user.name || '',
+            email: user.email || '',
+          },
+          theme: { color: '#0066CC' }
+        };
+        const rzp = new (window as any).Razorpay(options);
+        rzp.on('payment.failed', function (response: any) {
+          toast.error(response.error.description || 'Payment failed');
+          setLoading(false);
+        });
+        rzp.open();
+        return;
+      }
+
+      // Default wallet/other methods
       for (const prompt of cart) {
         await createOrder(prompt.id, paymentMethod, code || undefined, selectedCurrency)
       }
@@ -68,7 +127,6 @@ export default function CheckoutPage() {
       router.push('/account/orders')
     } catch (err: any) {
       toast.error(err.message || 'Checkout failed')
-    } finally {
       setLoading(false)
     }
   }
@@ -86,6 +144,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-6">Checkout</h1>
 
       <div className="grid lg:grid-cols-5 gap-6">
@@ -149,9 +208,6 @@ export default function CheckoutPage() {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between text-slate-600">
                 <span>Subtotal</span><span>{formatPrice(total, selectedCurrency)}</span>
-              </div>
-              <div className="flex justify-between text-slate-600">
-                <span>Platform Fee</span><span>{formatPrice(platformFee, selectedCurrency)}</span>
               </div>
             </div>
             <Separator className="my-4" />

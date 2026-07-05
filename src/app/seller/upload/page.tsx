@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import { Loader2, Sparkles, ArrowLeft, ImagePlus, X } from 'lucide-react'
 import Link from 'next/link'
+import Script from 'next/script'
 
 export default function UploadPromptPage() {
   const router = useRouter()
@@ -33,6 +34,8 @@ export default function UploadPromptPage() {
   })
 
   const handleChange = (field: string, value: any) => setForm(prev => ({ ...prev, [field]: value }))
+
+  const [paymentMethod, setPaymentMethod] = useState<'wallet' | 'razorpay'>('wallet')
 
   useEffect(() => {
     fetch('/api/categories')
@@ -104,33 +107,88 @@ export default function UploadPromptPage() {
     }
   }
 
+  const submitToAPI = async (imageUrl: string | null, razorpayData?: any) => {
+    const payload = {
+      ...form,
+      price: parseFloat(form.price) || 0,
+      tags: form.tags.split(',').map(t => t.trim()).filter(Boolean),
+      recommendedAI: [form.recommendedAI],
+      sampleImages: imageUrl ? [imageUrl] : [],
+      ...razorpayData
+    }
+    const res = await fetch('/api/prompts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    const json = await res.json()
+    if (json.success) {
+      toast.success('Prompt submitted for review!')
+      fetchPrompts()
+      router.push('/seller')
+    } else {
+      toast.error(json.error || 'Failed to upload')
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) { toast.error('Please sign in first'); return }
     if (!user.isSeller) { toast.error('Become a seller first'); return }
-    const imageUrl = await uploadImage()
+    
     setLoading(true)
+    const imageUrl = await uploadImage()
+
+    if (!form.isFree && user.role !== 'ADMIN' && estimate && estimate.totalFees > 0 && paymentMethod === 'razorpay') {
+      try {
+        const feeRes = await fetch('/api/razorpay/upload-fee', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: parseFloat(form.price),
+            promptLength: form.promptText.length,
+            categoryId: form.categoryId
+          })
+        })
+        const feeData = await feeRes.json()
+        if (!feeData.success) throw new Error(feeData.error)
+
+        const options = {
+          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+          amount: Math.round(feeData.feeUsd * 8350), 
+          currency: 'INR',
+          name: 'Maghgo',
+          description: 'Prompt Listing Fee',
+          order_id: feeData.orderId,
+          handler: async function (response: any) {
+            await submitToAPI(imageUrl, {
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpaySignature: response.razorpay_signature,
+            })
+            setLoading(false)
+          },
+          prefill: { name: user?.name, email: user?.email },
+          theme: { color: '#0066CC' }
+        }
+        
+        const rzp = new (window as any).Razorpay(options)
+        rzp.on('payment.failed', function (response: any) {
+          toast.error(response.error.description || 'Payment failed')
+          setLoading(false)
+        })
+        rzp.open()
+        return // exit function, submitToAPI will run in handler
+      } catch (e: any) {
+        toast.error(e.message || 'Failed to initiate Razorpay checkout')
+        setLoading(false)
+        return
+      }
+    }
+
+    // Direct wallet payment or free prompt
     try {
-      const payload = {
-        ...form,
-        price: parseFloat(form.price) || 0,
-        tags: form.tags.split(',').map(t => t.trim()).filter(Boolean),
-        recommendedAI: [form.recommendedAI],
-        sampleImages: imageUrl ? [imageUrl] : []
-      }
-      const res = await fetch('/api/prompts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      })
-      const json = await res.json()
-      if (json.success) {
-        toast.success('Prompt submitted for review!')
-        fetchPrompts()
-        router.push('/seller')
-      } else {
-        toast.error(json.error || 'Failed to upload')
-      }
+      await submitToAPI(imageUrl)
     } catch (e) {
       console.error('[upload] prompt creation error', e)
       toast.error('Failed to upload prompt')
@@ -139,110 +197,124 @@ export default function UploadPromptPage() {
     }
   }
 
+  const needsListingFee = !form.isFree && user?.role !== 'ADMIN' && estimate !== null
+  const hasEnoughWalletBalance = (user?.currentBalance || 0) >= (estimate?.totalFees || 0)
+
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
-      <Link href="/seller" className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-[#0066CC] mb-6">
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12 relative z-10">
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
+      <Link href="/seller" className="flex items-center gap-1.5 text-sm font-bold text-white/50 hover:text-neon-blue hover:drop-shadow-[0_0_5px_rgba(0,210,255,0.5)] transition-all mb-6">
         <ArrowLeft className="h-4 w-4" /> Back to Dashboard
       </Link>
 
-      <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-6">Upload New Prompt</h1>
+      <h1 className="text-2xl sm:text-3xl font-extrabold text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.2)] mb-8">Upload New Prompt</h1>
 
-      <Card className="p-6">
-        <form onSubmit={handleSubmit} className="space-y-5">
+      <Card className="glass-panel border-white/10 rounded-3xl p-8 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <Label htmlFor="title">Title</Label>
-            <Input id="title" value={form.title} onChange={e => handleChange('title', e.target.value)} required placeholder="e.g., Ultra-Realistic Portrait Photography" />
+            <Label htmlFor="title" className="text-white/70 ml-1 font-bold">Title</Label>
+            <Input id="title" value={form.title} onChange={e => handleChange('title', e.target.value)} required placeholder="e.g., Ultra-Realistic Portrait Photography" className="mt-1.5 bg-white/5 border-white/20 text-white placeholder:text-white/30 focus:border-neon-blue focus:ring-1 focus:ring-neon-blue rounded-xl h-11" />
           </div>
           <div>
-            <Label htmlFor="description">Description</Label>
-            <Textarea id="description" value={form.description} onChange={e => handleChange('description', e.target.value)} required rows={3} placeholder="Describe what this prompt does..." />
+            <Label htmlFor="description" className="text-white/70 ml-1 font-bold">Description</Label>
+            <Textarea id="description" value={form.description} onChange={e => handleChange('description', e.target.value)} required rows={3} placeholder="Describe what this prompt does..." className="mt-1.5 bg-white/5 border-white/20 text-white placeholder:text-white/30 focus:border-neon-blue focus:ring-1 focus:ring-neon-blue rounded-xl" />
           </div>
           <div>
-            <Label htmlFor="promptText">Prompt Text</Label>
-            <Textarea id="promptText" value={form.promptText} onChange={e => handleChange('promptText', e.target.value)} required rows={5} placeholder="Paste the actual prompt text here..." className="font-mono text-sm" />
+            <Label htmlFor="promptText" className="text-white/70 ml-1 font-bold">Prompt Text</Label>
+            <Textarea id="promptText" value={form.promptText} onChange={e => handleChange('promptText', e.target.value)} required rows={5} placeholder="Paste the actual prompt text here..." className="mt-1.5 bg-white/5 border-white/20 text-white placeholder:text-white/30 focus:border-neon-blue focus:ring-1 focus:ring-neon-blue rounded-xl font-mono text-sm" />
           </div>
           <div>
-            <Label htmlFor="categoryId">Category</Label>
+            <Label htmlFor="categoryId" className="text-white/70 ml-1 font-bold">Category</Label>
             <select
               id="categoryId"
               value={form.categoryId}
               onChange={e => handleChange('categoryId', e.target.value)}
               required
-              className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066CC] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="mt-1.5 flex h-11 w-full rounded-xl border border-white/20 bg-black/40 px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neon-blue focus-visible:border-neon-blue disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <option value="" disabled>Select a category</option>
+              <option value="" disabled className="bg-slate-900">Select a category</option>
               {categoriesList.map(cat => (
-                <option key={cat.id} value={cat.id}>{cat.name}</option>
+                <option key={cat.id} value={cat.id} className="bg-slate-900">{cat.name}</option>
               ))}
             </select>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="recommendedAI">AI Tool</Label>
-              <Input id="recommendedAI" value={form.recommendedAI} onChange={e => handleChange('recommendedAI', e.target.value)} placeholder="e.g., Midjourney v6" />
+              <Label htmlFor="recommendedAI" className="text-white/70 ml-1 font-bold">AI Tool</Label>
+              <Input id="recommendedAI" value={form.recommendedAI} onChange={e => handleChange('recommendedAI', e.target.value)} placeholder="e.g., Midjourney v6" className="mt-1.5 bg-white/5 border-white/20 text-white placeholder:text-white/30 focus:border-neon-blue focus:ring-1 focus:ring-neon-blue rounded-xl h-11" />
             </div>
             <div>
-              <Label htmlFor="tags">Tags (comma-separated)</Label>
-              <Input id="tags" value={form.tags} onChange={e => handleChange('tags', e.target.value)} placeholder="photo, portrait, realistic" />
+              <Label htmlFor="tags" className="text-white/70 ml-1 font-bold">Tags (comma-separated)</Label>
+              <Input id="tags" value={form.tags} onChange={e => handleChange('tags', e.target.value)} placeholder="photo, portrait, realistic" className="mt-1.5 bg-white/5 border-white/20 text-white placeholder:text-white/30 focus:border-neon-blue focus:ring-1 focus:ring-neon-blue rounded-xl h-11" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="price">Price (USD)</Label>
-              <Input id="price" type="number" min="0" step="0.99" value={form.price} onChange={e => handleChange('price', e.target.value)} disabled={form.isFree} />
+              <Label htmlFor="price" className="text-white/70 ml-1 font-bold">Price (USD)</Label>
+              <Input id="price" type="number" min="0" step="0.99" value={form.price} onChange={e => handleChange('price', e.target.value)} disabled={form.isFree} className="mt-1.5 bg-white/5 border-white/20 text-white placeholder:text-white/30 focus:border-neon-blue focus:ring-1 focus:ring-neon-blue rounded-xl h-11 disabled:bg-white/5" />
             </div>
-            <div className="flex items-end pb-2">
+            <div className="flex items-end pb-3">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={form.isFree} onChange={e => handleChange('isFree', e.target.checked)} className="rounded border-slate-300" />
-                <span className="text-sm font-medium text-slate-700">Free prompt</span>
+                <input type="checkbox" checked={form.isFree} onChange={e => handleChange('isFree', e.target.checked)} className="rounded border-white/20 bg-white/5 text-neon-blue focus:ring-neon-blue w-5 h-5" />
+                <span className="text-sm font-bold text-white/70">Free prompt</span>
               </label>
             </div>
           </div>
-          {estimate && !form.isFree && user?.role !== 'ADMIN' && (
-            <div className={`p-4 rounded-lg border ${user?.currentBalance! < estimate.totalFees ? 'bg-red-50 border-red-200' : 'bg-blue-50 border-blue-200'}`}>
-              <div className="flex justify-between items-center mb-2">
-                <span className={`text-sm font-medium ${user?.currentBalance! < estimate.totalFees ? 'text-red-800' : 'text-blue-800'}`}>Upfront Listing Fee</span>
-                <span className={`text-lg font-bold ${user?.currentBalance! < estimate.totalFees ? 'text-red-700' : 'text-blue-700'}`}>
-                  ${estimate.totalFees.toFixed(2)}
-                </span>
+
+          {needsListingFee && (
+            <div className="p-5 rounded-2xl border bg-black/40 border-neon-blue/30 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-neon-blue/5 to-transparent pointer-events-none" />
+              <div className="relative z-10">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-sm font-bold text-white uppercase tracking-widest">Upfront Listing Fee</span>
+                  <span className="text-xl font-black text-neon-blue drop-shadow-[0_0_5px_rgba(0,210,255,0.5)]">
+                    ${estimate?.totalFees.toFixed(2)}
+                  </span>
+                </div>
+                
+                <div className="space-y-3 mt-4 border-t border-white/10 pt-4">
+                  <p className="text-sm font-bold text-white/70 mb-2">Select Payment Method:</p>
+                  
+                  <label className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-colors ${paymentMethod === 'wallet' ? 'border-neon-blue bg-neon-blue/10' : 'border-white/10 glass-panel hover:bg-white/5'}`}>
+                    <input type="radio" name="paymentMethod" value="wallet" checked={paymentMethod === 'wallet'} onChange={() => setPaymentMethod('wallet')} className="text-neon-blue focus:ring-neon-blue w-4 h-4 bg-transparent border-white/30" disabled={!hasEnoughWalletBalance} />
+                    <div className="flex-1">
+                      <div className="text-sm font-bold text-white">Pay from Wallet</div>
+                      <div className="text-xs text-white/50 font-medium">Current Balance: ${(user?.currentBalance || 0).toFixed(2)}</div>
+                    </div>
+                    {!hasEnoughWalletBalance && <span className="text-[10px] uppercase font-bold text-neon-pink bg-neon-pink/10 border border-neon-pink/20 px-2 py-1 rounded-full">Insufficient</span>}
+                  </label>
+
+                  <label className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-colors ${paymentMethod === 'razorpay' ? 'border-neon-blue bg-neon-blue/10' : 'border-white/10 glass-panel hover:bg-white/5'}`}>
+                    <input type="radio" name="paymentMethod" value="razorpay" checked={paymentMethod === 'razorpay'} onChange={() => setPaymentMethod('razorpay')} className="text-neon-blue focus:ring-neon-blue w-4 h-4 bg-transparent border-white/30" />
+                    <div className="flex-1">
+                      <div className="text-sm font-bold text-white">Pay directly with Razorpay</div>
+                      <div className="text-xs text-white/50 font-medium">Pay via UPI, Cards, NetBanking</div>
+                    </div>
+                  </label>
+                </div>
               </div>
-              <div className="flex justify-between items-center text-xs">
-                <span className="text-slate-600">Your Wallet Balance:</span>
-                <span className={`font-semibold ${user?.currentBalance! < estimate.totalFees ? 'text-red-600' : 'text-slate-700'}`}>
-                  ${(user?.currentBalance || 0).toFixed(2)}
-                </span>
-              </div>
-              {user?.currentBalance! < estimate.totalFees && (
-                <p className="text-xs text-red-600 mt-2 font-medium">
-                  Insufficient balance. You must add funds to your wallet to upload this prompt.
-                </p>
-              )}
-              {user?.currentBalance! >= estimate.totalFees && (
-                <p className="text-xs text-blue-600 mt-2">
-                  This fee will be deducted from your wallet immediately. You keep 100% of all future sales!
-                </p>
-              )}
             </div>
           )}
+
           {user?.role === 'ADMIN' && (
-            <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200">
-              <span className="text-sm font-medium text-emerald-800">Admin Bypass: No listing fee required.</span>
+            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
+              <span className="text-sm font-bold text-emerald-400">Admin Bypass: No listing fee required.</span>
             </div>
           )}
           <div>
-            <Label>Prompt Image</Label>
-            <div className="mt-1">
+            <Label className="text-white/70 ml-1 font-bold">Prompt Image</Label>
+            <div className="mt-1.5">
               {imagePreview ? (
                 <div className="relative inline-block">
-                  <img src={imagePreview} alt="Preview" className="h-40 w-60 object-cover rounded-lg border" />
-                  <button type="button" onClick={clearImage} className="absolute -top-2 -right-2 h-6 w-6 bg-red-500 text-white rounded-full flex items-center justify-center">
-                    <X className="h-3 w-3" />
+                  <img src={imagePreview} alt="Preview" className="h-40 w-60 object-cover rounded-2xl border border-white/20 shadow-lg" />
+                  <button type="button" onClick={clearImage} className="absolute -top-2 -right-2 h-7 w-7 bg-neon-pink text-white rounded-full flex items-center justify-center shadow-[0_0_10px_rgba(255,0,128,0.5)]">
+                    <X className="h-3.5 w-3.5" />
                   </button>
                 </div>
               ) : (
-                <label className="flex flex-col items-center justify-center h-32 w-60 border-2 border-dashed border-slate-300 rounded-lg cursor-pointer hover:border-[#0066CC] transition-colors">
-                  <ImagePlus className="h-8 w-8 text-slate-400" />
-                  <span className="text-sm text-slate-500 mt-1">Click to upload (max 5MB)</span>
+                <label className="flex flex-col items-center justify-center h-32 w-60 border-2 border-dashed border-white/20 bg-white/5 rounded-2xl cursor-pointer hover:border-neon-blue hover:bg-white/10 transition-colors">
+                  <ImagePlus className="h-8 w-8 text-white/40" />
+                  <span className="text-xs font-bold text-white/50 mt-2">Click to upload (max 5MB)</span>
                   <input type="file" accept="image/*" onChange={handleImageSelect} className="hidden" />
                 </label>
               )}
@@ -253,12 +325,12 @@ export default function UploadPromptPage() {
             disabled={
               loading || 
               uploadingImage || 
-              (!form.isFree && user?.role !== 'ADMIN' && estimate !== null && (user?.currentBalance || 0) < estimate.totalFees)
+              (needsListingFee && paymentMethod === 'wallet' && !hasEnoughWalletBalance)
             } 
-            className="w-full bg-[#FF6600] hover:bg-[#E65C00] text-white font-semibold h-11 disabled:opacity-50"
+            className="w-full bg-neon-blue hover:bg-neon-blue/80 text-black font-extrabold h-14 rounded-full mt-4 shadow-[0_0_20px_rgba(0,210,255,0.4)] transition-all disabled:opacity-50"
           >
-            {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-            <Sparkles className="h-4 w-4 mr-2" /> Submit Prompt
+            {loading && <Loader2 className="h-5 w-5 mr-2 animate-spin" />}
+            <Sparkles className="h-5 w-5 mr-2" /> {needsListingFee && paymentMethod === 'razorpay' ? 'Pay & Submit Prompt' : 'Submit Prompt'}
           </Button>
         </form>
       </Card>

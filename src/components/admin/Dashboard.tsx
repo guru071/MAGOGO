@@ -84,12 +84,12 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {alerts.map((alert: any, i: number) => (
             <motion.div key={i} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}>
-              <Card className={`p-3 border ${alert.type === 'positive' ? 'bg-emerald-50 border-emerald-200' : alert.type === 'negative' ? 'bg-red-50 border-red-200' : 'bg-amber-50 border-amber-200'}`}>
+              <Card className={`p-3 border ${alert.type === 'positive' ? 'bg-emerald-500/10 border-emerald-500/20' : alert.type === 'negative' ? 'bg-red-500/10 border-red-500/20' : 'bg-amber-500/10 border-amber-500/20'} backdrop-blur-md`}>
                 <div className="flex items-center gap-2">
-                  {alert.type === 'positive' ? <ArrowUpRight className="h-4 w-4 text-emerald-600" /> : alert.type === 'negative' ? <ArrowDownRight className="h-4 w-4 text-red-600" /> : <AlertCircle className="h-4 w-4 text-amber-600" />}
+                  {alert.type === 'positive' ? <ArrowUpRight className="h-4 w-4 text-emerald-400" /> : alert.type === 'negative' ? <ArrowDownRight className="h-4 w-4 text-red-400" /> : <AlertCircle className="h-4 w-4 text-amber-400" />}
                   <div>
-                    <p className="text-xs font-semibold">{alert.metric}</p>
-                    <p className="text-[10px] text-slate-600">{alert.message}</p>
+                    <p className="text-xs font-semibold text-white">{alert.metric}</p>
+                    <p className="text-[10px] text-white/60">{alert.message}</p>
                   </div>
                 </div>
               </Card>
@@ -102,13 +102,13 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.map(item => (
           <motion.div key={item.label} whileHover={{ y: -3 }}>
-            <Card className="p-4 border shadow-sm hover:shadow-md transition-all">
+            <Card className="glass-panel p-4 shadow-[0_0_20px_rgba(0,0,0,0.3)] transition-all">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-muted-foreground">{item.label}</p>
-                  <p className={`text-xl font-bold ${item.color}`}>{item.value}</p>
+                  <p className="text-xs text-white/60 font-medium">{item.label}</p>
+                  <p className={`text-xl font-black ${item.color} drop-shadow-sm`}>{item.value}</p>
                 </div>
-                <div className={`h-9 w-9 rounded-lg flex items-center justify-center ${item.bg}/10`}>
+                <div className={`h-9 w-9 rounded-xl flex items-center justify-center ${item.bg}/20 border border-${item.bg.replace('bg-', '')}/30`}>
                   <item.icon className={`h-5 w-5 ${item.color}`} />
                 </div>
               </div>
@@ -124,64 +124,64 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
 
       {/* Revenue + Orders Charts */}
       <div className="grid lg:grid-cols-2 gap-4">
-        <Card className="p-4 border shadow-sm">
+        <Card className="glass-panel p-4 shadow-[0_0_20px_rgba(0,0,0,0.3)]">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-[#0066CC]" /> Revenue Forecast
-              {forecast?.forecast?.length > 0 && <Badge className="bg-indigo-100 text-indigo-700 border-0 text-[10px]">{forecast.forecast.length}d forecast</Badge>}
+            <h3 className="font-bold flex items-center gap-2 text-white">
+              <TrendingUp className="h-4 w-4 text-neon-blue drop-shadow-[0_0_5px_rgba(0,210,255,0.8)]" /> Revenue Forecast
+              {forecast?.forecast?.length > 0 && <Badge className="bg-indigo-500/20 text-indigo-300 border-indigo-500/30 text-[10px]">{(forecast.forecast.length)}d forecast</Badge>}
             </h3>
             {forecast?.model?.alpha > 0 && (
-              <span className="text-[10px] text-muted-foreground">α={forecast.model.alpha}, MSE={forecast.model.mse}</span>
+              <span className="text-[10px] text-white/40">α={forecast.model.alpha}, MSE={forecast.model.mse}</span>
             )}
           </div>
           {chartData.length === 0 ? (
-            <div className="h-[220px] flex items-center justify-center text-sm text-muted-foreground">No data</div>
+            <div className="h-[220px] flex items-center justify-center text-sm text-white/40">No data</div>
           ) : (
             <ResponsiveContainer width="100%" height={220}>
               <ComposedChart data={chartData}>
                 <defs>
                   <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#0066CC" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#0066CC" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#00d2ff" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#00d2ff" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="fcGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#10B981" stopOpacity={0.2} />
                     <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="date" tick={{ fontSize: 10 }} interval={Math.max(1, Math.floor(chartData.length / 10))} />
-                <YAxis tick={{ fontSize: 10 }} />
-                <RTooltip contentStyle={{ fontSize: 12, borderRadius: 8 }} />
-                <Area type="monotone" dataKey="revenue" stroke="#0066CC" fill="url(#revGrad)" strokeWidth={2} name="Actual" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff1a" />
+                <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#ffffff66' }} interval={Math.max(1, Math.floor(chartData.length / 10))} />
+                <YAxis tick={{ fontSize: 10, fill: '#ffffff66' }} />
+                <RTooltip contentStyle={{ fontSize: 12, borderRadius: 8, backgroundColor: '#000000cc', borderColor: '#ffffff2a', color: '#fff' }} />
+                <Area type="monotone" dataKey="revenue" stroke="#00d2ff" fill="url(#revGrad)" strokeWidth={2} name="Actual" />
                 <Area type="monotone" dataKey="revenue" stroke="#10B981" fill="url(#fcGrad)" strokeWidth={2} strokeDasharray="5 5" name="Forecast" />
               </ComposedChart>
             </ResponsiveContainer>
           )}
           {predictive.predictedGrowth !== undefined && (
             <div className="mt-2 flex items-center gap-2 text-xs">
-              <Brain className="h-3 w-3 text-indigo-500" />
-              <span className="text-muted-foreground">Next 30d prediction:</span>
-              <span className="font-semibold text-indigo-600">${(predictive.predictedNextMonthRevenue || 0).toFixed(0)}</span>
-              <span className={predictive.predictedGrowth > 0 ? 'text-emerald-600' : 'text-red-600'}>
+              <Brain className="h-3 w-3 text-indigo-400" />
+              <span className="text-white/60">Next 30d prediction:</span>
+              <span className="font-bold text-indigo-400">${(predictive.predictedNextMonthRevenue || 0).toFixed(0)}</span>
+              <span className={predictive.predictedGrowth > 0 ? 'text-emerald-400' : 'text-red-400'}>
                 ({predictive.predictedGrowth > 0 ? '+' : ''}{predictive.predictedGrowth}%)
               </span>
             </div>
           )}
         </Card>
-        <Card className="p-4 border shadow-sm">
-          <h3 className="font-semibold mb-4 flex items-center gap-2">
-            <BarChart3 className="h-4 w-4 text-[#FF6600]" /> Orders & Users
+        <Card className="glass-panel p-4 shadow-[0_0_20px_rgba(0,0,0,0.3)]">
+          <h3 className="font-bold mb-4 flex items-center gap-2 text-white">
+            <BarChart3 className="h-4 w-4 text-[#FF6600] drop-shadow-[0_0_5px_rgba(255,102,0,0.8)]" /> Orders & Users
           </h3>
           {ordersData.length === 0 ? (
-            <div className="h-[220px] flex items-center justify-center text-sm text-muted-foreground">No data</div>
+            <div className="h-[220px] flex items-center justify-center text-sm text-white/40">No data</div>
           ) : (
             <ResponsiveContainer width="100%" height={220}>
               <ComposedChart data={ordersData.map((d: any, i: number) => ({ ...d, users: usersData[i]?.count || 0, sellers: sellData[i]?.count || 0 }))}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="date" tick={{ fontSize: 10 }} interval={6} />
-                <YAxis tick={{ fontSize: 10 }} />
-                <RTooltip contentStyle={{ fontSize: 12, borderRadius: 8 }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff1a" />
+                <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#ffffff66' }} interval={6} />
+                <YAxis tick={{ fontSize: 10, fill: '#ffffff66' }} />
+                <RTooltip contentStyle={{ fontSize: 12, borderRadius: 8, backgroundColor: '#000000cc', borderColor: '#ffffff2a', color: '#fff' }} />
                 <Bar dataKey="count" fill="#FF6600" radius={[4, 4, 0, 0]} name="Orders" opacity={0.8} />
                 <Line type="monotone" dataKey="users" stroke="#10B981" strokeWidth={2} name="New Users" dot={false} />
               </ComposedChart>
@@ -192,26 +192,26 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
 
       {/* Anomaly Banner */}
       {anomaliesAll.length > 0 && (
-        <Card className="p-4 border-red-200 bg-red-50/40">
+        <Card className="p-4 border-red-500/30 bg-red-950/40 backdrop-blur-md">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold flex items-center gap-2 text-red-700">
+            <h3 className="font-bold flex items-center gap-2 text-red-400">
               <AlertTriangle className="h-4 w-4" /> Anomaly Detection
             </h3>
             <div className="flex gap-2">
-              <Badge className="bg-red-100 text-red-700 border-0 text-[10px]">Z-score: {anomalies.zScore?.length || 0}</Badge>
-              <Badge className="bg-red-100 text-red-700 border-0 text-[10px]">IQR: {anomalies.iqr?.length || 0}</Badge>
+              <Badge className="bg-red-500/20 text-red-300 border-red-500/30 text-[10px]">Z-score: {anomalies.zScore?.length || 0}</Badge>
+              <Badge className="bg-red-500/20 text-red-300 border-red-500/30 text-[10px]">IQR: {anomalies.iqr?.length || 0}</Badge>
             </div>
           </div>
           <ScrollArea className="max-h-24">
             <div className="flex gap-2">
               {anomaliesAll.map((a: any, i: number) => (
-                <div key={i} className="flex items-center gap-2 p-2 rounded-lg bg-white border border-red-100 text-sm shrink-0">
-                  <div className={`h-2 w-2 rounded-full ${a.type === 'spike' || a.type === 'high' ? 'bg-emerald-500' : 'bg-red-500'}`} />
-                  <span className="text-xs text-muted-foreground">{a.day}</span>
-                  <span className="font-semibold text-xs">${a.value.toFixed(2)}</span>
-                  {a.zScore && <span className="text-[10px] text-muted-foreground">z={a.zScore}</span>}
-                  {a.type === 'spike' && <Badge className="bg-emerald-100 text-emerald-700 border-0 text-[10px]">Spike</Badge>}
-                  {a.type === 'drop' && <Badge className="bg-red-100 text-red-700 border-0 text-[10px]">Drop</Badge>}
+                <div key={i} className="flex items-center gap-2 p-2 rounded-xl bg-black/40 border border-red-500/20 text-sm shrink-0">
+                  <div className={`h-2 w-2 rounded-full ${a.type === 'spike' || a.type === 'high' ? 'bg-emerald-400 shadow-[0_0_5px_rgba(16,185,129,0.8)]' : 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.8)]'}`} />
+                  <span className="text-xs text-white/60">{a.day}</span>
+                  <span className="font-bold text-xs text-white">${a.value.toFixed(2)}</span>
+                  {a.zScore && <span className="text-[10px] text-white/40">z={a.zScore}</span>}
+                  {a.type === 'spike' && <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px]">Spike</Badge>}
+                  {a.type === 'drop' && <Badge className="bg-red-500/20 text-red-300 border-red-500/30 text-[10px]">Drop</Badge>}
                 </div>
               ))}
             </div>
@@ -222,18 +222,18 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
       {/* Seasonality + Retention + Funnel */}
       <div className="grid lg:grid-cols-3 gap-4">
         {/* Seasonality: Day of Week + Hour + Monthly */}
-        <Card className="p-4 border shadow-sm">
-          <h3 className="font-semibold mb-4 flex items-center gap-2 text-sm">
-            <Sun className="h-4 w-4 text-amber-500" /> Seasonality Patterns
+        <Card className="glass-panel p-4 shadow-[0_0_20px_rgba(0,0,0,0.3)]">
+          <h3 className="font-bold mb-4 flex items-center gap-2 text-sm text-white">
+            <Sun className="h-4 w-4 text-amber-400 drop-shadow-[0_0_5px_rgba(251,191,36,0.8)]" /> Seasonality Patterns
           </h3>
           <div className="space-y-4">
             {analytics?.dowOrders?.length > 0 && (
               <div>
-                <p className="text-[10px] text-muted-foreground mb-1 font-semibold uppercase">Day of Week</p>
+                <p className="text-[10px] text-white/50 mb-1 font-bold uppercase tracking-wider">Day of Week</p>
                 <ResponsiveContainer width="100%" height={80}>
                   <BarChart data={(analytics.dowOrders || []).map((d: any) => ({ ...d, label: DOW_LABELS[d.dow] }))}>
-                    <XAxis dataKey="label" tick={{ fontSize: 9 }} />
-                    <RTooltip contentStyle={{ fontSize: 11 }} />
+                    <XAxis dataKey="label" tick={{ fontSize: 9, fill: '#ffffff66' }} />
+                    <RTooltip contentStyle={{ fontSize: 11, backgroundColor: '#000000cc', borderColor: '#ffffff2a', color: '#fff' }} />
                     <Bar dataKey="count" radius={[3, 3, 0, 0]}>
                       {(analytics.dowOrders || []).map((_: any, i: number) => <Cell key={i} fill={DOW_COLORS[i % 7]} />)}
                     </Bar>
@@ -243,11 +243,11 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
             )}
             {seasonPattern.length > 0 && (
               <div>
-                <p className="text-[10px] text-muted-foreground mb-1 font-semibold uppercase">Weekly Seasonal Effect</p>
+                <p className="text-[10px] text-white/50 mb-1 font-bold uppercase tracking-wider">Weekly Seasonal Effect</p>
                 <ResponsiveContainer width="100%" height={60}>
                   <AreaChart data={seasonPattern}>
                     <XAxis dataKey="period" tick={false} />
-                    <RTooltip contentStyle={{ fontSize: 11 }} formatter={(v: number) => [`${v > 0 ? '+' : ''}${v}`]} />
+                    <RTooltip contentStyle={{ fontSize: 11, backgroundColor: '#000000cc', borderColor: '#ffffff2a', color: '#fff' }} formatter={(v: number) => [`${v > 0 ? '+' : ''}${v}`]} />
                     <Area type="monotone" dataKey="effect" stroke="#8B5CF6" fill="#8B5CF6" fillOpacity={0.2} strokeWidth={2} />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -255,11 +255,11 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
             )}
             {analytics?.monthlyOrders?.length > 0 && (
               <div>
-                <p className="text-[10px] text-muted-foreground mb-1 font-semibold uppercase">Monthly</p>
+                <p className="text-[10px] text-white/50 mb-1 font-bold uppercase tracking-wider">Monthly</p>
                 <ResponsiveContainer width="100%" height={60}>
                   <BarChart data={(analytics.monthlyOrders || []).map((d: any) => ({ ...d, label: MONTH_LABELS[d.month - 1] || d.month }))}>
-                    <XAxis dataKey="label" tick={{ fontSize: 9 }} />
-                    <RTooltip contentStyle={{ fontSize: 11 }} />
+                    <XAxis dataKey="label" tick={{ fontSize: 9, fill: '#ffffff66' }} />
+                    <RTooltip contentStyle={{ fontSize: 11, backgroundColor: '#000000cc', borderColor: '#ffffff2a', color: '#fff' }} />
                     <Bar dataKey="count" fill="#06B6D4" radius={[3, 3, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
@@ -269,20 +269,20 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
         </Card>
 
         {/* Retention Cohorts */}
-        <Card className="p-4 border shadow-sm">
-          <h3 className="font-semibold mb-4 flex items-center gap-2 text-sm">
-            <Repeat className="h-4 w-4 text-[#FF6600]" /> Retention Cohorts (Weekly)
+        <Card className="glass-panel p-4 shadow-[0_0_20px_rgba(0,0,0,0.3)]">
+          <h3 className="font-bold mb-4 flex items-center gap-2 text-sm text-white">
+            <Repeat className="h-4 w-4 text-[#FF6600] drop-shadow-[0_0_5px_rgba(255,102,0,0.8)]" /> Retention Cohorts (Weekly)
           </h3>
           {retention.length === 0 ? (
-            <div className="h-[200px] flex items-center justify-center text-xs text-muted-foreground">Insufficient data for cohort analysis</div>
+            <div className="h-[200px] flex items-center justify-center text-xs text-white/40">Insufficient data for cohort analysis</div>
           ) : (
             <ScrollArea className="max-h-[260px]">
               <div className="space-y-2">
                 {retention.map((cohort: any, ci: number) => (
                   <div key={cohort.cohort} className="text-xs">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-mono font-semibold text-slate-700">{cohort.cohort.slice(5)}</span>
-                      <span className="text-muted-foreground">{cohort.totalUsers} users</span>
+                      <span className="font-mono font-bold text-white/80">{cohort.cohort.slice(5)}</span>
+                      <span className="text-white/50">{cohort.totalUsers} users</span>
                     </div>
                     <div className="flex gap-0.5">
                       {cohort.sizes.filter((s: any) => s.week <= 8).map((s: any, wi: number) => (
@@ -291,12 +291,12 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
                             className="w-full rounded-sm transition-all hover:opacity-80"
                             style={{
                               height: `${Math.max(4, s.retention * 1.5)}px`,
-                              backgroundColor: s.retention > 50 ? '#0066CC' : s.retention > 20 ? '#FF6600' : '#E5E7EB',
+                              backgroundColor: s.retention > 50 ? '#00d2ff' : s.retention > 20 ? '#FF6600' : '#ffffff22',
                               opacity: wi === 0 ? 1 : s.retention / 100,
                             }}
                             title={`Week ${s.week}: ${s.retention}%`}
                           />
-                          {wi % 2 === 0 && <span className="text-[8px] text-muted-foreground">{s.week === 0 ? 'W0' : `W${s.week}`}</span>}
+                          {wi % 2 === 0 && <span className="text-[8px] text-white/40">{s.week === 0 ? 'W0' : `W${s.week}`}</span>}
                         </div>
                       ))}
                     </div>
@@ -308,29 +308,29 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
         </Card>
 
         {/* Sales Funnel */}
-        <Card className="p-4 border shadow-sm">
-          <h3 className="font-semibold mb-4 flex items-center gap-2 text-sm">
-            <Target className="h-4 w-4 text-emerald-600" /> Sales Funnel
+        <Card className="glass-panel p-4 shadow-[0_0_20px_rgba(0,0,0,0.3)]">
+          <h3 className="font-bold mb-4 flex items-center gap-2 text-sm text-white">
+            <Target className="h-4 w-4 text-emerald-400 drop-shadow-[0_0_5px_rgba(52,211,153,0.8)]" /> Sales Funnel
           </h3>
           {funnel.length === 0 ? (
-            <div className="h-[200px] flex items-center justify-center text-xs text-muted-foreground">Insufficient data</div>
+            <div className="h-[200px] flex items-center justify-center text-xs text-white/40">Insufficient data</div>
           ) : (
             <div className="space-y-3">
               <ResponsiveContainer width="100%" height={140}>
                 <FunnelChart data={funnel.map((f: any) => ({ ...f, value: f.count }))}>
-                  <RTooltip contentStyle={{ fontSize: 11 }} />
+                  <RTooltip contentStyle={{ fontSize: 11, backgroundColor: '#000000cc', borderColor: '#ffffff2a', color: '#fff' }} />
                   <Funnel dataKey="value" isAnimationActive>
                     {funnel.map((_: any, i: number) => <Cell key={i} fill={FUNNEL_COLORS[i % FUNNEL_COLORS.length]} />)}
-                    <LabelList position="right" fill="#64748B" stroke="none" fontSize={11} dataKey="stage" />
+                    <LabelList position="right" fill="#ffffffb3" stroke="none" fontSize={11} dataKey="stage" />
                   </Funnel>
                 </FunnelChart>
               </ResponsiveContainer>
               {funnel.map((f: any, i: number) => (
-                <div key={f.stage} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 text-xs">
-                  <span className="font-medium">{f.stage}</span>
+                <div key={f.stage} className="flex items-center justify-between p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-xs transition-colors">
+                  <span className="font-bold text-white/80">{f.stage}</span>
                   <div className="flex items-center gap-3">
-                    <span className="font-semibold">{f.count.toLocaleString()}</span>
-                    {i > 0 && <span className="text-red-500 text-[10px]">-{f.dropRate}%</span>}
+                    <span className="font-black text-white">{f.count.toLocaleString()}</span>
+                    {i > 0 && <span className="text-red-400 text-[10px] font-bold">-{f.dropRate}%</span>}
                   </div>
                 </div>
               ))}
@@ -342,26 +342,27 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
       {/* Top Categories + Payment Methods + Top Sellers */}
       <div className="grid lg:grid-cols-3 gap-4">
         {analytics?.topCategories?.length > 0 && (
-          <Card className="p-4 border shadow-sm">
-            <h3 className="font-semibold mb-3 flex items-center gap-2"><Package className="h-4 w-4 text-[#0066CC]" /> Top Categories</h3>
-            <ScrollArea className="max-h-[300px]">
+          <Card className="glass-panel p-4 shadow-[0_0_20px_rgba(0,0,0,0.3)]">
+            <h3 className="font-bold mb-3 flex items-center gap-2 text-white"><Package className="h-4 w-4 text-neon-blue" /> Top Categories</h3>
+            <ScrollArea className="max-h-[300px] pr-2">
+              <div className="space-y-2">
               {analytics.topCategories.map((cat: any, i: number) => {
                 const maxRev = Math.max(...analytics.topCategories.map((c: any) => c.revenue));
                 const pct = maxRev > 0 ? (cat.revenue / maxRev) * 100 : 0;
                 return (
-                  <div key={cat.name} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50">
-                    <span className="text-xs font-mono w-5 text-right text-muted-foreground">{i + 1}</span>
+                  <div key={cat.name} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                    <span className="text-xs font-mono font-bold w-5 text-right text-white/40">{i + 1}</span>
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between mb-0.5">
-                        <span className="text-sm font-medium truncate">{cat.name}</span>
-                        <span className="text-sm font-semibold text-[#0066CC]">${cat.revenue.toFixed(2)}</span>
+                        <span className="text-sm font-bold text-white truncate">{cat.name}</span>
+                        <span className="text-sm font-black text-neon-blue">${cat.revenue.toFixed(2)}</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
-                          <motion.div className="h-full rounded-full bg-gradient-to-r from-[#0066CC] to-[#FF6600]" initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.5, delay: i * 0.03 }} />
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="flex-1 h-1.5 bg-black/40 rounded-full overflow-hidden">
+                          <motion.div className="h-full rounded-full bg-gradient-to-r from-neon-blue to-neon-pink" initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.5, delay: i * 0.03 }} />
                         </div>
                       </div>
-                      <div className="flex gap-2 text-[10px] text-muted-foreground mt-0.5">
+                      <div className="flex gap-2 text-[10px] text-white/50 mt-1 font-medium">
                         <span>{cat.orders} orders</span>
                         <span>·</span>
                         <span>{cat.prompts} prompts</span>
@@ -373,94 +374,101 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
                   </div>
                 );
               })}
+              </div>
             </ScrollArea>
           </Card>
         )}
         {analytics?.revenueByPaymentMethod?.length > 0 && (
-          <Card className="p-4 border shadow-sm">
-            <h3 className="font-semibold mb-3 flex items-center gap-2"><Banknote className="h-4 w-4 text-emerald-600" /> Payment Methods</h3>
-            <ScrollArea className="max-h-[300px]">
-              <ResponsiveContainer width="100%" height={140}>
+          <Card className="glass-panel p-4 shadow-[0_0_20px_rgba(0,0,0,0.3)]">
+            <h3 className="font-bold mb-3 flex items-center gap-2 text-white"><Banknote className="h-4 w-4 text-emerald-400" /> Payment Methods</h3>
+            <ScrollArea className="max-h-[300px] pr-2">
+              <ResponsiveContainer width="100%" height={140} className="mb-4">
                 <PieChart>
-                  <Pie data={analytics.revenueByPaymentMethod} dataKey="revenue" nameKey="method" cx="50%" cy="50%" outerRadius={55} innerRadius={30}>
+                  <Pie data={analytics.revenueByPaymentMethod} dataKey="revenue" nameKey="method" cx="50%" cy="50%" outerRadius={55} innerRadius={35} stroke="rgba(255,255,255,0.1)">
                     {analytics.revenueByPaymentMethod.map((_: any, i: number) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
                   </Pie>
-                  <RTooltip />
-                  <Legend wrapperStyle={{ fontSize: 10 }} />
+                  <RTooltip contentStyle={{ fontSize: 11, backgroundColor: '#000000cc', borderColor: '#ffffff2a', color: '#fff' }} />
+                  <Legend wrapperStyle={{ fontSize: 10, color: '#fff' }} />
                 </PieChart>
               </ResponsiveContainer>
+              <div className="space-y-2">
               {analytics.revenueByPaymentMethod.map((pm: any) => (
-                <div key={pm.method} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 text-sm">
-                  <span className="font-medium">{pm.method}</span>
+                <div key={pm.method} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-sm">
+                  <span className="font-bold text-white">{pm.method}</span>
                   <div className="flex items-center gap-3">
-                    <span className="text-xs text-muted-foreground">{pm.count} txns · ${pm.avgAmount.toFixed(2)} avg</span>
-                    <span className="font-semibold text-emerald-600">${pm.revenue.toFixed(2)}</span>
+                    <span className="text-xs text-white/50">{pm.count} txns · ${pm.avgAmount.toFixed(2)} avg</span>
+                    <span className="font-black text-emerald-400">${pm.revenue.toFixed(2)}</span>
                   </div>
                 </div>
               ))}
+              </div>
             </ScrollArea>
           </Card>
         )}
         {analytics?.topSellers?.length > 0 && (
-          <Card className="p-4 border shadow-sm">
-            <h3 className="font-semibold mb-3 flex items-center gap-2"><Trophy className="h-4 w-4 text-[#FF6600]" /> Top Sellers</h3>
-            <ScrollArea className="max-h-[300px]">
+          <Card className="glass-panel p-4 shadow-[0_0_20px_rgba(0,0,0,0.3)]">
+            <h3 className="font-bold mb-3 flex items-center gap-2 text-white"><Trophy className="h-4 w-4 text-[#FF6600]" /> Top Sellers</h3>
+            <ScrollArea className="max-h-[300px] pr-2">
+              <div className="space-y-2">
               {analytics.topSellers.map((seller: any, i: number) => {
                 const maxRev = Math.max(...analytics.topSellers.map((s: any) => s.revenue));
                 const pct = maxRev > 0 ? (seller.revenue / maxRev) * 100 : 0;
                 return (
-                  <motion.div key={seller.id} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03 }} className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-muted/60">
-                    <span className="text-sm font-bold w-5 text-center text-[#FF6600]">{i < 3 ? ['🥇','🥈','🥉'][i] : `#${i+1}`}</span>
-                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#0066CC] to-[#004C99] flex items-center justify-center text-white text-xs font-bold">{seller.name?.[0]?.toUpperCase() || '?'}</div>
+                  <motion.div key={seller.id} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03 }} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                    <span className="text-sm font-black w-5 text-center text-[#FF6600]">{i < 3 ? ['🥇','🥈','🥉'][i] : `#${i+1}`}</span>
+                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center text-white text-sm font-black shadow-lg border border-white/20">{seller.name?.[0]?.toUpperCase() || '?'}</div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
-                        <p className="font-medium text-sm truncate">{seller.name}</p>
-                        <span className="font-semibold text-[#0066CC] text-sm ml-2">${seller.revenue?.toFixed(2)}</span>
+                        <p className="font-bold text-sm text-white truncate">{seller.name}</p>
+                        <span className="font-black text-neon-blue text-sm ml-2">${seller.revenue?.toFixed(2)}</span>
                       </div>
-                      <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
-                        <motion.div className="h-full rounded-full bg-gradient-to-r from-[#0066CC] to-[#FF6600]" initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.5, delay: i * 0.03 }} />
+                      <div className="flex-1 h-1.5 bg-black/40 rounded-full overflow-hidden mt-1">
+                        <motion.div className="h-full rounded-full bg-gradient-to-r from-neon-blue to-[#FF6600]" initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.5, delay: i * 0.03 }} />
                       </div>
-                      <div className="flex gap-2 text-[10px] text-muted-foreground mt-0.5">
+                      <div className="flex gap-2 text-[10px] text-white/50 mt-1 font-medium">
                         <span>{seller.sales} sales</span>
                         <span>·</span>
                         <span>{seller.promptCount} prompts</span>
                         <span>·</span>
-                        <span>★ {seller.avgRating.toFixed(1)}</span>
+                        <span className="text-amber-400">★ {seller.avgRating.toFixed(1)}</span>
                         {seller.refundRate > 0 && <><span>·</span><span className="text-red-400">{seller.refundRate}% refunds</span></>}
                       </div>
                     </div>
                   </motion.div>
                 );
               })}
+              </div>
             </ScrollArea>
           </Card>
         )}
       </div>
 
       {/* Quick Actions */}
-      <Card className="p-4 border shadow-sm">
-        <h3 className="font-semibold mb-3 flex items-center gap-2"><Zap className="h-4 w-4 text-[#FF6600]" /> Quick Actions</h3>
+      <Card className="glass-panel p-5 shadow-[0_0_20px_rgba(0,0,0,0.3)]">
+        <h3 className="font-bold mb-4 flex items-center gap-2 text-white"><Zap className="h-5 w-5 text-[#FF6600] drop-shadow-[0_0_5px_rgba(255,102,0,0.8)]" /> Quick Actions</h3>
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-          {s?.pendingPrompts > 0 && <Button variant="outline" className="h-auto py-3 flex flex-col items-center gap-1.5 hover:bg-[#0066CC]/5 hover:border-[#0066CC]/30 hover:text-[#0066CC] border-slate-200" onClick={() => loadTab('prompts')}><CheckCircle className="h-5 w-5 text-[#FF6600]" /><span className="text-xs font-medium">Approve Pending</span><Badge className="bg-[#FF6600] text-white text-[10px]">{s.pendingPrompts}</Badge></Button>}
-          <Button variant="outline" className="h-auto py-3 flex flex-col items-center gap-1.5 hover:bg-[#0066CC]/5 hover:border-[#0066CC]/30 hover:text-[#0066CC] border-slate-200" onClick={() => loadTab('payouts')}><Banknote className="h-5 w-5 text-[#0066CC]" /><span className="text-xs font-medium">Process Payouts</span></Button>
-          <Button variant="outline" className="h-auto py-3 flex flex-col items-center gap-1.5 hover:bg-[#FF6600]/5 hover:border-[#FF6600]/30 hover:text-[#FF6600] border-slate-200" onClick={() => loadTab('broadcasts')}><Megaphone className="h-5 w-5 text-[#FF6600]" /><span className="text-xs font-medium">Send Broadcast</span></Button>
-          <Button variant="outline" className="h-auto py-3 flex flex-col items-center gap-1.5 hover:bg-red-50 hover:border-red-200 hover:text-red-600 border-slate-200" onClick={() => loadTab('reports')}><Flag className="h-5 w-5 text-red-500" /><span className="text-xs font-medium">View Reports</span></Button>
-          <Button variant="outline" className="h-auto py-3 flex flex-col items-center gap-1.5 hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-600 border-slate-200" onClick={() => loadTab('security')}><Shield className="h-5 w-5 text-indigo-500" /><span className="text-xs font-medium">Security</span></Button>
+          {s?.pendingPrompts > 0 && <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2 bg-black/40 border-neon-blue/30 hover:bg-neon-blue/20 hover:border-neon-blue hover:text-white text-white/80 transition-all rounded-2xl" onClick={() => loadTab('prompts')}><CheckCircle className="h-6 w-6 text-[#FF6600]" /><span className="text-xs font-bold">Approve Pending</span><Badge className="bg-[#FF6600] text-white text-[10px] border-0">{s.pendingPrompts}</Badge></Button>}
+          <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2 bg-black/40 border-white/10 hover:bg-white/10 hover:border-white/30 hover:text-white text-white/80 transition-all rounded-2xl" onClick={() => loadTab('payouts')}><Banknote className="h-6 w-6 text-emerald-400" /><span className="text-xs font-bold">Process Payouts</span></Button>
+          <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2 bg-black/40 border-white/10 hover:bg-white/10 hover:border-white/30 hover:text-white text-white/80 transition-all rounded-2xl" onClick={() => loadTab('broadcasts')}><Megaphone className="h-6 w-6 text-[#FF6600]" /><span className="text-xs font-bold">Send Broadcast</span></Button>
+          <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2 bg-black/40 border-white/10 hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-400 text-white/80 transition-all rounded-2xl" onClick={() => loadTab('reports')}><Flag className="h-6 w-6 text-red-500" /><span className="text-xs font-bold">View Reports</span></Button>
+          <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2 bg-black/40 border-white/10 hover:bg-indigo-500/10 hover:border-indigo-500/30 hover:text-indigo-400 text-white/80 transition-all rounded-2xl" onClick={() => loadTab('security')}><Shield className="h-6 w-6 text-indigo-400" /><span className="text-xs font-bold">Security</span></Button>
         </div>
       </Card>
 
       {activityLogs.length > 0 && (
-        <Card className="p-4 border shadow-sm">
-          <h3 className="font-semibold mb-3 flex items-center gap-2"><Activity className="h-4 w-4 text-[#0066CC]" /> Recent Activity</h3>
-          <ScrollArea className="max-h-48">
+        <Card className="glass-panel p-4 shadow-[0_0_20px_rgba(0,0,0,0.3)]">
+          <h3 className="font-bold mb-3 flex items-center gap-2 text-white"><Activity className="h-4 w-4 text-neon-blue" /> Recent Activity</h3>
+          <ScrollArea className="max-h-48 pr-2">
+            <div className="space-y-1">
             {activityLogs.map((log: any, i: number) => (
-              <div key={log.id || i} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 text-sm">
-                <Badge className={`text-[10px] shrink-0 ${ACTION_COLORS[log.action] || ACTION_COLORS.SYSTEM}`}>{log.action?.replace(/_/g, ' ')}</Badge>
-                <span className="flex-1 truncate">{log.details || log.action}</span>
-                <span className="text-xs text-muted-foreground whitespace-nowrap">{log.user?.name || 'System'}</span>
-                <span className="text-[10px] text-muted-foreground whitespace-nowrap">{new Date(log.createdAt).toLocaleString()}</span>
+              <div key={log.id || i} className="flex items-center gap-3 p-2.5 rounded-xl bg-black/40 hover:bg-white/10 transition-colors text-sm border border-white/5">
+                <Badge className={`text-[10px] shrink-0 border-0 ${ACTION_COLORS[log.action] || 'bg-white/10 text-white/80'}`}>{log.action?.replace(/_/g, ' ')}</Badge>
+                <span className="flex-1 truncate text-white/90">{log.details || log.action}</span>
+                <span className="text-xs text-white/50 font-bold whitespace-nowrap">{log.user?.name || 'System'}</span>
+                <span className="text-[10px] text-white/40 whitespace-nowrap">{new Date(log.createdAt).toLocaleString()}</span>
               </div>
             ))}
+            </div>
           </ScrollArea>
         </Card>
       )}

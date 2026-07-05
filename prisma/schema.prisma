@@ -21,6 +21,7 @@ model User {
   isSeller        Boolean  @default(false)
   isBanned        Boolean  @default(false)
   bio             String?
+  country         String   @default("INDIA")
 
   bankName        String?
   bankAccount     String?
@@ -133,6 +134,12 @@ model Prompt {
   // E-commerce Ecosystem Relations
   cartItems       CartItem[]
   qnas            QnA[]
+
+  @@index([status])
+  @@index([categoryId])
+  @@index([sellerId])
+  @@index([isFree])
+  @@index([isTrending])
 }
 
 model Order {
@@ -170,6 +177,10 @@ model Order {
   payoutId        String?
   payout          Payout?  @relation(fields: [payoutId], references: [id])
   revenue         PlatformRevenue?
+
+  @@index([sellerId])
+  @@index([buyerId])
+  @@index([status])
 }
 
 model PlatformRevenue {
@@ -456,6 +467,7 @@ model WalletTransaction {
   amount      Float
   type        String   // e.g. "CREDIT", "DEBIT"
   description String?
+  paymentId   String?  @unique
   status      String   @default("COMPLETED") // PENDING, COMPLETED, FAILED
   createdAt   DateTime @default(now())
 }

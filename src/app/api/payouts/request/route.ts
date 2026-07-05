@@ -15,15 +15,47 @@ export async function POST(req: NextRequest) {
     const periodStart = new Date(now.getFullYear(), now.getMonth(), 1);
     const periodEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
 
-    const payout = await db.payout.create({
-      data: {
-        sellerId: user.id!,
-        amount,
-        notes: notes || null,
-        periodStart,
-        periodEnd,
-        status: 'PENDING',
-      },
+    const payout = await db.$transaction(async (tx) => {
+      // Lock user for balance check
+      const txUser = await tx.user.findUnique({ where: { id: user.id! } });
+      if (!txUser || txUser.currentBalance < amount) {
+        throw new Error('Requested payout amount exceeds current balance');
+      }
+
+      // Check for existing pending payouts to prevent spam
+      const pendingPayout = await tx.payout.findFirst({
+        where: { sellerId: user.id!, status: 'PENDING' }
+      });
+      if (pendingPayout) {
+        throw new Error('You already have a pending payout request');
+      }
+
+      // Escrow the balance so they can't double-spend it while waiting
+      await tx.user.update({
+        where: { id: user.id! },
+        data: { currentBalance: { decrement: amount } }
+      });
+      
+      await tx.walletTransaction.create({
+        data: {
+          userId: user.id!,
+          amount: amount,
+          type: 'DEBIT',
+          description: `Payout Request (Escrow)`,
+          status: 'PENDING' // Indicates it's in progress
+        }
+      });
+
+      return await tx.payout.create({
+        data: {
+          sellerId: user.id!,
+          amount,
+          notes: notes || null,
+          periodStart,
+          periodEnd,
+          status: 'PENDING',
+        },
+      });
     });
 
     return NextResponse.json({ success: true, data: payout }, { status: 201 });

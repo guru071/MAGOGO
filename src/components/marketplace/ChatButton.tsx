@@ -43,7 +43,7 @@ export default function ChatButton() {
       {open && <ChatPanel onClose={() => setOpen(false)} />}
       <Button
         onClick={() => setOpen(!open)}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-[#0066CC] hover:bg-[#0055AA] text-white shadow-xl shadow-[#0066CC]/30 z-50"
+        className="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-neon-blue hover:bg-neon-blue/80 text-black shadow-xl shadow-[0_0_20px_rgba(0,210,255,0.5)] z-50 transition-all"
       >
         {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
       </Button>
@@ -192,28 +192,28 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <div className="fixed bottom-24 right-6 w-80 sm:w-96 h-[500px] bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 flex flex-col overflow-hidden">
+    <div className="fixed bottom-24 right-6 w-80 sm:w-96 h-[500px] glass-panel-heavy border border-white/20 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.8)] z-50 flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="bg-[#0066CC] text-white p-4 flex items-center justify-between shrink-0">
+      <div className="bg-black/40 border-b border-white/10 p-4 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center">
-            <Headset className="h-4 w-4" />
+          <div className="h-10 w-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-[0_0_10px_rgba(255,255,255,0.1)]">
+            <Headset className="h-5 w-5 text-neon-blue drop-shadow-[0_0_5px_rgba(0,210,255,0.5)]" />
           </div>
           <div>
-            <p className="font-semibold text-sm">Support Team</p>
-            <p className="text-[10px] text-white/70 flex items-center gap-1">
-              <span className="h-1.5 w-1.5 rounded-full bg-green-400 inline-block" />
+            <p className="font-bold text-white text-sm">Support Team</p>
+            <p className="text-[10px] text-white/50 flex items-center gap-1 mt-0.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 inline-block shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
               Online
             </p>
           </div>
         </div>
-        <div className="flex gap-1">
+        <div className="flex gap-1 text-white/60">
           {messages.length > 0 && (
             <>
-              <button onClick={handleDownload} className="p-1.5 rounded-lg hover:bg-white/20 transition-colors" title="Download Chat">
+              <button onClick={handleDownload} className="p-1.5 rounded-lg hover:bg-white/10 hover:text-white transition-colors" title="Download Chat">
                 <Download className="h-4 w-4" />
               </button>
-              <button onClick={handleClear} className="p-1.5 rounded-lg hover:bg-white/20 transition-colors" title="Clear Chat">
+              <button onClick={handleClear} className="p-1.5 rounded-lg hover:bg-white/10 hover:text-neon-pink transition-colors" title="Clear Chat">
                 <Trash2 className="h-4 w-4" />
               </button>
             </>
@@ -222,11 +222,11 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
       </div>
 
       {/* Mode Toggle */}
-      <div className="flex border-b border-slate-100 shrink-0">
+      <div className="flex border-b border-white/10 shrink-0 bg-black/40 p-1 gap-1">
         <button
           onClick={() => setMode('chat')}
-          className={`flex-1 py-2 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors ${
-            mode === 'chat' ? 'text-[#0066CC] border-b-2 border-[#0066CC]' : 'text-slate-400 hover:text-slate-600'
+          className={`flex-1 py-1.5 text-xs font-bold flex items-center justify-center gap-1.5 rounded-lg transition-colors ${
+            mode === 'chat' ? 'bg-white/10 text-white shadow-sm' : 'text-white/40 hover:text-white/70 hover:bg-white/5'
           }`}
         >
           <MessageSquare className="h-3.5 w-3.5" />
@@ -234,8 +234,8 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
         </button>
         <button
           onClick={() => setMode('ticket')}
-          className={`flex-1 py-2 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors ${
-            mode === 'ticket' ? 'text-[#0066CC] border-b-2 border-[#0066CC]' : 'text-slate-400 hover:text-slate-600'
+          className={`flex-1 py-1.5 text-xs font-bold flex items-center justify-center gap-1.5 rounded-lg transition-colors ${
+            mode === 'ticket' ? 'bg-white/10 text-white shadow-sm' : 'text-white/40 hover:text-white/70 hover:bg-white/5'
           }`}
         >
           <Ticket className="h-3.5 w-3.5" />
@@ -245,25 +245,25 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
 
       {/* Subject input (ticket mode) */}
       {mode === 'ticket' && (
-        <div className="px-3 pt-3 shrink-0">
+        <div className="px-3 pt-3 shrink-0 bg-black/40">
           <Input
             value={subject}
             onChange={e => setSubject(e.target.value)}
             placeholder="Ticket subject..."
-            className="text-xs border-slate-200"
+            className="text-xs bg-white/5 border-white/20 text-white placeholder:text-white/30 focus:border-neon-blue rounded-xl"
             disabled={sending}
           />
         </div>
       )}
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-1 bg-slate-50/50">
+      <div className="flex-1 overflow-y-auto p-4 space-y-1 bg-black/40">
         {loading ? (
-          <div className="flex items-center justify-center h-full"><Loader2 className="h-6 w-6 animate-spin text-[#0066CC]" /></div>
+          <div className="flex items-center justify-center h-full"><Loader2 className="h-6 w-6 animate-spin text-neon-blue" /></div>
         ) : messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center text-slate-400">
-            <MessageCircle className="h-10 w-10 mb-3 text-slate-300" />
-            <p className="text-sm font-medium">No messages yet</p>
+          <div className="flex flex-col items-center justify-center h-full text-center text-white/40">
+            <MessageCircle className="h-10 w-10 mb-3 text-white/20" />
+            <p className="text-sm font-bold text-white/60">No messages yet</p>
             <p className="text-xs mt-1">Send a message to start chatting</p>
           </div>
         ) : (
@@ -271,14 +271,14 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
             <div key={gi}>
               {group.msgs.map((m, mi) => (
                 <div key={m.id || `${gi}-${mi}`} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'} ${mi > 0 ? 'mt-0.5' : 'mt-2'}`}>
-                  <div className={`max-w-[80%] rounded-xl px-4 py-2.5 text-sm relative ${
+                  <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm relative ${
                     m.role === 'user'
-                      ? 'bg-[#0066CC] text-white rounded-br-sm'
-                      : 'bg-white border border-slate-200 text-slate-700 rounded-bl-sm shadow-sm'
+                      ? 'bg-neon-blue text-black font-medium rounded-br-sm shadow-[0_0_10px_rgba(0,210,255,0.2)]'
+                      : 'glass-panel border-white/10 text-white rounded-bl-sm'
                   } ${mi === 0 && m.role === 'support' ? 'ml-2' : ''}`}>
                     {m.content.startsWith('**Ticket:') ? (
                       <div>
-                        <p className="font-bold text-xs mb-1">
+                        <p className="font-bold text-xs mb-1 opacity-70">
                           {m.content.split('\n')[0].replace(/\*\*/g, '')}
                         </p>
                         <p>{m.content.split('\n').slice(2).join('\n')}</p>
@@ -286,9 +286,9 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
                     ) : (
                       <p>{m.content}</p>
                     )}
-                    <div className="flex items-center gap-1 mt-1">
+                    <div className="flex items-center gap-1 mt-1 justify-end">
                       {m.createdAt && (
-                        <span className={`text-[10px] ${m.role === 'user' ? 'text-white/60' : 'text-slate-400'}`}>
+                        <span className={`text-[9px] font-bold ${m.role === 'user' ? 'text-black/60' : 'text-white/40'}`}>
                           {new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       )}
@@ -301,12 +301,12 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
           ))
         )}
         {typing && (
-          <div className="flex justify-start">
-            <div className="bg-white border border-slate-200 rounded-xl rounded-bl-sm px-4 py-2.5 shadow-sm">
-              <div className="flex gap-1">
-                <span className="h-2 w-2 bg-slate-300 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="h-2 w-2 bg-slate-300 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="h-2 w-2 bg-slate-300 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+          <div className="flex justify-start mt-2 ml-2">
+            <div className="glass-panel border-white/10 rounded-2xl rounded-bl-sm px-4 py-3">
+              <div className="flex gap-1.5 items-center h-4">
+                <span className="h-1.5 w-1.5 bg-white/50 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="h-1.5 w-1.5 bg-white/50 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="h-1.5 w-1.5 bg-white/50 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
               </div>
             </div>
           </div>
@@ -316,12 +316,12 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
 
       {/* Canned Responses */}
       {user && messages.length > 0 && (
-        <div className="px-3 flex gap-1.5 overflow-x-auto shrink-0 pb-1 border-t border-slate-100 pt-2">
+        <div className="px-3 flex gap-1.5 overflow-x-auto shrink-0 pb-2 border-t border-white/10 pt-3 bg-black/40">
           {CANNED_RESPONSES.map((text, i) => (
             <button
               key={i}
               onClick={() => handleCannedResponse(text)}
-              className="text-[10px] whitespace-nowrap px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors shrink-0"
+              className="text-[10px] font-bold whitespace-nowrap px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 hover:text-white transition-colors shrink-0"
             >
               {text}
             </button>
@@ -330,34 +330,34 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
       )}
 
       {/* Input */}
-      <div className="p-3 border-t border-slate-100 shrink-0 bg-white">
+      <div className="p-3 border-t border-white/10 shrink-0 bg-black/40">
         {user ? (
           <form onSubmit={e => { e.preventDefault(); handleSend() }} className="flex gap-2">
             <Input
               value={input}
               onChange={e => setInput(e.target.value)}
               placeholder={mode === 'ticket' ? 'Describe your issue...' : 'Type a message...'}
-              className="flex-1 text-sm border-slate-200"
+              className="flex-1 text-sm bg-white/5 border-white/20 text-white placeholder:text-white/30 focus:border-neon-blue rounded-xl h-11"
               disabled={sending}
             />
-            <Button type="submit" size="icon" className="bg-[#0066CC] text-white shrink-0" disabled={sending || !input.trim()}>
-              {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+            <Button type="submit" size="icon" className="bg-neon-blue hover:bg-neon-blue/80 text-black h-11 w-11 rounded-xl shrink-0 shadow-[0_0_15px_rgba(0,210,255,0.4)] transition-all" disabled={sending || !input.trim()}>
+              {sending ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
             </Button>
           </form>
         ) : (
-          <Button className="w-full bg-[#0066CC] text-white text-sm" onClick={() => setShowAuthModal(true)}>
+          <Button className="w-full bg-neon-blue hover:bg-neon-blue/80 text-black font-bold h-11 rounded-xl shadow-[0_0_15px_rgba(0,210,255,0.4)]" onClick={() => setShowAuthModal(true)}>
             Sign in to chat
           </Button>
         )}
 
         {/* Quick Actions */}
         {user && messages.length === 0 && (
-          <div className="flex gap-2 mt-2 flex-wrap">
+          <div className="flex gap-2 mt-3 flex-wrap">
             {QUICK_ACTIONS.map((action, i) => (
               <button
                 key={i}
                 onClick={() => handleQuickAction(action.template)}
-                className="text-[10px] px-2 py-1 rounded-md bg-slate-50 border border-slate-200 text-slate-500 hover:bg-slate-100 transition-colors"
+                className="text-[10px] font-bold px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white/50 hover:bg-white/10 hover:text-white transition-colors"
               >
                 {action.label}
               </button>

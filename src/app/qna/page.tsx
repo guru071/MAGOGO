@@ -14,14 +14,14 @@ import { toast } from 'sonner'
 const TAGS = ['midjourney', 'chatgpt', 'pricing', 'technical', 'dalle', 'stable-diffusion', 'prompt-engineering', 'api', 'beginner', 'advanced', 'troubleshooting', 'comparison']
 
 const TAG_COLORS: Record<string, string> = {
-  midjourney: 'bg-purple-100 text-purple-700 border-purple-200',
-  chatgpt: 'bg-green-100 text-green-700 border-green-200',
-  pricing: 'bg-amber-100 text-amber-700 border-amber-200',
-  technical: 'bg-blue-100 text-blue-700 border-blue-200',
+  midjourney: 'bg-purple-100 text-neon-purple border-neon-purple/30',
+  chatgpt: 'bg-green-100 text-emerald-400 border-emerald-500/30',
+  pricing: 'bg-amber-100 text-amber-400 border-amber-500/30',
+  technical: 'bg-blue-100 text-neon-blue border-neon-blue/30',
   dalle: 'bg-pink-100 text-pink-700 border-pink-200',
   'stable-diffusion': 'bg-indigo-100 text-indigo-700 border-indigo-200',
   'prompt-engineering': 'bg-cyan-100 text-cyan-700 border-cyan-200',
-  api: 'bg-red-100 text-red-700 border-red-200',
+  api: 'bg-red-100 text-neon-pink border-neon-pink/30',
   beginner: 'bg-emerald-100 text-emerald-700 border-emerald-200',
   advanced: 'bg-violet-100 text-violet-700 border-violet-200',
   troubleshooting: 'bg-orange-100 text-orange-700 border-orange-200',
@@ -31,8 +31,8 @@ const TAG_COLORS: Record<string, string> = {
 function getReputation(questionCount: number, totalVotes: number) {
   const score = questionCount * 10 + totalVotes
   if (score >= 100) return { level: 'Gold', color: 'text-yellow-600 bg-yellow-50 border-yellow-200', icon: '🥇' }
-  if (score >= 40) return { level: 'Silver', color: 'text-slate-500 bg-slate-50 border-slate-200', icon: '🥈' }
-  if (score >= 10) return { level: 'Bronze', color: 'text-amber-700 bg-amber-50 border-amber-200', icon: '🥉' }
+  if (score >= 40) return { level: 'Silver', color: 'text-white/60 bg-black/40/5 border-white/10', icon: '🥈' }
+  if (score >= 10) return { level: 'Bronze', color: 'text-amber-400 bg-amber-500/20 border-amber-500/30', icon: '🥉' }
   return null
 }
 
@@ -320,17 +320,17 @@ export default function QnAPage() {
   const reputation = getReputation(userQuestionCount, userTotalVotes)
 
   if (loading) {
-    return <div className="max-w-5xl mx-auto px-4 py-20 text-center"><Loader2 className="h-8 w-8 animate-spin text-[#0066CC] mx-auto" /></div>
+    return <div className="max-w-5xl mx-auto px-4 py-20 text-center"><Loader2 className="h-8 w-8 animate-spin text-neon-blue drop-shadow-[0_0_5px_rgba(0,210,255,0.5)] mx-auto" /></div>
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 relative z-10">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-1">
-            <h1 className="text-3xl font-extrabold text-slate-900 flex items-center gap-3">
-              <MessageCircle className="h-8 w-8 text-[#0066CC]" /> Community Q&A
+            <h1 className="text-3xl font-extrabold text-white flex items-center gap-3">
+              <MessageCircle className="h-8 w-8 text-neon-blue drop-shadow-[0_0_5px_rgba(0,210,255,0.5)]" /> Community Q&A
             </h1>
             {reputation && (
               <Badge variant="outline" className={`${reputation.color} text-xs px-2 py-0.5`}>
@@ -338,14 +338,14 @@ export default function QnAPage() {
               </Badge>
             )}
           </div>
-          <p className="text-slate-500 text-sm">Ask questions, share knowledge, and level up your prompt engineering skills</p>
+          <p className="text-white/60 text-sm">Ask questions, share knowledge, and level up your prompt engineering skills</p>
         </div>
         <div className="flex items-center gap-3">
           <Badge variant="secondary" className="text-xs px-3 py-1.5">
             <MessageSquare className="h-3 w-3 mr-1" /> {questions.length} questions
           </Badge>
           {user && (
-            <Button onClick={() => setShowAsk(!showAsk)} className="bg-[#0066CC] text-white whitespace-nowrap">
+            <Button onClick={() => setShowAsk(!showAsk)} className="bg-neon-blue text-black hover:bg-neon-blue/80 shadow-[0_0_15px_rgba(0,210,255,0.5)] text-white whitespace-nowrap">
               {showAsk ? <X className="h-4 w-4 mr-2" /> : <Send className="h-4 w-4 mr-2" />}
               {showAsk ? 'Cancel' : 'Ask Question'}
             </Button>
@@ -355,13 +355,13 @@ export default function QnAPage() {
 
       {/* Ask form */}
       {showAsk && (
-        <Card className="p-6 border-slate-200 shadow-sm mb-6 bg-gradient-to-r from-blue-50 to-indigo-50">
-          <h3 className="font-bold text-slate-800 mb-4">Ask the Community</h3>
+        <Card className="p-6 border-white/10 shadow-2xl mb-6 glass-panel border-neon-blue/30 bg-neon-blue/10">
+          <h3 className="font-bold text-white/90 mb-4">Ask the Community</h3>
           <div className="space-y-4">
-            <Input placeholder="What is your question about?" value={title} onChange={e => setTitle(e.target.value)} />
-            <Textarea placeholder="Describe your question in detail. Include what you have tried, what AI tool you are using, and any relevant context..." rows={4} value={body} onChange={e => setBody(e.target.value)} />
+            <Input placeholder="What is your question about?" value={title} onChange={e => setTitle(e.target.value)} className="bg-black/40 border-white/20 text-white focus:border-neon-blue h-12 rounded-xl" />
+            <Textarea placeholder="Describe your question in detail. Include what you have tried, what AI tool you are using, and any relevant context..." rows={4} value={body} onChange={e => setBody(e.target.value)} className="bg-black/40 border-white/20 text-white focus:border-neon-blue rounded-xl resize-none" />
             <div>
-              <p className="text-xs font-medium text-slate-500 mb-2">Tags (click to select):</p>
+              <p className="text-xs font-medium text-white/60 mb-2">Tags (click to select):</p>
               <div className="flex flex-wrap gap-1.5">
                 {TAGS.map(tag => (
                   <button
@@ -370,8 +370,8 @@ export default function QnAPage() {
                     onClick={() => toggleTag(tag)}
                     className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
                       selectedTags.includes(tag)
-                        ? 'bg-[#0066CC] text-white border-[#0066CC]'
-                        : 'bg-white text-slate-600 border-slate-200 hover:border-[#0066CC] hover:text-[#0066CC]'
+                        ? 'bg-neon-blue text-black hover:bg-neon-blue/80 shadow-[0_0_15px_rgba(0,210,255,0.5)] text-white border-neon-blue'
+                        : 'bg-black/40 text-white/70 border-white/10 hover:border-neon-blue hover:text-neon-blue drop-shadow-[0_0_5px_rgba(0,210,255,0.5)]'
                     }`}
                   >
                     {tag}
@@ -380,12 +380,12 @@ export default function QnAPage() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Button onClick={handleAsk} disabled={submitting || !title.trim() || !body.trim()} className="bg-[#0066CC] text-white">
+              <Button onClick={handleAsk} disabled={submitting || !title.trim() || !body.trim()} className="bg-neon-blue text-black hover:bg-neon-blue/80 shadow-[0_0_15px_rgba(0,210,255,0.5)] text-white">
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
                 Post Question
               </Button>
               {selectedTags.length > 0 && (
-                <span className="text-xs text-slate-400">{selectedTags.length} tag{selectedTags.length > 1 ? 's' : ''} selected</span>
+                <span className="text-xs text-white/50">{selectedTags.length} tag{selectedTags.length > 1 ? 's' : ''} selected</span>
               )}
             </div>
           </div>
@@ -395,17 +395,17 @@ export default function QnAPage() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50" />
           <Input
             placeholder="Search questions, tags, or content..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="pl-9"
+            className="pl-9 bg-black/40 border-white/20 text-white focus:border-neon-blue h-12 rounded-xl"
           />
         </div>
         <Select value={categoryFilter} onValueChange={setCategoryFilter}>
           <SelectTrigger className="w-full sm:w-44">
-            <Filter className="h-4 w-4 mr-2 text-slate-400" />
+            <Filter className="h-4 w-4 mr-2 text-white/50" />
             <SelectValue placeholder="All Categories" />
           </SelectTrigger>
           <SelectContent>
@@ -431,11 +431,11 @@ export default function QnAPage() {
       <div className="space-y-4">
         {filteredQuestions.length === 0 ? (
           <div className="text-center py-20">
-            <MessageCircle className="h-16 w-16 text-slate-200 mx-auto mb-4" />
-            <p className="text-slate-500 font-medium text-lg">
+            <MessageCircle className="h-16 w-16 text-white/30 mx-auto mb-4" />
+            <p className="text-white/60 font-medium text-lg">
               {search || categoryFilter !== 'all' ? 'No matching questions found' : 'No questions yet'}
             </p>
-            <p className="text-slate-400 text-sm mt-1">
+            <p className="text-white/50 text-sm mt-1">
               {search || categoryFilter !== 'all' ? 'Try a different search or filter' : 'Be the first to ask a question!'}
             </p>
           </div>
@@ -449,7 +449,7 @@ export default function QnAPage() {
           return (
             <Card
               key={q.id}
-              className="border-slate-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+              className="border-white/10 shadow-2xl hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-shadow cursor-pointer"
               onClick={() => { setExpandedQ(isExpanded ? null : q.id); handleView(q.id) }}
             >
               <div className="p-5">
@@ -459,18 +459,18 @@ export default function QnAPage() {
                     <button
                       onClick={e => { e.stopPropagation(); handleVote(q.id, 'up') }}
                       className={`p-1.5 rounded-full transition-colors ${
-                        userVotes.up.has(user?.id || '') ? 'text-green-600 bg-green-50' : 'text-slate-300 hover:text-green-600 hover:bg-green-50'
+                        userVotes.up.has(user?.id || '') ? 'text-emerald-400 bg-emerald-500/20' : 'text-white/40 hover:text-emerald-400 hover:bg-emerald-500/20'
                       }`}
                     >
                       <ThumbsUp className="h-4 w-4" />
                     </button>
-                    <span className={`text-sm font-bold ${q.votes > 0 ? 'text-green-600' : q.votes < 0 ? 'text-red-500' : 'text-slate-500'}`}>
+                    <span className={`text-sm font-bold ${q.votes > 0 ? 'text-emerald-400' : q.votes < 0 ? 'text-neon-pink' : 'text-white/60'}`}>
                       {q.votes || 0}
                     </span>
                     <button
                       onClick={e => { e.stopPropagation(); handleVote(q.id, 'down') }}
                       className={`p-1.5 rounded-full transition-colors ${
-                        userVotes.down.has(user?.id || '') ? 'text-red-500 bg-red-50' : 'text-slate-300 hover:text-red-500 hover:bg-red-50'
+                        userVotes.down.has(user?.id || '') ? 'text-neon-pink bg-neon-pink/20' : 'text-white/40 hover:text-neon-pink hover:bg-neon-pink/20'
                       }`}
                     >
                       <ThumbsDown className="h-4 w-4" />
@@ -483,33 +483,33 @@ export default function QnAPage() {
                     <div className="flex items-center gap-2 mb-2 flex-wrap">
                       <Badge variant="outline" className={`text-[10px] ${
                         hasAccepted
-                          ? 'text-green-600 border-green-200 bg-green-50'
+                          ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/20'
                           : answerCount > 0
-                            ? 'text-blue-600 border-blue-200 bg-blue-50'
-                            : 'text-amber-600 border-amber-200 bg-amber-50'
+                            ? 'text-neon-blue border-neon-blue/30 bg-neon-blue/20'
+                            : 'text-amber-400 border-amber-500/30 bg-amber-500/20'
                       }`}>
                         {hasAccepted ? <CheckCircle className="h-3 w-3 mr-0.5" /> : answerCount > 0 ? <MessageSquare className="h-3 w-3 mr-0.5" /> : <Clock className="h-3 w-3 mr-0.5" />}
                         {hasAccepted ? 'Answered' : answerCount > 0 ? `${answerCount} answer${answerCount > 1 ? 's' : ''}` : 'Open'}
                       </Badge>
                       {q.tags?.map((tag: string) => (
-                        <Badge key={tag} variant="outline" className={`text-[10px] border px-1.5 py-0 ${TAG_COLORS[tag] || 'bg-slate-100 text-slate-600 border-slate-200'}`}>
+                        <Badge key={tag} variant="outline" className={`text-[10px] border px-1.5 py-0 ${TAG_COLORS[tag] || 'bg-black/40/10 text-white/70 border-white/10'}`}>
                           {tag}
                         </Badge>
                       ))}
                     </div>
 
-                    <h3 className="font-bold text-slate-900 text-base leading-snug">{q.title}</h3>
-                    <p className={`text-sm text-slate-600 mt-1.5 ${isExpanded ? '' : 'line-clamp-2'}`}>{q.body}</p>
+                    <h3 className="font-bold text-white text-base leading-snug">{q.title}</h3>
+                    <p className={`text-sm text-white/70 mt-1.5 ${isExpanded ? '' : 'line-clamp-2'}`}>{q.body}</p>
 
                     {/* Stats row */}
-                    <div className="flex items-center gap-4 mt-3 text-xs text-slate-400">
+                    <div className="flex items-center gap-4 mt-3 text-xs text-white/50">
                       <div className="flex items-center gap-1.5">
-                        <div className="w-5 h-5 rounded-full bg-[#0066CC]/10 flex items-center justify-center">
-                          <span className="text-[10px] font-bold text-[#0066CC]">
+                        <div className="w-5 h-5 rounded-full bg-neon-blue text-black hover:bg-neon-blue/80 shadow-[0_0_15px_rgba(0,210,255,0.5)]/10 flex items-center justify-center">
+                          <span className="text-[10px] font-bold text-neon-blue drop-shadow-[0_0_5px_rgba(0,210,255,0.5)]">
                             {(q.author || 'A').charAt(0).toUpperCase()}
                           </span>
                         </div>
-                        <span className="font-medium text-slate-500">{q.author || 'Anonymous'}</span>
+                        <span className="font-medium text-white/60">{q.author || 'Anonymous'}</span>
                         {getReputation(
                           questions.filter(x => x.author === q.author).length,
                           questions.filter(x => x.author === q.author).reduce((s, x) => s + (x.votes || 0), 0)
@@ -544,14 +544,14 @@ export default function QnAPage() {
 
                 {/* Expanded section: answers */}
                 {isExpanded && (
-                  <div className="mt-5 border-t border-slate-100 pt-4 space-y-4" onClick={e => e.stopPropagation()}>
+                  <div className="mt-5 border-t border-white/5 pt-4 space-y-4" onClick={e => e.stopPropagation()}>
                     {/* AI Suggest button */}
                     {user && (
                       <div className="flex items-center gap-2">
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-xs border-purple-200 text-purple-700 hover:bg-purple-50"
+                          className="text-xs border-neon-purple/30 text-neon-purple hover:bg-neon-purple/20"
                           onClick={async (e) => { e.stopPropagation(); await handleAiSuggest(q.title, q.id) }}
                           disabled={aiSuggesting === q.id}
                         >
@@ -561,12 +561,12 @@ export default function QnAPage() {
                       </div>
                     )}
                     {aiSuggestion && aiSuggesting !== q.id && (
-                      <Card className="p-4 border-purple-200 bg-gradient-to-r from-purple-50 to-indigo-50">
+                      <Card className="p-4 border-neon-purple/30 glass-panel border-neon-purple/30 bg-neon-purple/10">
                         <div className="flex items-center gap-2 mb-2">
-                          <Sparkles className="h-4 w-4 text-purple-600" />
-                          <span className="text-xs font-semibold text-purple-700">AI Suggestion</span>
+                          <Sparkles className="h-4 w-4 text-neon-purple" />
+                          <span className="text-xs font-semibold text-neon-purple">AI Suggestion</span>
                         </div>
-                        <p className="text-sm text-slate-700">{aiSuggestion}</p>
+                        <p className="text-sm text-white/80">{aiSuggestion}</p>
                       </Card>
                     )}
 
@@ -575,28 +575,28 @@ export default function QnAPage() {
                       const aKey = q.id + '_' + a.id
                       const aUserVotes = localAnswerVotes[aKey] || { up: new Set(), down: new Set() }
                       return (
-                        <div key={a.id} className={`p-4 rounded-xl border-2 transition-colors ${
+                        <div key={a.id} className={`p-4 rounded-2xl border-2 transition-colors ${
                           a.isAccepted
-                            ? 'border-green-400 bg-green-50/50'
-                            : 'border-slate-100 bg-slate-50/50'
+                            ? 'border-emerald-500/50 bg-emerald-500/10'
+                            : 'border-white/5 bg-black/40'
                         }`}>
                           <div className="flex items-start gap-3">
                             <div className="flex flex-col items-center gap-1">
                               <button
                                 onClick={e => { e.stopPropagation(); handleAnswerVote(q.id, a.id, 'up') }}
                                 className={`p-1 rounded transition-colors ${
-                                  aUserVotes.up.has(user?.id || '') ? 'text-green-600' : 'text-slate-300 hover:text-green-600'
+                                  aUserVotes.up.has(user?.id || '') ? 'text-emerald-400' : 'text-white/40 hover:text-emerald-400'
                                 }`}
                               >
                                 <ThumbsUp className="h-3.5 w-3.5" />
                               </button>
-                              <span className={`text-xs font-bold ${a.votes > 0 ? 'text-green-600' : a.votes < 0 ? 'text-red-500' : 'text-slate-400'}`}>
+                              <span className={`text-xs font-bold ${a.votes > 0 ? 'text-emerald-400' : a.votes < 0 ? 'text-neon-pink' : 'text-white/50'}`}>
                                 {a.votes || 0}
                               </span>
                               <button
                                 onClick={e => { e.stopPropagation(); handleAnswerVote(q.id, a.id, 'down') }}
                                 className={`p-1 rounded transition-colors ${
-                                  aUserVotes.down.has(user?.id || '') ? 'text-red-500' : 'text-slate-300 hover:text-red-500'
+                                  aUserVotes.down.has(user?.id || '') ? 'text-neon-pink' : 'text-white/40 hover:text-neon-pink'
                                 }`}
                               >
                                 <ThumbsDown className="h-3.5 w-3.5" />
@@ -604,20 +604,20 @@ export default function QnAPage() {
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                                <span className="text-xs font-semibold text-slate-700">{a.author || 'Anonymous'}</span>
-                                <span className="text-[10px] text-slate-400">· {getTimeAgo(a.createdAt)}</span>
+                                <span className="text-xs font-semibold text-white/80">{a.author || 'Anonymous'}</span>
+                                <span className="text-[10px] text-white/50">· {getTimeAgo(a.createdAt)}</span>
                                 {a.isAccepted && (
-                                  <Badge className="bg-green-100 text-green-700 border-green-200 text-[10px] px-1.5 py-0">
+                                  <Badge className="bg-green-100 text-emerald-400 border-emerald-500/30 text-[10px] px-1.5 py-0">
                                     <CheckCircle className="h-3 w-3 mr-0.5" /> Accepted
                                   </Badge>
                                 )}
                               </div>
-                              <p className="text-sm text-slate-700 leading-relaxed">{a.text}</p>
+                              <p className="text-sm text-white/80 leading-relaxed">{a.text}</p>
                               {user && q.author === user?.name && !a.isAccepted && (
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="mt-2 text-xs text-green-600 hover:text-green-700 hover:bg-green-50"
+                                  className="mt-2 text-xs text-emerald-400 hover:text-emerald-400 hover:bg-emerald-500/20"
                                   onClick={e => { e.stopPropagation(); handleAcceptAnswer(q.id, a.id) }}
                                 >
                                   <Star className="h-3 w-3 mr-1" /> Mark as Accepted
@@ -627,7 +627,7 @@ export default function QnAPage() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="mt-2 text-xs text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                                  className="mt-2 text-xs text-amber-400 hover:text-amber-400 hover:bg-amber-500/20"
                                   onClick={e => { e.stopPropagation(); handleAcceptAnswer(q.id, a.id) }}
                                 >
                                   <X className="h-3 w-3 mr-1" /> Unmark Accepted
@@ -642,9 +642,9 @@ export default function QnAPage() {
                     {/* Answer form */}
                     {user && selectedQ === q.id && (
                       <div className="space-y-2 pt-2">
-                        <Textarea placeholder="Write your answer..." rows={3} value={answerText} onChange={e => setAnswerText(e.target.value)} />
+                        <Textarea placeholder="Write your answer..." rows={3} value={answerText} onChange={e => setAnswerText(e.target.value)} className="bg-black/40 border-white/20 text-white focus:border-neon-blue rounded-xl resize-none" />
                         <div className="flex gap-2">
-                          <Button size="sm" onClick={() => handleAnswer(q.id)} disabled={answering || !answerText.trim()} className="bg-[#0066CC] text-white">
+                          <Button size="sm" onClick={() => handleAnswer(q.id)} disabled={answering || !answerText.trim()} className="bg-neon-blue text-black hover:bg-neon-blue/80 shadow-[0_0_15px_rgba(0,210,255,0.5)] text-white">
                             {answering ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                             Submit Answer
                           </Button>
@@ -655,12 +655,12 @@ export default function QnAPage() {
                       </div>
                     )}
                     {user && selectedQ !== q.id && (
-                      <Button variant="ghost" size="sm" className="text-xs text-[#0066CC]" onClick={() => setSelectedQ(q.id)}>
+                      <Button variant="ghost" size="sm" className="text-xs text-neon-blue drop-shadow-[0_0_5px_rgba(0,210,255,0.5)]" onClick={() => setSelectedQ(q.id)}>
                         <MessageSquare className="h-3 w-3 mr-1.5" /> Write an answer
                       </Button>
                     )}
                     {!user && (
-                      <p className="text-xs text-slate-400 italic">Please log in to answer questions</p>
+                      <p className="text-xs text-white/50 italic">Please log in to answer questions</p>
                     )}
                   </div>
                 )}

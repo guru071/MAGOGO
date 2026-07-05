@@ -95,7 +95,8 @@ export function calculateFees(
   const gstAmt = taxableFees * (config.gstRate / 100)
 
   const totalFees = commissionAmt + closingFee + paymentFeeAmt + gstAmt
-  const netAmount = amount - totalFees
+  let netAmount = amount - totalFees
+  if (netAmount < 0) netAmount = 0
 
   return {
     grossAmount: amount,

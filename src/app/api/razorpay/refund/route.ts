@@ -30,13 +30,14 @@ export async function POST(req: NextRequest) {
     const razorpayKeyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
     const razorpaySecret = process.env.RAZORPAY_KEY_SECRET;
 
+    const { usdToPaise } = await import('@/lib/razorpay');
+
     let refundId: string | null = null;
     let paymentRefund = false;
 
     if (razorpayKeyId && razorpaySecret && order.paymentId) {
       // Attempt real Razorpay refund
       try {
-        const crypto = await import('crypto');
         const basicAuth = Buffer.from(`${razorpayKeyId}:${razorpaySecret}`).toString('base64');
 
         const refundRes = await fetch('https://api.razorpay.com/v1/payments/' + order.paymentId + '/refund', {
@@ -46,7 +47,7 @@ export async function POST(req: NextRequest) {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            amount: Math.round(order.amount * 100), // Razorpay uses paise
+            amount: usdToPaise(order.amount), // Fixed currency conversion
             notes: { reason: reason || 'Admin initiated refund' },
           }),
         });
@@ -62,30 +63,60 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Update order status
-    const updatedOrder = await db.order.update({
-      where: { id: orderId },
-      data: {
-        status: 'REFUNDED',
-      },
-    });
-
-    // Credit buyer's balance (manual refund fallback or additional credit)
-    if (!paymentRefund) {
-      await db.user.update({
-        where: { id: order.buyerId },
-        data: { currentBalance: { increment: order.amount } },
+    // Process refund atomically
+    await db.$transaction(async (tx) => {
+      // Update order status
+      await tx.order.update({
+        where: { id: orderId },
+        data: { status: 'REFUNDED' },
       });
-    }
 
-    // Log the activity
-    await db.activityLog.create({
-      data: {
-        userId: user.id!,
-        action: 'ORDER_REFUNDED',
-        details: `Refunded order ${order.orderId} for $${order.amount.toFixed(2)} (Buyer: ${order.buyer.name}). Reason: ${reason || 'No reason provided'}. ${refundId ? `Razorpay refund ID: ${refundId}` : 'Manual balance credit.'}`,
-        ipAddress: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || undefined,
-      },
+      // Credit buyer's balance (manual refund fallback)
+      if (!paymentRefund) {
+        await tx.user.update({
+          where: { id: order.buyerId },
+          data: { currentBalance: { increment: order.amount } },
+        });
+        
+        await tx.walletTransaction.create({
+          data: {
+            userId: order.buyerId,
+            amount: order.amount,
+            type: 'CREDIT',
+            description: `Refund for Order ${order.orderId}`,
+            status: 'COMPLETED'
+          }
+        });
+      }
+
+      // CRITICAL FIX: Reverse seller earnings
+      await tx.user.update({
+        where: { id: order.sellerId },
+        data: {
+          currentBalance: { decrement: order.sellerAmount },
+          totalEarnings: { decrement: order.sellerAmount }
+        }
+      });
+      
+      await tx.walletTransaction.create({
+        data: {
+          userId: order.sellerId,
+          amount: order.sellerAmount,
+          type: 'DEBIT',
+          description: `Reversal for Refunded Order ${order.orderId}`,
+          status: 'COMPLETED'
+        }
+      });
+
+      // Log the activity
+      await tx.activityLog.create({
+        data: {
+          userId: user.id!,
+          action: 'ORDER_REFUNDED',
+          details: `Refunded order ${order.orderId} for $${order.amount.toFixed(2)} (Buyer: ${order.buyer.name}). Reason: ${reason || 'No reason provided'}. ${refundId ? `Razorpay refund ID: ${refundId}` : 'Manual balance credit.'}`,
+          ipAddress: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || undefined,
+        },
+      });
     });
 
     return NextResponse.json({

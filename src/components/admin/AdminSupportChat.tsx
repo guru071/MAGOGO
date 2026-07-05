@@ -114,40 +114,40 @@ export default function AdminSupportChat({ token, adminId }: { token: string; ad
     <div className="space-y-6 flex flex-col h-[calc(100vh-150px)]">
       <div className="flex justify-between items-center shrink-0">
         <div>
-          <h2 className="text-2xl font-bold">Support Chat</h2>
-          <p className="text-slate-500">Provide customer support to marketplace users</p>
+          <h2 className="text-2xl font-bold text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">Support Chat</h2>
+          <p className="text-white/60">Provide customer support to marketplace users</p>
         </div>
-        <Button onClick={fetchSessions} variant="outline">Refresh</Button>
+        <Button onClick={fetchSessions} variant="outline" className="bg-white/5 border-white/20 text-white hover:bg-white/10 hover:text-white">Refresh</Button>
       </div>
 
       <div className="flex flex-1 gap-4 overflow-hidden">
         {/* Left sidebar: Sessions List */}
-        <Card className="w-1/3 flex flex-col overflow-hidden">
-          <div className="p-4 border-b bg-slate-50 font-semibold shrink-0">
+        <Card className="glass-panel w-1/3 flex flex-col overflow-hidden shadow-[0_0_20px_rgba(0,0,0,0.3)]">
+          <div className="p-4 border-b border-white/10 bg-black/40 font-bold text-white shrink-0">
             Active Conversations ({sessions.length})
           </div>
           <div className="flex-1 overflow-y-auto">
             {loading && sessions.length === 0 ? (
-              <div className="p-4 text-center text-slate-400">Loading...</div>
+              <div className="p-4 text-center text-white/50 font-medium">Loading...</div>
             ) : sessions.length === 0 ? (
-              <div className="p-8 text-center text-slate-400">No active chats</div>
+              <div className="p-8 text-center text-white/50 font-medium">No active chats</div>
             ) : (
               sessions.map(session => (
                 <button
                   key={session.user.id}
                   onClick={() => handleSelectUser(session.user)}
-                  className={`w-full text-left p-4 border-b flex items-start gap-3 transition-colors ${selectedUser?.id === session.user.id ? 'bg-blue-50' : 'hover:bg-slate-50'}`}
+                  className={`w-full text-left p-4 border-b border-white/5 flex items-start gap-3 transition-colors ${selectedUser?.id === session.user.id ? 'bg-neon-blue/10 border-l-4 border-l-neon-blue' : 'hover:bg-white/5'}`}
                 >
-                  <div className="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center shrink-0 overflow-hidden">
-                    {session.user.avatar ? <img src={session.user.avatar} alt="avatar" /> : <UserIcon className="h-5 w-5 text-slate-400" />}
+                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center shrink-0 overflow-hidden border border-white/20">
+                    {session.user.avatar ? <img src={session.user.avatar} alt="avatar" className="w-full h-full object-cover" /> : <UserIcon className="h-5 w-5 text-white/60" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-center mb-1">
-                      <p className="font-medium truncate">{session.user.name}</p>
-                      {session.hasUnread && <span className="h-2 w-2 rounded-full bg-blue-500 shrink-0"></span>}
+                      <p className="font-bold text-white truncate">{session.user.name}</p>
+                      {session.hasUnread && <span className="h-2.5 w-2.5 rounded-full bg-neon-blue shrink-0 shadow-[0_0_5px_rgba(0,210,255,0.8)]"></span>}
                     </div>
-                    <p className="text-xs text-slate-500 truncate">{session.user.email}</p>
-                    <p className="text-xs text-slate-400 mt-1">{formatDistanceToNow(new Date(session.lastMessageAt))} ago</p>
+                    <p className="text-xs text-white/60 truncate">{session.user.email}</p>
+                    <p className="text-[10px] text-white/40 mt-1 font-medium">{formatDistanceToNow(new Date(session.lastMessageAt))} ago</p>
                   </div>
                 </button>
               ))
@@ -156,23 +156,23 @@ export default function AdminSupportChat({ token, adminId }: { token: string; ad
         </Card>
 
         {/* Right side: Chat Window */}
-        <Card className="flex-1 flex flex-col overflow-hidden bg-slate-50/50">
+        <Card className="glass-panel flex-1 flex flex-col overflow-hidden bg-black/40 shadow-[0_0_20px_rgba(0,0,0,0.3)] border-white/10">
           {!selectedUser ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-slate-400">
-              <MessageCircle className="h-12 w-12 mb-4 text-slate-300" />
-              <p>Select a conversation to view and reply</p>
+            <div className="flex-1 flex flex-col items-center justify-center text-white/50">
+              <MessageCircle className="h-12 w-12 mb-4 text-white/20" />
+              <p className="font-medium">Select a conversation to view and reply</p>
             </div>
           ) : (
             <>
               {/* Chat Header */}
-              <div className="p-4 border-b bg-white flex justify-between items-center shrink-0 shadow-sm z-10">
+              <div className="p-4 border-b border-white/10 bg-black/30 flex justify-between items-center shrink-0 shadow-sm z-10 backdrop-blur-md">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden">
-                    {selectedUser.avatar ? <img src={selectedUser.avatar} alt="avatar" /> : <UserIcon className="h-5 w-5 text-slate-400" />}
+                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center overflow-hidden border border-white/20 shadow-[0_0_10px_rgba(255,255,255,0.1)]">
+                    {selectedUser.avatar ? <img src={selectedUser.avatar} alt="avatar" className="w-full h-full object-cover" /> : <UserIcon className="h-5 w-5 text-white/60" />}
                   </div>
                   <div>
-                    <h3 className="font-bold">{selectedUser.name}</h3>
-                    <p className="text-xs text-slate-500">{selectedUser.email}</p>
+                    <h3 className="font-black text-white">{selectedUser.name}</h3>
+                    <p className="text-xs text-white/60 font-medium">{selectedUser.email}</p>
                   </div>
                 </div>
               </div>
@@ -180,18 +180,18 @@ export default function AdminSupportChat({ token, adminId }: { token: string; ad
               {/* Chat Messages */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {loadingMessages ? (
-                  <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-slate-400" /></div>
+                  <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-white/40" /></div>
                 ) : messages.length === 0 ? (
-                  <div className="text-center py-8 text-slate-400">No messages found.</div>
+                  <div className="text-center py-8 text-white/40 font-medium">No messages found.</div>
                 ) : (
                   messages.map((m, i) => {
                     const isAdminMsg = m.senderId !== selectedUser.id;
                     return (
                       <div key={m.id || i} className={`flex ${isAdminMsg ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[70%] rounded-2xl px-4 py-2.5 ${isAdminMsg ? 'bg-[#0066CC] text-white rounded-br-sm' : 'bg-white border text-slate-800 rounded-bl-sm shadow-sm'}`}>
+                        <div className={`max-w-[70%] rounded-2xl px-4 py-2.5 ${isAdminMsg ? 'bg-neon-blue text-black font-medium rounded-br-sm shadow-[0_0_10px_rgba(0,210,255,0.3)]' : 'bg-white/10 border border-white/20 text-white rounded-bl-sm backdrop-blur-md shadow-sm'}`}>
                           {m.content.startsWith('**Ticket:') ? (
                             <div>
-                              <p className="font-bold text-xs mb-1 border-b pb-1 mb-2 opacity-80">
+                              <p className={`font-bold text-xs mb-1 border-b pb-1 mb-2 ${isAdminMsg ? 'border-black/20' : 'border-white/20'}`}>
                                 {m.content.split('\n')[0].replace(/\*\*/g, '')}
                               </p>
                               <p className="whitespace-pre-wrap text-sm">{m.content.split('\n').slice(2).join('\n')}</p>
@@ -199,9 +199,9 @@ export default function AdminSupportChat({ token, adminId }: { token: string; ad
                           ) : (
                             <p className="whitespace-pre-wrap text-sm">{m.content}</p>
                           )}
-                          <div className={`text-[10px] mt-1 flex justify-end gap-1 ${isAdminMsg ? 'text-white/70' : 'text-slate-400'}`}>
+                          <div className={`text-[10px] mt-1 flex justify-end gap-1 font-bold ${isAdminMsg ? 'text-black/60' : 'text-white/40'}`}>
                             {new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            {isAdminMsg && m.isRead && <CheckCheck className="h-3 w-3" />}
+                            {isAdminMsg && m.isRead && <CheckCheck className="h-3 w-3 text-black/80" />}
                             {isAdminMsg && !m.isRead && <Check className="h-3 w-3" />}
                           </div>
                         </div>
@@ -213,16 +213,16 @@ export default function AdminSupportChat({ token, adminId }: { token: string; ad
               </div>
 
               {/* Chat Input */}
-              <div className="p-4 bg-white border-t shrink-0">
-                <form onSubmit={handleSend} className="flex gap-2">
+              <div className="p-4 bg-black/30 border-t border-white/10 shrink-0 backdrop-blur-md">
+                <form onSubmit={handleSend} className="flex gap-3">
                   <Input
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Type your reply to the user..."
                     disabled={sending}
-                    className="flex-1"
+                    className="flex-1 bg-white/5 border-white/20 text-white placeholder:text-white/30 focus:border-neon-blue focus:ring-1 focus:ring-neon-blue rounded-xl h-11"
                   />
-                  <Button type="submit" disabled={sending || !input.trim()} className="bg-[#0066CC] hover:bg-[#0055AA]">
+                  <Button type="submit" disabled={sending || !input.trim()} className="bg-neon-blue hover:bg-neon-blue/80 text-black font-extrabold h-11 px-6 rounded-xl shadow-[0_0_15px_rgba(0,210,255,0.4)]">
                     {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                     <span className="ml-2">Send</span>
                   </Button>

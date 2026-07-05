@@ -109,73 +109,73 @@ export default function FraudDashboard({ token }: { token: string }) {
     <div className="space-y-6">
       {/* Summary cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="p-4">
+        <Card className="glass-panel p-4 shadow-[0_0_20px_rgba(0,0,0,0.3)] border-white/10">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-              <AlertTriangle className="h-5 w-5 text-red-600" />
+            <div className="h-10 w-10 rounded-xl bg-red-500/20 border border-red-500/30 flex items-center justify-center">
+              <AlertTriangle className="h-5 w-5 text-red-500 drop-shadow-[0_0_5px_currentColor]" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{data?.total ?? 0}</p>
-              <p className="text-xs text-muted-foreground">Total Flagged</p>
+              <p className="text-2xl font-black text-white">{data?.total ?? 0}</p>
+              <p className="text-xs font-bold text-white/50">Total Flagged</p>
             </div>
           </div>
         </Card>
-        <Card className="p-4">
+        <Card className="glass-panel p-4 shadow-[0_0_20px_rgba(0,0,0,0.3)] border-white/10">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-              <ShieldAlert className="h-5 w-5 text-amber-600" />
+            <div className="h-10 w-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
+              <ShieldAlert className="h-5 w-5 text-amber-400 drop-shadow-[0_0_5px_currentColor]" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{openCount}</p>
-              <p className="text-xs text-muted-foreground">Open Cases</p>
+              <p className="text-2xl font-black text-white">{openCount}</p>
+              <p className="text-xs font-bold text-white/50">Open Cases</p>
             </div>
           </div>
         </Card>
-        <Card className="p-4">
+        <Card className="glass-panel p-4 shadow-[0_0_20px_rgba(0,0,0,0.3)] border-white/10">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-              <Ban className="h-5 w-5 text-red-600" />
+            <div className="h-10 w-10 rounded-xl bg-red-500/20 border border-red-500/30 flex items-center justify-center">
+              <Ban className="h-5 w-5 text-red-500 drop-shadow-[0_0_5px_currentColor]" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{blockedCount}</p>
-              <p className="text-xs text-muted-foreground">Blocked Users</p>
+              <p className="text-2xl font-black text-white">{blockedCount}</p>
+              <p className="text-xs font-bold text-white/50">Blocked Users</p>
             </div>
           </div>
         </Card>
-        <Card className="p-4">
+        <Card className="glass-panel p-4 shadow-[0_0_20px_rgba(0,0,0,0.3)] border-white/10">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-              <CheckCircle className="h-5 w-5 text-green-600" />
+            <div className="h-10 w-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
+              <CheckCircle className="h-5 w-5 text-emerald-400 drop-shadow-[0_0_5px_currentColor]" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{falsePositiveCount}</p>
-              <p className="text-xs text-muted-foreground">False Positives</p>
+              <p className="text-2xl font-black text-white">{falsePositiveCount}</p>
+              <p className="text-xs font-bold text-white/50">False Positives</p>
             </div>
           </div>
         </Card>
       </div>
 
       {/* Risk score gauge */}
-      <Card className="p-6">
+      <Card className="glass-panel p-6 shadow-[0_0_20px_rgba(0,0,0,0.3)] border-white/10">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold">Average Risk Score</h3>
-          <span className={`text-2xl font-bold ${avgRiskScore >= 80 ? 'text-red-600' : avgRiskScore >= 60 ? 'text-orange-600' : avgRiskScore >= 30 ? 'text-amber-600' : 'text-green-600'}`}>
+          <h3 className="text-sm font-bold text-white">Average Risk Score</h3>
+          <span className={`text-2xl font-black ${avgRiskScore >= 80 ? 'text-red-500 drop-shadow-[0_0_5px_rgba(239,68,68,0.8)]' : avgRiskScore >= 60 ? 'text-orange-500 drop-shadow-[0_0_5px_rgba(249,115,22,0.8)]' : avgRiskScore >= 30 ? 'text-amber-400 drop-shadow-[0_0_5px_rgba(251,191,36,0.8)]' : 'text-emerald-400 drop-shadow-[0_0_5px_rgba(52,211,153,0.8)]'}`}>
             {avgRiskScore}/100
           </span>
         </div>
-        <div className="h-4 bg-muted rounded-full overflow-hidden relative">
+        <div className="h-4 bg-white/5 rounded-full overflow-hidden relative border border-white/10">
           <div className="absolute inset-0 flex">
-            <div className="h-full bg-green-500" style={{ width: '30%' }} />
-            <div className="h-full bg-amber-500" style={{ width: '30%' }} />
-            <div className="h-full bg-red-500" style={{ width: '20%' }} />
-            <div className="h-full bg-red-800" style={{ width: '20%' }} />
+            <div className="h-full bg-emerald-500/80 shadow-[0_0_10px_rgba(16,185,129,0.5)]" style={{ width: '30%' }} />
+            <div className="h-full bg-amber-500/80 shadow-[0_0_10px_rgba(245,158,11,0.5)]" style={{ width: '30%' }} />
+            <div className="h-full bg-orange-500/80 shadow-[0_0_10px_rgba(249,115,22,0.5)]" style={{ width: '20%' }} />
+            <div className="h-full bg-red-600/80 shadow-[0_0_10px_rgba(220,38,38,0.5)]" style={{ width: '20%' }} />
           </div>
           <div
-            className="absolute top-0 h-full w-1 bg-white shadow-lg transition-all duration-500"
+            className="absolute top-0 h-full w-1.5 bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)] transition-all duration-500 rounded-full"
             style={{ left: `${avgRiskScore}%`, transform: 'translateX(-50%)' }}
           />
         </div>
-        <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
+        <div className="flex justify-between text-[10px] text-white/50 font-bold mt-2 px-1">
           <span>Low (0-30)</span>
           <span>Medium (30-60)</span>
           <span>High (60-80)</span>
@@ -184,23 +184,23 @@ export default function FraudDashboard({ token }: { token: string }) {
       </Card>
 
       {/* Cases table */}
-      <Card>
-        <div className="p-4 border-b">
+      <Card className="glass-panel shadow-[0_0_20px_rgba(0,0,0,0.3)] border-white/10 overflow-hidden">
+        <div className="p-4 border-b border-white/10 bg-black/40">
           <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v); setPage(1); }}>
-            <TabsList>
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="OPEN">Open</TabsTrigger>
-              <TabsTrigger value="RESOLVED">Resolved</TabsTrigger>
+            <TabsList className="bg-white/5 border border-white/10">
+              <TabsTrigger value="all" className="data-[state=active]:bg-neon-blue data-[state=active]:text-black data-[state=active]:font-bold text-white/70">All</TabsTrigger>
+              <TabsTrigger value="OPEN" className="data-[state=active]:bg-neon-blue data-[state=active]:text-black data-[state=active]:font-bold text-white/70">Open</TabsTrigger>
+              <TabsTrigger value="RESOLVED" className="data-[state=active]:bg-neon-blue data-[state=active]:text-black data-[state=active]:font-bold text-white/70">Resolved</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
         {loading ? (
           <div className="p-8 flex justify-center">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            <Loader2 className="h-6 w-6 animate-spin text-neon-blue" />
           </div>
         ) : !data?.cases?.length ? (
-          <div className="p-8 text-center text-sm text-muted-foreground">
-            <ShieldCheck className="h-8 w-8 mx-auto mb-2 text-green-500" />
+          <div className="p-8 text-center text-sm text-white/50 font-medium">
+            <ShieldCheck className="h-8 w-8 mx-auto mb-3 text-emerald-400 drop-shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
             No fraud cases found
           </div>
         ) : (
@@ -208,44 +208,45 @@ export default function FraudDashboard({ token }: { token: string }) {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b bg-muted/50">
-                    <th className="text-left p-3 font-medium">Date</th>
-                    <th className="text-left p-3 font-medium">User</th>
-                    <th className="text-left p-3 font-medium">Type</th>
-                    <th className="text-left p-3 font-medium">Score</th>
-                    <th className="text-left p-3 font-medium">Status</th>
-                    <th className="text-right p-3 font-medium">Actions</th>
+                  <tr className="border-b border-white/10 bg-black/30">
+                    <th className="text-left p-4 font-bold text-[10px] uppercase tracking-wider text-white/50">Date</th>
+                    <th className="text-left p-4 font-bold text-[10px] uppercase tracking-wider text-white/50">User</th>
+                    <th className="text-left p-4 font-bold text-[10px] uppercase tracking-wider text-white/50">Type</th>
+                    <th className="text-left p-4 font-bold text-[10px] uppercase tracking-wider text-white/50">Score</th>
+                    <th className="text-left p-4 font-bold text-[10px] uppercase tracking-wider text-white/50">Status</th>
+                    <th className="text-right p-4 font-bold text-[10px] uppercase tracking-wider text-white/50">Actions</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-white/5">
                   {data.cases.map((c) => (
-                    <tr key={c.id} className="border-b hover:bg-muted/30">
-                      <td className="p-3 text-muted-foreground whitespace-nowrap">{formatDate(c.createdAt)}</td>
-                      <td className="p-3">
+                    <tr key={c.id} className="hover:bg-white/5 transition-colors">
+                      <td className="p-4 text-white/60 whitespace-nowrap font-medium text-xs">{formatDate(c.createdAt)}</td>
+                      <td className="p-4">
                         <div>
-                          <p className="font-medium">{c.user?.name || 'Unknown'}</p>
-                          <p className="text-xs text-muted-foreground">{c.user?.email}</p>
+                          <p className="font-bold text-white">{c.user?.name || 'Unknown'}</p>
+                          <p className="text-[10px] text-white/50 font-medium">{c.user?.email}</p>
                         </div>
                       </td>
-                      <td className="p-3">
-                        <Badge variant="outline" className="flex items-center gap-1 w-fit">
-                          {getEntityIcon(c.entityType)}
+                      <td className="p-4">
+                        <Badge variant="outline" className="flex items-center gap-1.5 w-fit bg-white/5 border-white/20 text-white">
+                          <span className="text-white/60">{getEntityIcon(c.entityType)}</span>
                           {c.entityType}
                         </Badge>
                       </td>
-                      <td className="p-3">
-                        <Badge className={getScoreColor(c.riskScore)}>{c.riskScore}</Badge>
+                      <td className="p-4">
+                        <Badge className={`${getScoreColor(c.riskScore)} border-0 font-bold`}>{c.riskScore}</Badge>
                       </td>
-                      <td className="p-3">
-                        <Badge variant={c.status === 'OPEN' ? 'destructive' : 'secondary'}>
+                      <td className="p-4">
+                        <Badge variant={c.status === 'OPEN' ? 'destructive' : 'secondary'} className={c.status === 'OPEN' ? 'bg-red-500/20 text-red-400 border-0' : 'bg-white/10 text-white/70 border-0'}>
                           {c.status}
                         </Badge>
                       </td>
-                      <td className="p-3 text-right">
+                      <td className="p-4 text-right">
                         <div className="flex items-center justify-end gap-1">
                           <Button
                             variant="ghost"
                             size="sm"
+                            className="text-white/70 hover:text-white hover:bg-white/10"
                             onClick={() => { setSelectedCase(c); setReviewModalOpen(true); }}
                           >
                             <Eye className="h-4 w-4" />
@@ -255,7 +256,7 @@ export default function FraudDashboard({ token }: { token: string }) {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-red-600"
+                                className="text-red-400 hover:text-red-300 hover:bg-red-500/20"
                                 onClick={() => handleAction(c.id, 'block_user')}
                               >
                                 <Ban className="h-4 w-4" />
@@ -263,7 +264,7 @@ export default function FraudDashboard({ token }: { token: string }) {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-green-600"
+                                className="text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/20"
                                 onClick={() => handleAction(c.id, 'dismiss')}
                               >
                                 <XCircle className="h-4 w-4" />
@@ -280,15 +281,15 @@ export default function FraudDashboard({ token }: { token: string }) {
 
             {/* Pagination */}
             {data.totalPages > 1 && (
-              <div className="flex items-center justify-between p-4 border-t">
-                <p className="text-sm text-muted-foreground">
+              <div className="flex items-center justify-between p-4 border-t border-white/10 bg-black/40">
+                <p className="text-xs text-white/50 font-bold">
                   Page {data.page} of {data.totalPages} ({data.total} total)
                 </p>
-                <div className="flex gap-1">
-                  <Button variant="outline" size="sm" disabled={data.page <= 1} onClick={() => setPage((p) => p - 1)}>
+                <div className="flex gap-1.5">
+                  <Button variant="outline" size="sm" disabled={data.page <= 1} onClick={() => setPage((p) => p - 1)} className="bg-white/5 border-white/20 text-white hover:bg-white/10 disabled:opacity-50">
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="sm" disabled={data.page >= data.totalPages} onClick={() => setPage((p) => p + 1)}>
+                  <Button variant="outline" size="sm" disabled={data.page >= data.totalPages} onClick={() => setPage((p) => p + 1)} className="bg-white/5 border-white/20 text-white hover:bg-white/10 disabled:opacity-50">
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
@@ -300,64 +301,68 @@ export default function FraudDashboard({ token }: { token: string }) {
 
       {/* Review modal */}
       {reviewModalOpen && selectedCase && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setReviewModalOpen(false)}>
-          <div className="bg-background rounded-xl max-w-lg w-full p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold flex items-center gap-2">
-                <ShieldAlert className="h-5 w-5 text-amber-500" />
+        <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setReviewModalOpen(false)}>
+          <div className="glass-panel rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-[0_0_30px_rgba(0,0,0,0.5)] border-white/20" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+              <h3 className="text-lg font-black flex items-center gap-2 text-white">
+                <ShieldAlert className="h-5 w-5 text-amber-400 drop-shadow-[0_0_5px_currentColor]" />
                 Case Review
               </h3>
-              <Badge variant={selectedCase.status === 'OPEN' ? 'destructive' : 'secondary'}>{selectedCase.status}</Badge>
+              <Badge variant={selectedCase.status === 'OPEN' ? 'destructive' : 'secondary'} className={selectedCase.status === 'OPEN' ? 'bg-red-500/20 text-red-400 border-0' : 'bg-white/10 text-white/70 border-0'}>
+                {selectedCase.status}
+              </Badge>
             </div>
-            <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <p className="text-xs text-muted-foreground">User</p>
-                  <p className="text-sm font-medium">{selectedCase.user?.name || 'Unknown'}</p>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                  <p className="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-1">User</p>
+                  <p className="text-sm font-bold text-white">{selectedCase.user?.name || 'Unknown'}</p>
                 </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Email</p>
-                  <p className="text-sm">{selectedCase.user?.email || 'N/A'}</p>
+                <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                  <p className="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-1">Email</p>
+                  <p className="text-sm text-white/80 font-medium truncate">{selectedCase.user?.email || 'N/A'}</p>
                 </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Entity Type</p>
-                  <Badge variant="outline">{selectedCase.entityType}</Badge>
+                <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                  <p className="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-1">Entity Type</p>
+                  <Badge variant="outline" className="bg-white/10 border-white/20 text-white font-medium">{selectedCase.entityType}</Badge>
                 </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Risk Score</p>
-                  <Badge className={getScoreColor(selectedCase.riskScore)}>{selectedCase.riskScore}/100</Badge>
+                <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                  <p className="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-1">Risk Score</p>
+                  <Badge className={`${getScoreColor(selectedCase.riskScore)} border-0 font-bold`}>{selectedCase.riskScore}/100</Badge>
                 </div>
               </div>
               {selectedCase.signals && (
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">Fraud Signals</p>
-                  <pre className="text-xs bg-muted p-3 rounded-lg overflow-auto max-h-40">
+                <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                  <p className="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-2">Fraud Signals</p>
+                  <pre className="text-xs bg-black/40 text-white/80 p-3 rounded-lg overflow-auto max-h-40 border border-white/10 font-mono">
                     {JSON.stringify(JSON.parse(selectedCase.signals), null, 2)}
                   </pre>
                 </div>
               )}
-              <div>
-                <p className="text-xs text-muted-foreground">Created</p>
-                <p className="text-sm">{formatDate(selectedCase.createdAt)}</p>
-              </div>
-              {selectedCase.resolution && (
-                <div>
-                  <p className="text-xs text-muted-foreground">Resolution</p>
-                  <p className="text-sm">{selectedCase.resolution}</p>
+              <div className="flex gap-4">
+                <div className="flex-1 bg-white/5 p-3 rounded-xl border border-white/5">
+                  <p className="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-1">Created</p>
+                  <p className="text-xs font-medium text-white/80">{formatDate(selectedCase.createdAt)}</p>
                 </div>
-              )}
+                {selectedCase.resolution && (
+                  <div className="flex-1 bg-white/5 p-3 rounded-xl border border-white/5">
+                    <p className="text-[10px] text-white/50 font-bold uppercase tracking-wider mb-1">Resolution</p>
+                    <p className="text-xs font-bold text-emerald-400">{selectedCase.resolution}</p>
+                  </div>
+                )}
+              </div>
             </div>
             {selectedCase.status === 'OPEN' && (
-              <div className="flex gap-2 pt-2">
-                <Button variant="destructive" className="flex-1" onClick={() => handleAction(selectedCase.id, 'block_user')}>
-                  <Ban className="h-4 w-4 mr-1.5" /> Block User
+              <div className="flex gap-3 pt-2">
+                <Button variant="destructive" className="flex-1 bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30 font-bold" onClick={() => handleAction(selectedCase.id, 'block_user')}>
+                  <Ban className="h-4 w-4 mr-2" /> Block User
                 </Button>
-                <Button variant="outline" className="flex-1" onClick={() => handleAction(selectedCase.id, 'dismiss')}>
-                  <CheckCircle className="h-4 w-4 mr-1.5" /> Dismiss
+                <Button variant="outline" className="flex-1 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/30 font-bold hover:text-emerald-300" onClick={() => handleAction(selectedCase.id, 'dismiss')}>
+                  <CheckCircle className="h-4 w-4 mr-2" /> Dismiss
                 </Button>
               </div>
             )}
-            <Button variant="ghost" className="w-full" onClick={() => setReviewModalOpen(false)}>
+            <Button variant="ghost" className="w-full text-white/60 hover:text-white hover:bg-white/10 font-bold mt-2" onClick={() => setReviewModalOpen(false)}>
               Close
             </Button>
           </div>

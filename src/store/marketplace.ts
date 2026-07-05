@@ -35,6 +35,19 @@ export const CURRENCIES = [
   { code: 'NGN', symbol: '₦', name: 'Nigerian Naira', rate: 1550, flag: '🇳🇬' },
 ];
 
+export const COUNTRY_TO_CURRENCY: Record<string, string> = {
+  'INDIA': 'INR',
+  'USA': 'USD',
+  'UK': 'GBP',
+  'EUROPE': 'EUR',
+  'AUSTRALIA': 'AUD',
+  'CANADA': 'CAD',
+  'UAE': 'AED',
+  'JAPAN': 'JPY',
+  'BRAZIL': 'BRL',
+  'NIGERIA': 'NGN'
+};
+
 export const PAYMENT_METHODS = [
   { value: 'WALLET', label: 'Wallet Balance', desc: 'Pay using your available balance' },
   { value: 'STRIPE', label: 'Credit Card', desc: 'Visa, Mastercard, Amex' },
@@ -112,6 +125,8 @@ interface Store {
   toggleWishlist: (promptId: string) => Promise<boolean>;
   fetchOrders: (type?: string) => Promise<void>;
   createOrder: (promptId: string, paymentMethod: string, couponCode?: string, currency?: string) => Promise<boolean>;
+  themeStyle: 'normal' | 'universe';
+  setThemeStyle: (style: 'normal' | 'universe') => void;
   fetchAdminStats: () => Promise<void>;
 }
 
@@ -134,6 +149,12 @@ export const useStore = create<Store>((set, get) => ({
   cart: [], sortBy: 'newest', priceRange: [0, 200], isFreeOnly: false, selectedAI: null,
   selectedCurrency: typeof window !== 'undefined' ? (localStorage.getItem('pb_currency') || 'USD') : 'USD',
   showFilterPanel: false,
+  themeStyle: typeof window !== 'undefined' ? ((localStorage.getItem('pb_theme_style') as 'normal' | 'universe') || 'normal') : 'normal',
+
+  setThemeStyle: (style) => {
+    set({ themeStyle: style });
+    if (typeof window !== 'undefined') localStorage.setItem('pb_theme_style', style);
+  },
 
   login: async (email, password) => {
     try {
@@ -143,6 +164,13 @@ export const useStore = create<Store>((set, get) => ({
       if (!data.session) throw new Error('Login failed');
       const profile = await api(`/api/auth/me`);
       set({ user: profile });
+      
+      // Auto-set currency based on country
+      if (profile?.country) {
+        const cCode = COUNTRY_TO_CURRENCY[profile.country] || 'USD';
+        get().setSelectedCurrency(cCode);
+      }
+      
       localStorage.setItem('pb_user', JSON.stringify(profile));
       return true;
     } catch (e) { console.error('[store] login:', e); return false; }
@@ -172,6 +200,13 @@ export const useStore = create<Store>((set, get) => ({
       if (!user) { set({ user: null }); return; }
       const profile = await api(`/api/auth/me`);
       set({ user: profile });
+      
+      // Auto-set currency based on country
+      if (profile?.country) {
+        const cCode = COUNTRY_TO_CURRENCY[profile.country] || 'USD';
+        get().setSelectedCurrency(cCode);
+      }
+      
       localStorage.setItem('pb_user', JSON.stringify(profile));
     } catch (e) { console.error('[store] fetchMe:', e); set({ user: null }); localStorage.removeItem('pb_user'); }
   },

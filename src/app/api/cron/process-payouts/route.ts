@@ -69,11 +69,31 @@ export async function POST(req: NextRequest) {
           }
         });
         
-        // Link orders to payout
-        await tx.order.updateMany({
-          where: { id: { in: data.orderIds } },
-          data: { payoutId: p.id }
-        });
+        // Only link orders if payout wasn't a total failure, so they can be picked up again
+        if (status !== 'FAILED') {
+          await tx.order.updateMany({
+            where: { id: { in: data.orderIds } },
+            data: { payoutId: p.id }
+          });
+        }
+
+        // CRITICAL FIX: Deduct balance if money actually left the platform
+        if (status === 'COMPLETED') {
+          await tx.user.update({
+            where: { id: sellerId },
+            data: { currentBalance: { decrement: data.amount } }
+          });
+          
+          await tx.walletTransaction.create({
+            data: {
+              userId: sellerId,
+              amount: data.amount,
+              type: 'DEBIT',
+              description: `Automated Payout via RazorpayX (${transactionId || 'Manual'})`,
+              status: 'COMPLETED'
+            }
+          });
+        }
 
         return p;
       });
