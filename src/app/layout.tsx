@@ -10,6 +10,7 @@ import { Footer } from "@/components/marketplace/Footer"
 import { AuthModal } from "@/components/marketplace/AuthModal"
 import ChatButton from "@/components/marketplace/ChatButton"
 import { ThemeRenderer } from "@/components/marketplace/ThemeRenderer"
+import { BottomNav } from "@/components/marketplace/BottomNav"
 import { usePathname } from "next/navigation"
 import { ThemeProvider } from "next-themes"
 
@@ -37,10 +38,11 @@ function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col relative z-0">
+    <div className="min-h-screen flex flex-col relative z-0 pb-20 md:pb-0">
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />
+      <BottomNav />
       <AuthModal />
       <ChatButton />
     </div>
