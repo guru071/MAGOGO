@@ -77,7 +77,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col bg-transparent">
       {/* HERO */}
-      <section className="relative overflow-hidden pt-20 pb-24 sm:pt-32 sm:pb-32 text-center">
+      <section className="relative overflow-hidden pt-4 pb-24 sm:pt-12 sm:pb-32 text-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" }}>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel border border-neon-blue/30 text-neon-blue text-xs font-semibold mb-8 shadow-[0_0_15px_rgba(0,210,255,0.2)]">

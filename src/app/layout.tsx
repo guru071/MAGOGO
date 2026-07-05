@@ -38,7 +38,7 @@ function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col relative z-0 pb-20 md:pb-0">
+    <div className="min-h-screen flex flex-col relative z-0 pb-20 md:pb-0 pt-[88px]">
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />
