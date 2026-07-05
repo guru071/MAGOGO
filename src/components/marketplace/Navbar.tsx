@@ -156,7 +156,7 @@ export function Navbar() {
           </Link>
         </div>
 
-        <form onSubmit={handleSearch} className="hidden md:flex items-center flex-1 max-w-md mx-6" ref={searchRef}>
+        <form onSubmit={handleSearch} className="flex items-center flex-1 max-w-md mx-2 md:mx-6" ref={searchRef}>
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50" />
             <Input
@@ -337,17 +337,6 @@ export function Navbar() {
 
       {mobileMenuOpen && (
         <div className="absolute top-[80px] left-4 right-4 md:hidden glass-panel-heavy border border-white/10 rounded-3xl p-4 space-y-3 z-40 shadow-2xl">
-          <form onSubmit={handleSearch}>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50" />
-              <Input
-                value={searchValue}
-                onChange={(e) => handleSearchChange(e.target.value)}
-                placeholder="Search universe..."
-                className="pl-9 h-10 bg-white/5 border-white/10 text-white rounded-full"
-              />
-            </div>
-          </form>
           <div className="flex flex-col gap-1">
             <Link href="/browse" className="px-4 py-2.5 text-sm text-white/80 hover:bg-white/10 rounded-xl" onClick={() => setMobileMenuOpen(false)}>Browse</Link>
             <Link href="/cart" className="px-4 py-2.5 text-sm text-white/80 hover:bg-white/10 rounded-xl flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
