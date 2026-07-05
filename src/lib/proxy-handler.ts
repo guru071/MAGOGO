@@ -79,15 +79,11 @@ export async function middleware(request: NextRequest) {
     return applySecurityHeaders(response);
   }
 
-  // 4. Refresh Supabase session on admin and landing requests (keeps cookies in sync)
-  if (pathname.startsWith('/admin') || pathname === '/') {
-    const response = NextResponse.next();
-    const supabase = createSupabaseMiddlewareClient(request, response);
-    await supabase.auth.getUser();
-    return applySecurityHeaders(response);
-  }
-
-  return applySecurityHeaders(NextResponse.next());
+  // 4. Refresh Supabase session on all other routes (keeps cookies in sync)
+  const response = NextResponse.next();
+  const supabase = createSupabaseMiddlewareClient(request, response);
+  await supabase.auth.getUser();
+  return applySecurityHeaders(response);
 }
 
 function applySecurityHeaders(response: NextResponse): NextResponse {
