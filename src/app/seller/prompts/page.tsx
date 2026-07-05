@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
-import { Trash2, ExternalLink, PlusCircle, AlertTriangle } from 'lucide-react'
+import { Trash2, ExternalLink, PlusCircle, AlertTriangle, Edit } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   AlertDialog,
@@ -19,11 +19,22 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
 
 export default function SellerPromptsPage() {
   const { user, selectedCurrency } = useStore()
   const [prompts, setPrompts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [editingPrompt, setEditingPrompt] = useState<any>(null)
+  const [editPrice, setEditPrice] = useState<string>('')
+  const [isUpdating, setIsUpdating] = useState(false)
 
   const fetchPrompts = async () => {
     try {
@@ -57,6 +68,35 @@ export default function SellerPromptsPage() {
       }
     } catch (e) {
       toast.error('An error occurred while deleting')
+    }
+  }
+
+  const handleEditPrice = async () => {
+    if (!editingPrompt) return
+    const priceNum = parseFloat(editPrice)
+    if (isNaN(priceNum) || priceNum < 0) {
+      toast.error('Please enter a valid positive price')
+      return
+    }
+    setIsUpdating(true)
+    try {
+      const res = await fetch(`/api/seller/prompts/${editingPrompt.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ price: priceNum })
+      })
+      const json = await res.json()
+      if (json.success) {
+        toast.success('Price updated successfully')
+        setPrompts(prompts.map(p => p.id === editingPrompt.id ? { ...p, price: priceNum, isFree: priceNum === 0 } : p))
+        setEditingPrompt(null)
+      } else {
+        toast.error(json.error || 'Failed to update price')
+      }
+    } catch (e) {
+      toast.error('An error occurred while updating')
+    } finally {
+      setIsUpdating(false)
     }
   }
 
@@ -129,9 +169,13 @@ export default function SellerPromptsPage() {
                   </Link>
                 )}
                 
+                <Button variant="ghost" size="sm" className="text-white/70 hover:text-white hover:bg-white/10 ml-auto mr-2" onClick={() => { setEditingPrompt(prompt); setEditPrice(prompt.price?.toString() || '0'); }}>
+                  <Edit className="w-4 h-4" />
+                </Button>
+
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="ghost" size="sm" className="text-red-400 hover:text-red-300 hover:bg-red-500/20 ml-auto">
+                    <Button variant="ghost" size="sm" className="text-red-400 hover:text-red-300 hover:bg-red-500/20">
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </AlertDialogTrigger>
@@ -158,6 +202,34 @@ export default function SellerPromptsPage() {
           ))}
         </div>
       )}
+
+      {/* Edit Price Dialog */}
+      <Dialog open={!!editingPrompt} onOpenChange={(open) => !open && setEditingPrompt(null)}>
+        <DialogContent className="glass-panel border-white/10 text-white bg-black/90 sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Price</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <label className="text-sm font-medium text-white/70 mb-2 block">New Price (USD)</label>
+            <Input
+              type="number"
+              min="0"
+              step="0.01"
+              value={editPrice}
+              onChange={(e) => setEditPrice(e.target.value)}
+              className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-neon-blue focus:ring-neon-blue"
+              placeholder="e.g. 5.99"
+            />
+            <p className="text-xs text-white/50 mt-2">Set to 0 to make it FREE.</p>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setEditingPrompt(null)} className="text-white/70 hover:text-white">Cancel</Button>
+            <Button onClick={handleEditPrice} disabled={isUpdating} className="bg-neon-blue text-black font-bold hover:bg-neon-blue/80">
+              {isUpdating ? 'Saving...' : 'Save Changes'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
