@@ -143,33 +143,37 @@ export default function CheckoutPage() {
 
   if (cart.length === 0) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-20 text-center">
-        <ShoppingBag className="h-16 w-16 text-slate-200 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-slate-700">Nothing to checkout</h2>
-        <p className="text-slate-500 mt-2 mb-6">Add items to your cart first</p>
-        <Link href="/browse"><Button className="bg-[#0066CC] text-white">Browse Prompts</Button></Link>
+      <div className="max-w-4xl mx-auto px-4 py-20 text-center relative z-10">
+        <ShoppingBag className="h-16 w-16 text-white/20 mx-auto mb-4" />
+        <h2 className="text-2xl font-bold text-white">Nothing to checkout</h2>
+        <p className="text-white/50 mt-2 mb-6">Add items to your cart first</p>
+        <Link href="/browse">
+          <Button className="bg-neon-blue text-black hover:bg-neon-blue/80 shadow-[0_0_15px_rgba(0,210,255,0.4)]">
+            Browse Prompts
+          </Button>
+        </Link>
       </div>
     )
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 relative z-10">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
-      <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-6">Checkout</h1>
+      <h1 className="text-2xl sm:text-3xl font-extrabold text-white mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">Checkout</h1>
 
       <div className="grid lg:grid-cols-5 gap-6">
         <div className="lg:col-span-3 space-y-6">
-          <Card className="p-6">
-            <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
-              <CreditCard className="h-5 w-5 text-[#0066CC]" /> Payment Method
+          <Card className="p-6 glass-panel border-white/10 bg-black/40">
+            <h3 className="font-bold text-white mb-4 flex items-center gap-2">
+              <CreditCard className="h-5 w-5 text-neon-blue drop-shadow-[0_0_5px_rgba(0,210,255,0.5)]" /> Payment Method
             </h3>
             <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-3">
               {PAYMENT_METHODS.map(m => (
-                <div key={m.value} className="flex items-center space-x-3 border rounded-lg p-3 hover:border-[#0066CC]/30 transition-colors">
-                  <RadioGroupItem value={m.value} id={m.value} />
+                <div key={m.value} className={`flex items-center space-x-3 border rounded-lg p-3 transition-colors ${paymentMethod === m.value ? 'border-neon-blue bg-white/5' : 'border-white/10 hover:border-white/30'}`}>
+                  <RadioGroupItem value={m.value} id={m.value} className={paymentMethod === m.value ? 'border-neon-blue text-neon-blue' : 'border-white/50'} />
                   <Label htmlFor={m.value} className="flex-1 cursor-pointer">
-                    <span className="text-sm font-medium text-slate-800">{m.label}</span>
-                    <p className="text-xs text-slate-400">{m.desc}</p>
+                    <span className="text-sm font-medium text-white">{m.label}</span>
+                    <p className="text-xs text-white/50">{m.desc}</p>
                   </Label>
                 </div>
               ))}
@@ -188,15 +192,15 @@ export default function CheckoutPage() {
             )}
           </Card>
 
-          <Card className="p-6">
-            <h3 className="font-bold text-slate-800 mb-3">Currency</h3>
+          <Card className="p-6 glass-panel border-white/10 bg-black/40">
+            <h3 className="font-bold text-white mb-3">Currency</h3>
             <Select value={selectedCurrency} onValueChange={setSelectedCurrency}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full bg-white/5 border-white/20 text-white">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="glass-panel border-white/10 bg-black/90 text-white">
                 {CURRENCIES.map(c => (
-                  <SelectItem key={c.code} value={c.code}>{c.flag} {c.code} - {c.name}</SelectItem>
+                  <SelectItem key={c.code} value={c.code} className="focus:bg-white/10 focus:text-white">{c.flag} {c.code} - {c.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -204,34 +208,34 @@ export default function CheckoutPage() {
         </div>
 
         <div className="lg:col-span-2">
-          <Card className="p-6 sticky top-24">
-            <h3 className="font-bold text-slate-800 mb-4">Order Summary</h3>
+          <Card className="p-6 sticky top-28 glass-panel border-white/10 bg-black/40">
+            <h3 className="font-bold text-white mb-4">Order Summary</h3>
             <div className="space-y-3">
               {cart.map(p => (
                 <div key={p.id} className="flex items-center justify-between text-sm">
-                  <span className="text-slate-600 truncate max-w-[180px]">{p.title}</span>
-                  <span className="font-medium">{formatPrice(p.price, selectedCurrency)}</span>
+                  <span className="text-white/60 truncate max-w-[180px]">{p.title}</span>
+                  <span className="font-medium text-white">{formatPrice(p.price, selectedCurrency)}</span>
                 </div>
               ))}
             </div>
-            <Separator className="my-4" />
+            <Separator className="my-4 bg-white/10" />
             <div className="space-y-2 text-sm">
-              <div className="flex justify-between text-slate-600">
+              <div className="flex justify-between text-white/60">
                 <span>Subtotal</span><span>{formatPrice(total, selectedCurrency)}</span>
               </div>
             </div>
-            <Separator className="my-4" />
-            <div className="flex justify-between font-bold text-slate-900 text-lg">
-              <span>Total</span><span>{formatPrice(grandTotal, selectedCurrency)}</span>
+            <Separator className="my-4 bg-white/10" />
+            <div className="flex justify-between font-bold text-white text-lg">
+              <span>Total</span><span className="text-neon-blue drop-shadow-[0_0_8px_rgba(0,210,255,0.4)]">{formatPrice(grandTotal, selectedCurrency)}</span>
             </div>
 
             <Button onClick={handleCheckout} disabled={loading || cart.length === 0}
-              className="w-full mt-6 bg-[#FF6600] hover:bg-[#E65C00] text-white font-semibold h-12 shadow-lg shadow-[#FF6600]/20">
+              className="w-full mt-6 bg-neon-blue hover:bg-neon-blue/80 text-black font-extrabold h-12 shadow-[0_0_15px_rgba(0,210,255,0.4)] transition-all">
               {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               {loading ? 'Processing...' : `Pay ${formatPrice(grandTotal, selectedCurrency)}`}
             </Button>
 
-            <div className="flex items-center justify-center gap-1.5 mt-3 text-xs text-slate-400">
+            <div className="flex items-center justify-center gap-1.5 mt-4 text-xs text-white/40">
               <Lock className="h-3 w-3" /> {paymentMethod === 'PLAY_STORE' ? 'Verified by Google Play' : 'Secured by Razorpay'}
             </div>
           </Card>
