@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useStore } from '@/store/marketplace'
+import { useStore, formatPrice } from '@/store/marketplace'
 import { enableRazorpayProtections, disableRazorpayProtections } from '@/lib/razorpay-client'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -21,7 +21,7 @@ type Tx = {
 }
 
 export default function SellerWalletPage() {
-  const { user, fetchMe } = useStore()
+  const { user, fetchMe, selectedCurrency } = useStore()
   const [loading, setLoading] = useState(true)
   const [transactions, setTransactions] = useState<Tx[]>([])
   
@@ -175,7 +175,7 @@ export default function SellerWalletPage() {
               <WalletIcon className="h-5 w-5" />
               <span className="font-medium">Current Balance</span>
             </div>
-            <div className="text-4xl font-bold">${(user?.currentBalance || 0).toFixed(2)}</div>
+            <div className="text-4xl font-bold">{formatPrice(user?.currentBalance || 0, selectedCurrency)}</div>
           </CardContent>
         </Card>
       </div>
@@ -205,7 +205,7 @@ export default function SellerWalletPage() {
                   </div>
                   <div className="text-right">
                     <p className={`font-semibold ${tx.type === 'CREDIT' ? 'text-emerald-600' : 'text-slate-900'}`}>
-                      {tx.type === 'CREDIT' ? '+' : '-'}${tx.amount.toFixed(2)}
+                      {tx.type === 'CREDIT' ? '+' : '-'}{formatPrice(tx.amount, selectedCurrency)}
                     </p>
                     <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 uppercase">
                       {tx.status}

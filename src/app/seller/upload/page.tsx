@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { enableRazorpayProtections, disableRazorpayProtections } from '@/lib/razorpay-client'
-import { useStore } from '@/store/marketplace'
+import { useStore, formatPrice } from '@/store/marketplace'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -16,7 +16,7 @@ import Script from 'next/script'
 
 export default function UploadPromptPage() {
   const router = useRouter()
-  const { user, categories, fetchCategories, fetchPrompts } = useStore()
+  const { user, categories, fetchCategories, fetchPrompts, selectedCurrency } = useStore()
   const [loading, setLoading] = useState(false)
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -138,6 +138,14 @@ export default function UploadPromptPage() {
     if (!user.isSeller) { toast.error('Become a seller first'); return }
     
     setLoading(true)
+    
+    // Minimum price validation (0.06 USD ~ 5 INR)
+    if (!form.isFree && parseFloat(form.price) < 0.06) {
+      toast.error('Minimum selling price is $0.06 (approx ₹5)')
+      setLoading(false)
+      return
+    }
+
     const imageUrl = await uploadImage()
 
     if (!form.isFree && user.role !== 'ADMIN' && estimate && estimate.totalFees > 0 && paymentMethod === 'razorpay') {
@@ -261,7 +269,7 @@ export default function UploadPromptPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="price" className="text-white/70 ml-1 font-bold">Price (USD)</Label>
-              <Input id="price" type="number" min="0" step="0.99" value={form.price} onChange={e => handleChange('price', e.target.value)} disabled={form.isFree} className="mt-1.5 bg-white/5 border-white/20 text-white placeholder:text-white/30 focus:border-neon-blue focus:ring-1 focus:ring-neon-blue rounded-xl h-11 disabled:bg-white/5" />
+              <Input id="price" type="number" min="0.06" step="0.01" value={form.price} onChange={e => handleChange('price', e.target.value)} disabled={form.isFree} className="mt-1.5 bg-white/5 border-white/20 text-white placeholder:text-white/30 focus:border-neon-blue focus:ring-1 focus:ring-neon-blue rounded-xl h-11 disabled:bg-white/5" />
             </div>
             <div className="flex items-end pb-3">
               <label className="flex items-center gap-2 cursor-pointer">
@@ -278,7 +286,7 @@ export default function UploadPromptPage() {
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-sm font-bold text-white uppercase tracking-widest">Upfront Listing Fee</span>
                   <span className="text-xl font-black text-neon-blue drop-shadow-[0_0_5px_rgba(0,210,255,0.5)]">
-                    ${estimate?.totalFees.toFixed(2)}
+                    {formatPrice(estimate?.totalFees || 0, selectedCurrency)}
                   </span>
                 </div>
                 
@@ -289,7 +297,7 @@ export default function UploadPromptPage() {
                     <input type="radio" name="paymentMethod" value="wallet" checked={paymentMethod === 'wallet'} onChange={() => setPaymentMethod('wallet')} className="text-neon-blue focus:ring-neon-blue w-4 h-4 bg-transparent border-white/30" disabled={!hasEnoughWalletBalance} />
                     <div className="flex-1">
                       <div className="text-sm font-bold text-white">Pay from Wallet</div>
-                      <div className="text-xs text-white/50 font-medium">Current Balance: ${(user?.currentBalance || 0).toFixed(2)}</div>
+                      <div className="text-xs text-white/50 font-medium">Current Balance: {formatPrice(user?.currentBalance || 0, selectedCurrency)}</div>
                     </div>
                     {!hasEnoughWalletBalance && <span className="text-[10px] uppercase font-bold text-neon-pink bg-neon-pink/10 border border-neon-pink/20 px-2 py-1 rounded-full">Insufficient</span>}
                   </label>

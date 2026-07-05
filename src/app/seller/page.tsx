@@ -114,7 +114,7 @@ export default function SellerDashboardPage() {
       value: formatPrice(a?.totalRevenue || totalEarnings, selectedCurrency),
       icon: DollarSign,
       color: 'text-emerald-400',
-      sub: a ? `${(a.totalRevenue || 0).toFixed(2)} USD` : undefined,
+      sub: a ? `${formatPrice(a.totalRevenue || 0, selectedCurrency)}` : undefined,
       badge: periodComparison.revenueChange !== undefined ? <ChangeBadge value={periodComparison.revenueChange} label="vs prev period" /> : null,
     },
     {
@@ -236,7 +236,7 @@ export default function SellerDashboardPage() {
               {forecast.length > 0 && (
                 <Badge className="bg-neon-blue/20 text-neon-blue border border-neon-blue/30 text-[10px]">
                   <Target className="h-3 w-3 mr-0.5" />
-                  ${forecast.reduce((s: number, f: any) => s + f.predicted, 0).toFixed(0)} projected
+                  {formatPrice(forecast.reduce((s: number, f: any) => s + f.predicted, 0), selectedCurrency)} projected
                 </Badge>
               )}
             </div>
@@ -258,10 +258,10 @@ export default function SellerDashboardPage() {
                     <RTooltip
                       contentStyle={{ fontSize: 12, borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'rgba(0,0,0,0.8)', color: 'white' }}
                       formatter={(value: any, name: string) => {
-                        if (name === 'revenue') return [`$${value?.toFixed(2) || '0.00'}`, 'Revenue'];
-                        if (name === 'predicted') return [`$${value?.toFixed(2) || '0.00'}`, 'Forecast'];
-                        if (name === 'lowerBound') return [`$${value?.toFixed(2) || '0.00'}`, 'Lower Bound'];
-                        if (name === 'upperBound') return [`$${value?.toFixed(2) || '0.00'}`, 'Upper Bound'];
+                        if (name === 'revenue') return [formatPrice(value, selectedCurrency), 'Revenue'];
+                        if (name === 'predicted') return [formatPrice(value, selectedCurrency), 'Forecast'];
+                        if (name === 'lowerBound') return [formatPrice(value, selectedCurrency), 'Lower Bound'];
+                        if (name === 'upperBound') return [formatPrice(value, selectedCurrency), 'Upper Bound'];
                         return [value, name];
                       }}
                     />
@@ -288,7 +288,7 @@ export default function SellerDashboardPage() {
                 {anomalies.map((an: any, i: number) => (
                   <div key={i} className="glass-panel border border-white/10 rounded-xl p-3">
                     <p className="text-xs text-white/40">{an.date}</p>
-                    <p className="font-bold text-white text-lg">${an.revenue.toFixed(2)}</p>
+                    <p className="font-bold text-white text-lg">{formatPrice(an.revenue, selectedCurrency)}</p>
                     <div className="flex items-center gap-1 mt-1">
                       <Zap className="h-3 w-3 text-amber-400" />
                       <span className="text-[10px] text-amber-400 font-medium">Z-score: {an.zScore}</span>
@@ -644,12 +644,12 @@ export default function SellerDashboardPage() {
                        <tr key={o.id} className="border-b border-white/5 hover:bg-white/5">
                          <td className="py-2.5 pr-2 font-mono text-[10px] text-white/60">{o.orderId || o.id}</td>
                          <td className="py-2.5 pr-2 max-w-[120px] truncate text-white">{o.prompt?.title}</td>
-                         <td className="py-2.5 pr-2 text-right font-bold text-white">${(o.amount || 0).toFixed(2)}</td>
-                         <td className="py-2.5 pr-2 text-right text-neon-pink">-${(o.commissionAmt || 0).toFixed(2)}</td>
-                         <td className="py-2.5 pr-2 text-right text-amber-400">-${(o.gstAmt || 0).toFixed(2)}</td>
-                         <td className="py-2.5 pr-2 text-right text-purple-400">-${(o.closingFee || 0).toFixed(2)}</td>
-                         <td className="py-2.5 pr-2 text-right text-neon-pink/70">-${(o.paymentFeeAmt || 0).toFixed(2)}</td>
-                         <td className="py-2.5 text-right font-black text-emerald-400">${(o.netAmount || 0).toFixed(2)}</td>
+                         <td className="py-2.5 pr-2 text-right font-bold text-white">{formatPrice(o.amount || 0, selectedCurrency)}</td>
+                         <td className="py-2.5 pr-2 text-right text-neon-pink">-{formatPrice(o.commissionAmt || 0, selectedCurrency)}</td>
+                         <td className="py-2.5 pr-2 text-right text-amber-400">-{formatPrice(o.gstAmt || 0, selectedCurrency)}</td>
+                         <td className="py-2.5 pr-2 text-right text-purple-400">-{formatPrice(o.closingFee || 0, selectedCurrency)}</td>
+                         <td className="py-2.5 pr-2 text-right text-neon-pink/70">-{formatPrice(o.paymentFeeAmt || 0, selectedCurrency)}</td>
+                         <td className="py-2.5 text-right font-black text-emerald-400">{formatPrice(o.netAmount || 0, selectedCurrency)}</td>
                        </tr>
                      ))}
                    </tbody>

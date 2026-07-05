@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Zap, Clock, Loader2 } from 'lucide-react'
+import { useStore, formatPrice } from '@/store/marketplace'
 
 interface FlashDeal {
   id: string
@@ -14,6 +15,7 @@ interface FlashDeal {
 export default function FlashDealsBanner() {
   const [deals, setDeals] = useState<FlashDeal[]>([])
   const [loading, setLoading] = useState(true)
+  const { selectedCurrency } = useStore()
 
   useEffect(() => {
     fetch('/api/flash-deals/active')
@@ -38,7 +40,7 @@ export default function FlashDealsBanner() {
             className="shrink-0 bg-white/5 rounded-2xl border border-white/10 p-3 hover:border-neon-pink/50 hover:bg-white/10 transition-all min-w-[160px]">
             <p className="text-sm font-medium text-white truncate">{d.prompt.title}</p>
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-xs text-white/40 line-through">${d.prompt.price.toFixed(2)}</span>
+              <span className="text-xs text-white/40 line-through">{formatPrice(d.prompt.price, selectedCurrency)}</span>
               <span className="text-xs font-bold text-neon-pink">{d.discount}% OFF</span>
             </div>
           </Link>

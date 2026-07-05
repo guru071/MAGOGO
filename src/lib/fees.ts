@@ -28,7 +28,7 @@ export const DEFAULT_FEE_CONFIG: FeeConfig = {
   gstRate: 18,
   closingFee: 0.50,
   paymentFeeRate: 2.5,
-  minCommission: 0,
+  minCommission: 0.05,
   maxCommission: 0,
   enabled: true,
 }
@@ -87,16 +87,30 @@ export function calculateFees(
   if (config.minCommission > 0 && commissionAmt < config.minCommission) commissionAmt = config.minCommission
   if (config.maxCommission > 0 && commissionAmt > config.maxCommission) commissionAmt = config.maxCommission
 
-  const closingFee = config.closingFee
-  const paymentFeeAmt = amount * (config.paymentFeeRate / 100)
+  let closingFee = config.closingFee
+  let paymentFeeAmt = amount * (config.paymentFeeRate / 100)
 
   // GST is applicable on the service fees (commission + closing fee + payment fee) in India
-  const taxableFees = commissionAmt + closingFee + paymentFeeAmt
-  const gstAmt = taxableFees * (config.gstRate / 100)
+  let taxableFees = commissionAmt + closingFee + paymentFeeAmt
+  let gstAmt = taxableFees * (config.gstRate / 100)
 
-  const totalFees = commissionAmt + closingFee + paymentFeeAmt + gstAmt
+  let totalFees = commissionAmt + closingFee + paymentFeeAmt + gstAmt
   let netAmount = amount - totalFees
-  if (netAmount < 0) netAmount = 0
+  
+  if (netAmount < 0) {
+    netAmount = 0
+    totalFees = amount
+    
+    // Proportionally scale down fee components so they sum to totalFees (which equals amount)
+    const rawTotal = commissionAmt + closingFee + paymentFeeAmt + gstAmt
+    if (rawTotal > 0) {
+      const ratio = amount / rawTotal
+      commissionAmt *= ratio
+      closingFee *= ratio
+      paymentFeeAmt *= ratio
+      gstAmt *= ratio
+    }
+  }
 
   return {
     grossAmount: amount,
