@@ -17,21 +17,21 @@ import {
 import { toast } from 'sonner'
 import dynamic from 'next/dynamic'
 
-const AreaChart = dynamic(() => import('recharts').then(m => m.AreaChart), { ssr: false })
-const Area = dynamic(() => import('recharts').then(m => m.Area), { ssr: false })
-const BarChart = dynamic(() => import('recharts').then(m => m.BarChart), { ssr: false })
-const Bar = dynamic(() => import('recharts').then(m => m.Bar), { ssr: false })
-const ComposedChart = dynamic(() => import('recharts').then(m => m.ComposedChart), { ssr: false })
-const Line = dynamic(() => import('recharts').then(m => m.Line), { ssr: false })
-const XAxis = dynamic(() => import('recharts').then(m => m.XAxis), { ssr: false })
-const YAxis = dynamic(() => import('recharts').then(m => m.YAxis), { ssr: false })
-const RTooltip = dynamic(() => import('recharts').then(m => m.Tooltip), { ssr: false })
-const ResponsiveContainer = dynamic(() => import('recharts').then(m => m.ResponsiveContainer), { ssr: false })
-const CartesianGrid = dynamic(() => import('recharts').then(m => m.CartesianGrid), { ssr: false })
-const PieChart = dynamic(() => import('recharts').then(m => m.PieChart), { ssr: false })
-const Pie = dynamic(() => import('recharts').then(m => m.Pie), { ssr: false })
-const Cell = dynamic(() => import('recharts').then(m => m.Cell), { ssr: false })
-const Legend = dynamic(() => import('recharts').then(m => m.Legend), { ssr: false })
+const AreaChart = dynamic(() => import('recharts').then(m => m.AreaChart as any), { ssr: false }) as any
+const Area = dynamic(() => import('recharts').then(m => m.Area as any), { ssr: false }) as any
+const BarChart = dynamic(() => import('recharts').then(m => m.BarChart as any), { ssr: false }) as any
+const Bar = dynamic(() => import('recharts').then(m => m.Bar as any), { ssr: false }) as any
+const ComposedChart = dynamic(() => import('recharts').then(m => m.ComposedChart as any), { ssr: false }) as any
+const Line = dynamic(() => import('recharts').then(m => m.Line as any), { ssr: false }) as any
+const XAxis = dynamic(() => import('recharts').then(m => m.XAxis as any), { ssr: false }) as any
+const YAxis = dynamic(() => import('recharts').then(m => m.YAxis as any), { ssr: false }) as any
+const RTooltip = dynamic(() => import('recharts').then(m => m.Tooltip as any), { ssr: false }) as any
+const ResponsiveContainer = dynamic(() => import('recharts').then(m => m.ResponsiveContainer as any), { ssr: false }) as any
+const CartesianGrid = dynamic(() => import('recharts').then(m => m.CartesianGrid as any), { ssr: false }) as any
+const PieChart = dynamic(() => import('recharts').then(m => m.PieChart as any), { ssr: false }) as any
+const Pie = dynamic(() => import('recharts').then(m => m.Pie as any), { ssr: false }) as any
+const Cell = dynamic(() => import('recharts').then(m => m.Cell as any), { ssr: false }) as any
+const Legend = dynamic(() => import('recharts').then(m => m.Legend as any), { ssr: false }) as any
 
 import { SellerOnboarding } from '@/components/SellerOnboarding'
 

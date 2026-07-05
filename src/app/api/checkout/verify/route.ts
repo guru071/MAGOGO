@@ -7,7 +7,7 @@ import { getFeeConfig, calculateFees } from '@/lib/fees';
 export async function POST(req: NextRequest) {
   try {
     const user = await getCurrentUser();
-    if (!user) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    if (!user || !user.id) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
 
     const { razorpayOrderId, razorpayPaymentId, razorpaySignature, promptIds, couponCode, currency } = await req.json();
 
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     }
 
     const feeConfig = await getFeeConfig();
-    const processedOrders = [];
+    const processedOrders: any[] = [];
 
     // Process orders inside a transaction
     const result = await db.$transaction(async (tx) => {
