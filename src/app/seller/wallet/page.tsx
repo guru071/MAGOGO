@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useStore } from '@/store/marketplace'
+import { enableRazorpayProtections, disableRazorpayProtections } from '@/lib/razorpay-client'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -68,6 +69,7 @@ export default function SellerWalletPage() {
         description: 'Wallet Top-up',
         order_id: data.orderId,
         handler: async function (response: any) {
+          disableRazorpayProtections();
           const verifyRes = await fetch('/api/razorpay/wallet-verify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -93,13 +95,22 @@ export default function SellerWalletPage() {
           name: user?.name,
           email: user?.email,
         },
-        theme: { color: '#0066CC' }
+        theme: { color: '#0066CC' },
+        modal: {
+          ondismiss: function() {
+            disableRazorpayProtections();
+            setProcessing(false);
+          }
+        }
       }
 
       const rzp = new (window as any).Razorpay(options)
       rzp.on('payment.failed', function (response: any) {
+        disableRazorpayProtections();
         toast.error(response.error.description || 'Payment failed')
+        setProcessing(false);
       })
+      enableRazorpayProtections();
       rzp.open()
 
     } catch (e: any) {

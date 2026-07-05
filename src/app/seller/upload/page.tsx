@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { enableRazorpayProtections, disableRazorpayProtections } from '@/lib/razorpay-client'
 import { useStore } from '@/store/marketplace'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -161,6 +162,7 @@ export default function UploadPromptPage() {
           description: 'Prompt Listing Fee',
           order_id: feeData.orderId,
           handler: async function (response: any) {
+            disableRazorpayProtections();
             await submitToAPI(imageUrl, {
               razorpayPaymentId: response.razorpay_payment_id,
               razorpayOrderId: response.razorpay_order_id,
@@ -169,14 +171,22 @@ export default function UploadPromptPage() {
             setLoading(false)
           },
           prefill: { name: user?.name, email: user?.email },
-          theme: { color: '#0066CC' }
+          theme: { color: '#0066CC' },
+          modal: {
+            ondismiss: function() {
+              disableRazorpayProtections();
+              setLoading(false);
+            }
+          }
         }
         
         const rzp = new (window as any).Razorpay(options)
         rzp.on('payment.failed', function (response: any) {
+          disableRazorpayProtections();
           toast.error(response.error.description || 'Payment failed')
           setLoading(false)
         })
+        enableRazorpayProtections();
         rzp.open()
         return // exit function, submitToAPI will run in handler
       } catch (e: any) {

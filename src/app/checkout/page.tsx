@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { enableRazorpayProtections, disableRazorpayProtections } from '@/lib/razorpay-client'
 import { useStore, formatPrice, CURRENCIES, PAYMENT_METHODS } from '@/store/marketplace'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -95,6 +96,7 @@ export default function CheckoutPage() {
               })
             })
             const verifyJson = await verifyRes.json()
+            disableRazorpayProtections();
             if (!verifyJson.success) {
               toast.error(verifyJson.error || 'Payment verification failed')
               setLoading(false)
@@ -108,13 +110,21 @@ export default function CheckoutPage() {
             name: user.name || '',
             email: user.email || '',
           },
-          theme: { color: '#0066CC' }
+          theme: { color: '#0066CC' },
+          modal: {
+            ondismiss: function() {
+              disableRazorpayProtections();
+              setLoading(false);
+            }
+          }
         };
         const rzp = new (window as any).Razorpay(options);
         rzp.on('payment.failed', function (response: any) {
+          disableRazorpayProtections();
           toast.error(response.error.description || 'Payment failed');
           setLoading(false);
         });
+        enableRazorpayProtections();
         rzp.open();
         return;
       }
