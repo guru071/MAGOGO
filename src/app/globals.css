@@ -44,112 +44,295 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --color-maghgo-blue: #0066CC;
-  --color-maghgo-orange: #FF6600;
-  --color-neon-blue: #00d2ff;
-  --color-neon-purple: #3a7bd5;
-  --color-neon-pink: #ff0080;
+  --color-brand-blue: #2874F0;
+  --color-brand-orange: #FF9F00;
+  --color-brand-green: #388E3C;
+  --color-neon-blue: #2874F0;
+  --color-neon-purple: #2874F0;
+  --color-neon-pink: #FF9F00;
 }
 
-:root, .dark {
-  --radius: 1rem;
-  /* Deep Space Background (Dark) */
-  --background: oklch(0.12 0.02 260); 
-  --foreground: oklch(0.98 0.01 260);
-  --card: oklch(0.15 0.03 260 / 40%);
-  --card-foreground: oklch(0.98 0.01 260);
-  --popover: oklch(0.15 0.03 260 / 60%);
-  --popover-foreground: oklch(0.98 0.01 260);
-  
-  --glass-panel: rgba(0, 0, 0, 0.4);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --muted-text: rgba(255, 255, 255, 0.5);
-  
-  --primary: oklch(0.98 0.01 260);
-  --primary-foreground: oklch(0.20 0.02 260);
-  --secondary: oklch(0.20 0.02 260);
-  --secondary-foreground: oklch(0.98 0.01 260);
-  --muted: oklch(0.20 0.02 260);
-  --muted-foreground: oklch(0.65 0.01 260);
-  --accent: oklch(0.20 0.02 260);
-  --accent-foreground: oklch(0.98 0.01 260);
-  --destructive: oklch(0.40 0.1 20);
-  --destructive-foreground: oklch(0.98 0.01 260);
-  --border: oklch(0.20 0.02 260);
-  --input: oklch(0.20 0.02 260);
-  --ring: oklch(0.80 0.01 260);
+:root {
+  --radius: 0.5rem;
+  --background: #F1F3F6;
+  --foreground: #212121;
+  --card: #FFFFFF;
+  --card-foreground: #212121;
+  --popover: #FFFFFF;
+  --popover-foreground: #212121;
+  --glass-panel: rgba(255, 255, 255, 0.95);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --muted-text: #878787;
+  --primary: #2874F0;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F1F3F6;
+  --secondary-foreground: #212121;
+  --muted: #F1F3F6;
+  --muted-foreground: #878787;
+  --accent: #FF9F00;
+  --accent-foreground: #FFFFFF;
+  --destructive: #E53935;
+  --destructive-foreground: #FFFFFF;
+  --border: #F0F0F0;
+  --input: #E0E0E0;
+  --ring: #2874F0;
+  --chart-1: #2874F0;
+  --chart-2: #FF9F00;
+  --chart-3: #388E3C;
+  --chart-4: #FB641B;
+  --chart-5: #7B1FA2;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #212121;
+  --sidebar-primary: #2874F0;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F1F3F6;
+  --sidebar-accent-foreground: #212121;
+  --sidebar-border: #F0F0F0;
+  --sidebar-ring: #2874F0;
+}
 
-  --glass-panel: rgba(0, 0, 0, 0.4);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --muted-text: rgba(255, 255, 255, 0.5);
-  
-  --primary: oklch(0.65 0.2 260);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.25 0.1 290);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.2 0.05 260);
-  --muted-foreground: oklch(0.7 0.05 260);
-  --accent: oklch(0.6 0.25 320); /* Neon Pink */
-  --accent-foreground: oklch(0.985 0 0);
-  
-  --destructive: oklch(0.6 0.25 25);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.65 0.2 260);
-  
-  --chart-1: oklch(0.65 0.2 260);
-  --chart-2: oklch(0.6 0.25 320);
-  --chart-3: oklch(0.7 0.2 200);
-  --chart-4: oklch(0.75 0.2 150);
-  --chart-5: oklch(0.8 0.2 100);
-  
-  --sidebar: oklch(0.15 0.03 260 / 40%);
-  --sidebar-foreground: oklch(0.98 0.01 260);
-  --sidebar-primary: oklch(0.65 0.2 260);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.25 0.1 290);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.65 0.2 260);
+.dark {
+  --background: #0D0D0D;
+  --foreground: #F5F5F5;
+  --card: #1A1A1A;
+  --card-foreground: #F5F5F5;
+  --popover: #1A1A1A;
+  --popover-foreground: #F5F5F5;
+  --primary: #2874F0;
+  --primary-foreground: #FFFFFF;
+  --secondary: #2D2D2D;
+  --secondary-foreground: #F5F5F5;
+  --muted: #2D2D2D;
+  --muted-foreground: #9E9E9E;
+  --accent: #FF9F00;
+  --accent-foreground: #FFFFFF;
+  --destructive: #CF6679;
+  --destructive-foreground: #000000;
+  --border: #333333;
+  --input: #333333;
+  --ring: #2874F0;
+  --sidebar: #1A1A1A;
+  --sidebar-foreground: #F5F5F5;
+  --sidebar-primary: #2874F0;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #2D2D2D;
+  --sidebar-accent-foreground: #F5F5F5;
+  --sidebar-border: #333333;
+  --sidebar-ring: #2874F0;
 }
 
 @layer utilities {
-  /* iOS Liquid Glass Effect */
-  .glass-panel {
-    @apply bg-white/5 backdrop-blur-3xl backdrop-saturate-[150%] border border-white/20 border-t-white/30 border-l-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.4)];
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), inset 0 -1px 2px rgba(0, 0, 0, 0.2);
-  }
-  
-  .glass-panel-heavy {
-    @apply bg-black/40 backdrop-blur-[40px] backdrop-saturate-[200%] border border-white/10 border-t-white/20 shadow-[0_12px_40px_0_rgba(0,0,0,0.6)];
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), inset 0 -1px 3px rgba(0, 0, 0, 0.4);
+  .flipkart-header {
+    background: #2874F0;
+    color: white;
   }
 
-  .liquid-glass {
-    @apply bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-[50px] backdrop-saturate-[200%] border border-white/20 border-t-white/40 shadow-[0_8px_30px_rgba(0,0,0,0.5)];
-    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), inset 0 -2px 5px rgba(0, 0, 0, 0.3);
+  .flipkart-card {
+    background: white;
+    border: 1px solid #F0F0F0;
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
   }
 
-  .neon-glow {
-    box-shadow: 0 0 15px var(--color-neon-blue), 0 0 30px var(--color-neon-purple);
+  .flipkart-card:hover {
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px);
   }
-  
-  .neon-border {
-    position: relative;
+
+  .flipkart-price {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #212121;
   }
-  .neon-border::before {
-    content: '';
-    position: absolute;
-    top: -2px; left: -2px; right: -2px; bottom: -2px;
-    background: linear-gradient(45deg, var(--color-neon-blue), var(--color-neon-purple), var(--color-neon-pink));
-    z-index: -1;
-    border-radius: inherit;
-    opacity: 0;
-    transition: opacity 0.3s ease;
+
+  .flipkart-original-price {
+    color: #878787;
+    text-decoration: line-through;
+    font-size: 0.875rem;
+    margin-left: 0.5rem;
   }
-  .neon-border:hover::before {
-    opacity: 1;
-    animation: pulse-glow 2s infinite;
+
+  .flipkart-discount {
+    color: #388E3C;
+    font-weight: 500;
+    font-size: 0.8125rem;
+    margin-left: 0.5rem;
+  }
+
+  .flipkart-rating {
+    background: #388E3C;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .flipkart-btn-primary {
+    background: #FF9F00;
+    color: white;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border-radius: 0.375rem;
+    padding: 0.5rem 1.5rem;
+    transition: background 0.15s ease;
+  }
+
+  .flipkart-btn-primary:hover {
+    background: #FB641B;
+  }
+
+  .flipkart-btn-secondary {
+    background: #2874F0;
+    color: white;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border-radius: 0.375rem;
+    padding: 0.5rem 1.5rem;
+    transition: background 0.15s ease;
+  }
+
+  .flipkart-btn-secondary:hover {
+    background: #1a5dc7;
+  }
+
+  .flipkart-section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #212121;
+    padding: 1rem 0;
+  }
+
+  .flipkart-badge-free {
+    background: #388E3C;
+    color: white;
+    font-size: 0.625rem;
+    font-weight: 600;
+    padding: 0.125rem 0.375rem;
+    border-radius: 2px;
+  }
+
+  .flipkart-badge-discount {
+    background: #FF9F00;
+    color: white;
+    font-size: 0.625rem;
+    font-weight: 600;
+    padding: 0.125rem 0.375rem;
+    border-radius: 2px;
+  }
+
+  .flipkart-nav-link {
+    color: white;
+    font-weight: 500;
+    font-size: 0.8125rem;
+    transition: opacity 0.15s;
+  }
+
+  .flipkart-nav-link:hover {
+    opacity: 0.9;
+  }
+
+  .flipkart-search-input {
+    border: none;
+    border-radius: 0.25rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    width: 100%;
+    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  .flipkart-search-input:focus {
+    outline: none;
+    box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.15);
+  }
+
+  .flipkart-badge-count {
+    background: #FF6161;
+    color: white;
+    font-size: 0.625rem;
+    font-weight: 700;
+    border-radius: 9999px;
+    min-width: 1rem;
+    height: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.25rem;
+  }
+
+  .flipkart-filter-sidebar {
+    background: white;
+    border: 1px solid #F0F0F0;
+    border-radius: 0.375rem;
+    padding: 1rem;
+  }
+
+  .flipkart-breadcrumb {
+    color: #878787;
+    font-size: 0.75rem;
+  }
+
+  .flipkart-breadcrumb a {
+    color: #2874F0;
+  }
+
+  /* Category circle like Flipkart */
+  .flipkart-category-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: transform 0.15s;
+  }
+
+  .flipkart-category-item:hover {
+    transform: scale(1.05);
+  }
+
+  .flipkart-category-icon {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    border: 1px solid #F0F0F0;
+    background: white;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+
+  .flipkart-category-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #212121;
+    text-align: center;
+  }
+
+  /* Tabs for browse/product pages */
+  .flipkart-tab {
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #878787;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .flipkart-tab.active {
+    color: #2874F0;
+    border-bottom-color: #2874F0;
+  }
+
+  .flipkart-tab:hover {
+    color: #2874F0;
   }
 }
 
@@ -159,57 +342,45 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   }
 }
 
-/* Custom scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: oklch(0.7 0 0); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: oklch(0.5 0 0); }
+::-webkit-scrollbar-thumb { background: #C4C4C4; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #878787; }
 
-/* Hide scrollbar for category bar */
 .hide-scrollbar::-webkit-scrollbar { display: none; }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* MAGHGO gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #0066CC, #FF6600);
+  background: linear-gradient(135deg, #2874F0, #FF9F00);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* MAGHGO brand gradient background */
-.maghgo-gradient {
-  background: linear-gradient(135deg, #0066CC 0%, #004C99 50%, #003366 100%);
-}
-
-.maghgo-gradient-accent {
-  background: linear-gradient(135deg, #0066CC, #FF6600);
-}
-
-/* Prompt card hover */
 .prompt-card-hover {
   transition: all 0.2s ease;
 }
+
 .prompt-card-hover:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 24px rgba(0,0,0,0.1);
 }
 
-/* Shimmer loading */
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
+
 .shimmer {
-  background: linear-gradient(90deg, oklch(0.95 0 0) 25%, oklch(0.98 0 0) 50%, oklch(0.95 0 0) 75%);
+  background: linear-gradient(90deg, #F5F5F5 25%, #EEEEEE 50%, #F5F5F5 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
 
-/* Line clamp */
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -229,4 +400,18 @@
   -webkit-line-clamp: 6;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}@source "../";
+}
+
+.liquid-glass,
+.glass-panel,
+.glass-panel-heavy,
+.neon-border,
+.neon-glow {
+  /* reset to flipkart-card equivalent */
+  background: white;
+  border: 1px solid #F0F0F0;
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.08);
+}
+
+@source "../";

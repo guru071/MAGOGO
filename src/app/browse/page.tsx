@@ -2,22 +2,19 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useStore, formatPrice } from '@/store/marketplace'
-import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Slider } from '@/components/ui/slider'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Loader2, Search, X, ChevronLeft, ChevronRight, Sparkles, Star, Filter, RotateCcw, Heart, ShoppingCart, Eye, Download } from 'lucide-react'
+import { Loader2, Search, X, ChevronLeft, ChevronRight, Sparkles, Star, RotateCcw, Heart, ShoppingCart, SlidersHorizontal } from 'lucide-react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { toast } from 'sonner'
 
-const getCoverImage = (prompt: any) => {
+const getCoverImage = (prompt: { sampleImages?: string | string[] }) => {
   try {
     const images = typeof prompt.sampleImages === 'string' ? JSON.parse(prompt.sampleImages) : prompt.sampleImages;
     return images && images.length > 0 ? images[0] : null;
-  } catch (e) {
+  } catch {
     return null;
   }
 };
@@ -39,9 +36,9 @@ interface SearchResult {
 
 export default function BrowsePage() {
   const {
-    categories, fetchCategories, user,
-    toggleLike, toggleWishlist, addToCart, cart,
-    likedPromptIds, wishlistedPromptIds, searchQuery,
+    categories, fetchCategories,
+    toggleWishlist, addToCart, cart,
+    wishlistedPromptIds, searchQuery, selectedCurrency,
   } = useStore()
 
   const [showMobileFilters, setShowMobileFilters] = useState(false)
@@ -55,33 +52,33 @@ export default function BrowsePage() {
   const [localPrompts, setLocalPrompts] = useState<any[]>([])
   const [localTotal, setLocalTotal] = useState(0)
   const [localTotalPages, setLocalTotalPages] = useState(1)
-
   useEffect(() => {
     fetchCategories()
-  }, [])
+  }, [fetchCategories])
 
   useEffect(() => {
+    if (categories.length === 0) return
     const params = new URLSearchParams(window.location.search)
     const catParam = params.get('category')
     const sortParam = params.get('sort')
     const qParam = params.get('q')
 
-    if (categories.length > 0 && catParam) {
+    if (catParam) {
       const match = categories.find(c => c.slug === catParam || c.id === catParam)
       if (match && selectedCategories.length === 0) {
-        setSelectedCategories([match.id])
+        queueMicrotask(() => setSelectedCategories([match.id]))
       }
     }
 
     if (sortParam && sortBy === 'relevance') {
-      if (sortParam === 'popular') setSortBy('relevance')
-      else if (sortParam === 'newest') setSortBy('newest')
+      if (sortParam === 'popular') queueMicrotask(() => setSortBy('relevance'))
+      else if (sortParam === 'newest') queueMicrotask(() => setSortBy('newest'))
     }
 
     if (qParam && !searchQuery) {
-      useStore.getState().setSearchQuery(qParam)
+      queueMicrotask(() => useStore.getState().setSearchQuery(qParam))
     }
-  }, [categories])
+  }, [categories, searchQuery, selectedCategories, sortBy])
 
   const buildParams = useCallback((overridePage?: number) => {
     const params = new URLSearchParams()
@@ -115,7 +112,7 @@ export default function BrowsePage() {
         setLocalTotalPages(d.totalPages)
         if (overridePage) setLocalPage(overridePage)
       }
-    } catch (e) {
+    } catch {
       toast.error('Search failed')
     } finally {
       setLocalLoading(false)
@@ -123,17 +120,12 @@ export default function BrowsePage() {
   }, [buildParams])
 
   useEffect(() => {
-    performSearch(1)
-  }, [searchQuery, sortBy, selectedCategories, selectedPriceRange, minRatingFilter])
+    queueMicrotask(() => performSearch(1))
+  }, [searchQuery, sortBy, selectedCategories, selectedPriceRange, minRatingFilter, performSearch])
 
   const goToPage = (p: number) => {
     if (p < 1 || p > localTotalPages) return
     performSearch(p)
-  }
-
-  const handleLike = async (id: string, e: React.MouseEvent) => {
-    e.preventDefault()
-    await toggleLike(id)
   }
 
   const handleWishlist = async (id: string, e: React.MouseEvent) => {
@@ -171,320 +163,340 @@ export default function BrowsePage() {
   const displayPage = localPage
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 relative z-10">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight flex items-center gap-3 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">
-            <Sparkles className="h-8 w-8 text-neon-blue animate-pulse" /> Explore Prompts
-          </h1>
-          <p className="text-sm font-medium text-white/60 mt-2 flex items-center gap-2">
-            {localLoading ? (
-              <><Loader2 className="h-3.5 w-3.5 animate-spin text-neon-blue" /> Searching universe...</>
-            ) : (
-              `Showing ${displayPrompts.length} of ${displayTotal} results in ecosystem`
-            )}
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          {activeFilterCount > 0 && (
-            <Button variant="ghost" size="sm" onClick={clearFilters} className="text-white/60 hover:text-neon-pink hover:bg-white/5 rounded-full">
-              <RotateCcw className="h-3.5 w-3.5 mr-1" /> Clear
-            </Button>
-          )}
-          <Button variant="outline" size="sm" className="lg:hidden glass-panel border-white/20 text-white hover:bg-white/10 rounded-full" onClick={() => setShowMobileFilters(!showMobileFilters)}>
-            <Filter className="h-4 w-4 mr-2" /> Filters{activeFilterCount > 0 && ` (${activeFilterCount})`}
-          </Button>
+    <div className="bg-[#F1F3F6] min-h-screen">
+      {/* Breadcrumb */}
+      <div className="bg-white border-b border-[#F0F0F0]">
+        <div className="max-w-7xl mx-auto px-4 py-2 flex items-center gap-2 text-xs text-[#878787]">
+          <Link href="/" className="text-[#2874F0] hover:text-[#1a5dc7]">Home</Link>
+          <span>/</span>
+          <span className="text-[#212121]">Browse Prompts</span>
         </div>
       </div>
 
-      {/* Spelling suggestion banner */}
-      {searchResults?.suggestion && (
-        <div className="mb-6 p-4 glass-panel border-neon-blue/30 rounded-2xl flex items-center gap-3 text-sm text-neon-blue shadow-[0_0_15px_rgba(0,210,255,0.1)]">
-          <Sparkles className="h-5 w-5 animate-pulse shrink-0" />
-          <span>Did you mean: </span>
-          <Link
-            href={`/browse?q=${encodeURIComponent(searchResults.suggestion)}`}
-            className="font-bold underline underline-offset-4 hover:text-white transition-colors"
-            onClick={(e) => {
-              e.preventDefault()
-              useStore.getState().setSearchQuery(searchResults.suggestion!)
-              performSearch(1)
-            }}
-          >
-            {searchResults.suggestion}
-          </Link>
-          ?
-        </div>
-      )}
-
-      <div className="flex gap-6">
-        {/* Sidebar Filters */}
-        <aside className={`${showMobileFilters ? 'fixed inset-0 z-50 glass-panel-heavy bg-black/80 p-6 overflow-auto backdrop-blur-2xl' : 'hidden'} lg:block lg:w-64 shrink-0`}>
-          {showMobileFilters && (
-            <div className="flex items-center justify-between mb-6 lg:hidden">
-              <h3 className="font-extrabold text-xl text-white">Filters</h3>
-              <div className="flex items-center gap-2">
-                {activeFilterCount > 0 && (
-                  <Button variant="ghost" size="sm" onClick={clearFilters} className="text-xs text-neon-pink hover:bg-neon-pink/10 rounded-full">
-                    <RotateCcw className="h-3 w-3 mr-1" /> Clear
-                  </Button>
-                )}
-                <Button variant="ghost" size="icon" onClick={() => setShowMobileFilters(false)} className="text-white hover:bg-white/10 rounded-full">
-                  <X className="h-5 w-5" />
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {/* Active filter badges */}
-          {activeFilterCount > 0 && (
-            <div className="flex flex-wrap gap-2 mb-6">
-              {selectedCategories.map(catId => {
-                const cat = categories.find(c => c.id === catId)
-                return cat ? (
-                  <Badge key={catId} variant="outline" className="flex items-center gap-1.5 text-xs bg-white/5 border-white/20 text-white backdrop-blur-md rounded-full py-1">
-                    {cat.name}
-                    <button onClick={() => toggleCategory(catId)} className="hover:text-neon-pink transition-colors"><X className="h-3 w-3" /></button>
-                  </Badge>
-                ) : null
-              })}
-              {selectedPriceRange && (
-                <Badge variant="outline" className="flex items-center gap-1.5 text-xs bg-white/5 border-white/20 text-white backdrop-blur-md rounded-full py-1">
-                  {selectedPriceRange}
-                  <button onClick={() => setSelectedPriceRange('')} className="hover:text-neon-pink transition-colors"><X className="h-3 w-3" /></button>
-                </Badge>
-              )}
-              {minRatingFilter > 0 && (
-                <Badge variant="outline" className="flex items-center gap-1.5 text-xs bg-white/5 border-white/20 text-white backdrop-blur-md rounded-full py-1">
-                  <Star className="h-3 w-3 text-neon-blue fill-neon-blue" /> {minRatingFilter}+
-                  <button onClick={() => setMinRatingFilter(0)} className="hover:text-neon-pink transition-colors"><X className="h-3 w-3" /></button>
-                </Badge>
-              )}
-            </div>
-          )}
-
-          <div className="space-y-8">
-            {/* Categories */}
-            <div>
-              <h4 className="font-semibold text-white mb-4">Categories</h4>
-              <div className="flex flex-col gap-2 max-h-72 overflow-y-auto pr-2 custom-scrollbar">
-                {categories.map(cat => {
-                  const facetCount = searchResults?.facets.categories.find(c => c.id === cat.id)?.count
-                  return (
-                    <label key={cat.id} className="flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-white/10 cursor-pointer text-sm transition-colors group">
-                      <Checkbox
-                        checked={selectedCategories.includes(cat.id)}
-                        onCheckedChange={() => toggleCategory(cat.id)}
-                        className="border-white/30 data-[state=checked]:bg-neon-blue data-[state=checked]:border-neon-blue"
-                      />
-                      <span className="flex-1 text-white/80 group-hover:text-white transition-colors">{cat.name}</span>
-                      <span className="text-[10px] text-white/40 bg-white/5 px-1.5 py-0.5 rounded-full">{facetCount || 0}</span>
-                    </label>
-                  )
-                })}
-              </div>
-            </div>
-
-            {/* Price Range */}
-            <div>
-              <h4 className="font-semibold text-white mb-4">Price Range</h4>
-              <div className="flex flex-col gap-2">
-                {searchResults?.facets.priceRanges.map(range => (
-                  <label key={range.label} className="flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-white/10 cursor-pointer text-sm transition-colors group">
-                    <input
-                      type="radio"
-                      name="priceRange"
-                      checked={selectedPriceRange === range.label}
-                      onChange={() => setSelectedPriceRange(range.label)}
-                      className="text-neon-blue bg-white/5 border-white/20 focus:ring-neon-blue focus:ring-offset-black"
-                    />
-                    <span className="flex-1 text-white/80 group-hover:text-white transition-colors">{range.label}</span>
-                    <span className="text-[10px] text-white/40 bg-white/5 px-1.5 py-0.5 rounded-full">{range.count}</span>
-                  </label>
-                ))}
-                {selectedPriceRange && (
-                  <button onClick={() => setSelectedPriceRange('')} className="text-xs text-neon-pink text-left mt-2 hover:underline px-2">
-                    Clear price filter
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Min Rating */}
-            <div>
-              <h4 className="font-semibold text-white mb-4">Minimum Rating</h4>
-              <div className="flex items-center gap-3 px-2">
-                <Slider
-                  value={[minRatingFilter]}
-                  onValueChange={([v]) => setMinRatingFilter(v)}
-                  min={0}
-                  max={5}
-                  step={0.5}
-                  className="flex-1"
-                />
-                <span className="text-sm font-bold text-neon-blue w-10 text-right">
-                  {minRatingFilter > 0 ? minRatingFilter.toFixed(1) : 'Any'}
-                </span>
-              </div>
-              <div className="flex items-center gap-1 mt-3 px-2">
-                {[1, 2, 3, 4, 5].map(star => (
-                  <button key={star} onClick={() => setMinRatingFilter(star === minRatingFilter ? 0 : star)} className="hover:scale-110 transition-transform">
-                    <Star className={`h-5 w-5 ${star <= minRatingFilter ? 'fill-neon-blue text-neon-blue drop-shadow-[0_0_5px_rgba(0,210,255,0.8)]' : 'text-white/20'}`} />
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Sort */}
-            <div>
-              <h4 className="font-semibold text-white mb-4">Sort By</h4>
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="bg-white/5 border-white/10 text-white rounded-xl focus:ring-neon-blue focus:border-neon-blue h-12">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="glass-panel-heavy bg-black/80 border-white/10 text-white rounded-xl">
-                  <SelectItem value="relevance" className="focus:bg-white/10 focus:text-white cursor-pointer">Relevance</SelectItem>
-                  <SelectItem value="price_asc" className="focus:bg-white/10 focus:text-white cursor-pointer">Price: Low to High</SelectItem>
-                  <SelectItem value="price_desc" className="focus:bg-white/10 focus:text-white cursor-pointer">Price: High to Low</SelectItem>
-                  <SelectItem value="rating" className="focus:bg-white/10 focus:text-white cursor-pointer">Highest Rated</SelectItem>
-                  <SelectItem value="newest" className="focus:bg-white/10 focus:text-white cursor-pointer">Newest</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <Button onClick={() => { performSearch(1); setShowMobileFilters(false) }} className="w-full bg-gradient-to-r from-neon-blue to-neon-purple text-white font-bold rounded-full h-12 shadow-[0_0_15px_rgba(0,210,255,0.3)] hover:shadow-[0_0_25px_rgba(0,210,255,0.5)] transition-all">
-              Apply Filters
-            </Button>
+      <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-xl font-semibold text-[#212121]">Browse Prompts</h1>
+            <p className="text-xs text-[#878787] mt-0.5">
+              {localLoading ? 'Searching...' : `${displayTotal} results`}
+              {searchQuery && ` for "${searchQuery}"`}
+            </p>
           </div>
-        </aside>
+          <div className="flex items-center gap-3">
+            {activeFilterCount > 0 && (
+              <button onClick={clearFilters} className="text-xs text-[#2874F0] hover:text-[#1a5dc7] font-medium flex items-center gap-1 cursor-pointer">
+                <RotateCcw className="h-3 w-3" /> Clear All
+              </button>
+            )}
+            <button onClick={() => setShowMobileFilters(true)} className="lg:hidden flex items-center gap-1.5 text-sm text-[#2874F0] font-medium cursor-pointer">
+              <SlidersHorizontal className="h-4 w-4" /> Filters{activeFilterCount > 0 && ` (${activeFilterCount})`}
+            </button>
+          </div>
+        </div>
 
-        {/* Prompt Grid */}
-        <div className="flex-1">
-          {localLoading ? (
-            <div className="flex items-center justify-center py-24">
-              <Loader2 className="h-10 w-10 animate-spin text-neon-blue drop-shadow-[0_0_10px_rgba(0,210,255,0.8)]" />
+        {/* Spelling suggestion */}
+        {searchResults?.suggestion && (
+          <div className="mb-4 p-3 bg-[#FFF8E1] border border-[#FFE082] rounded-sm flex items-center gap-2 text-sm">
+            <Sparkles className="h-4 w-4 text-[#FF9F00] shrink-0" />
+            <span className="text-[#212121]">Did you mean: </span>
+            <Link
+              href={`/browse?q=${encodeURIComponent(searchResults.suggestion)}`}
+              className="font-medium text-[#2874F0] hover:underline"
+              onClick={(e) => {
+                e.preventDefault()
+                useStore.getState().setSearchQuery(searchResults.suggestion!)
+                performSearch(1)
+              }}
+            >
+              {searchResults.suggestion}
+            </Link>
+            ?
+          </div>
+        )}
+
+        <div className="flex gap-6">
+          {/* Sidebar Filters */}
+          <aside className="hidden lg:block w-64 shrink-0">
+            <div className="flipkart-filter-sidebar">
+              {/* Active filter badges */}
+              {activeFilterCount > 0 && (
+                <div className="flex flex-wrap gap-2 mb-4 pb-4 border-b border-[#F0F0F0]">
+                  {selectedCategories.map(catId => {
+                    const cat = categories.find(c => c.id === catId)
+                    return cat ? (
+                      <Badge key={catId} variant="outline" className="flex items-center gap-1 bg-[#F1F3F6] border-[#E0E0E0] text-[#212121] text-xs font-normal rounded-sm">
+                        {cat.name}
+                        <button onClick={() => toggleCategory(catId)} className="hover:text-[#FF6161] ml-1 cursor-pointer"><X className="h-3 w-3" /></button>
+                      </Badge>
+                    ) : null
+                  })}
+                  {selectedPriceRange && (
+                    <Badge variant="outline" className="flex items-center gap-1 bg-[#F1F3F6] border-[#E0E0E0] text-[#212121] text-xs font-normal rounded-sm">
+                      {selectedPriceRange}
+                      <button onClick={() => setSelectedPriceRange('')} className="hover:text-[#FF6161] ml-1 cursor-pointer"><X className="h-3 w-3" /></button>
+                    </Badge>
+                  )}
+                  {minRatingFilter > 0 && (
+                    <Badge variant="outline" className="flex items-center gap-1 bg-[#F1F3F6] border-[#E0E0E0] text-[#212121] text-xs font-normal rounded-sm">
+                      <Star className="h-3 w-3 fill-[#FF9F00] text-[#FF9F00]" /> {minRatingFilter}+
+                      <button onClick={() => setMinRatingFilter(0)} className="hover:text-[#FF6161] ml-1 cursor-pointer"><X className="h-3 w-3" /></button>
+                    </Badge>
+                  )}
+                </div>
+              )}
+
+              <div className="space-y-6">
+                {/* Sort */}
+                <div>
+                  <h4 className="text-sm font-medium text-[#212121] mb-3">Sort By</h4>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="bg-white border-[#E0E0E0] text-[#212121] rounded-sm h-10 text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border-[#F0F0F0] text-[#212121] rounded-sm">
+                      <SelectItem value="relevance" className="cursor-pointer">Relevance</SelectItem>
+                      <SelectItem value="price_asc" className="cursor-pointer">Price: Low to High</SelectItem>
+                      <SelectItem value="price_desc" className="cursor-pointer">Price: High to Low</SelectItem>
+                      <SelectItem value="rating" className="cursor-pointer">Highest Rated</SelectItem>
+                      <SelectItem value="newest" className="cursor-pointer">Newest</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Categories */}
+                <div>
+                  <h4 className="text-sm font-medium text-[#212121] mb-3">Categories</h4>
+                  <div className="flex flex-col gap-1 max-h-60 overflow-y-auto">
+                    {categories.map(cat => {
+                      const facetCount = searchResults?.facets.categories.find(c => c.id === cat.id)?.count
+                      return (
+                        <label key={cat.id} className="flex items-center gap-2.5 px-1 py-1.5 hover:bg-[#F1F3F6] rounded-sm cursor-pointer text-sm transition-colors group">
+                          <Checkbox
+                            checked={selectedCategories.includes(cat.id)}
+                            onCheckedChange={() => toggleCategory(cat.id)}
+                            className="border-[#C4C4C4] data-[state=checked]:bg-[#2874F0] data-[state=checked]:border-[#2874F0] h-4 w-4"
+                          />
+                          <span className="flex-1 text-[#212121] group-hover:text-[#2874F0] transition-colors">{cat.name}</span>
+                          {facetCount !== undefined && (
+                            <span className="text-[10px] text-[#878787]">{facetCount}</span>
+                          )}
+                        </label>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Price Range */}
+                <div>
+                  <h4 className="text-sm font-medium text-[#212121] mb-3">Price Range</h4>
+                  <div className="flex flex-col gap-1">
+                    {searchResults?.facets.priceRanges.map(range => (
+                      <label key={range.label} className="flex items-center gap-2.5 px-1 py-1.5 hover:bg-[#F1F3F6] rounded-sm cursor-pointer text-sm transition-colors group">
+                        <input
+                          type="radio"
+                          name="priceRange"
+                          checked={selectedPriceRange === range.label}
+                          onChange={() => setSelectedPriceRange(range.label)}
+                          className="text-[#2874F0] focus:ring-[#2874F0]"
+                        />
+                        <span className="flex-1 text-[#212121] group-hover:text-[#2874F0] transition-colors">{range.label}</span>
+                        <span className="text-[10px] text-[#878787]">{range.count}</span>
+                      </label>
+                    ))}
+                    {selectedPriceRange && (
+                      <button onClick={() => setSelectedPriceRange('')} className="text-xs text-[#2874F0] text-left mt-1 hover:underline px-1 cursor-pointer">
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Min Rating */}
+                <div>
+                  <h4 className="text-sm font-medium text-[#212121] mb-3">Minimum Rating</h4>
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map(star => (
+                      <button key={star} onClick={() => setMinRatingFilter(star === minRatingFilter ? 0 : star)}
+                        className="hover:scale-110 transition-transform cursor-pointer">
+                        <Star className={`h-5 w-5 ${star <= minRatingFilter ? 'fill-[#FF9F00] text-[#FF9F00]' : 'text-[#E0E0E0]'}`} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
-          ) : displayPrompts.length === 0 ? (
-            <div className="text-center py-24 glass-panel rounded-3xl mx-2">
-              <Search className="h-16 w-16 text-white/20 mx-auto mb-6" />
-              <h3 className="text-xl font-bold text-white/80">No prompts found in this sector</h3>
-              <p className="text-sm text-white/50 mt-2">Try adjusting your filters or expanding your search</p>
-            </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-6">
-                {displayPrompts.map(prompt => (
-                  <Link key={prompt.id} href={`/prompt/${prompt.id}`}>
-                    <Card className="neon-border glass-panel overflow-hidden h-full flex flex-col border-white/10 rounded-3xl group bg-black/40">
-                      <div className="relative h-36 bg-black/40 flex items-center justify-center overflow-hidden">
-                        {getCoverImage(prompt) ? (
-                          <img src={getCoverImage(prompt)} alt={prompt.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80 group-hover:opacity-100" />
-                        ) : (
-                          <Sparkles className="h-16 w-16 text-white/10 group-hover:scale-110 transition-transform duration-700 group-hover:text-neon-blue/50" />
-                        )}
-                        <div className="absolute top-3 right-3 flex flex-col gap-2">
-                          {prompt.isFree && <Badge className="bg-neon-blue text-black font-bold border-0 shadow-[0_0_10px_rgba(0,210,255,0.8)] backdrop-blur-md">FREE</Badge>}
-                          {prompt.discount > 0 && <Badge className="bg-neon-pink text-white font-bold border-0 shadow-[0_0_10px_rgba(255,0,128,0.8)] backdrop-blur-md">-{prompt.discount}%</Badge>}
-                        </div>
-                        <button onClick={(e) => handleWishlist(prompt.id, e)}
-                          className="absolute top-3 left-3 p-2 rounded-full bg-black/40 border border-white/10 hover:bg-white/20 backdrop-blur-md transition-all">
-                          <Heart className={`h-4 w-4 ${wishlistedPromptIds.has(prompt.id) ? 'fill-neon-pink text-neon-pink shadow-[0_0_10px_rgba(255,0,128,0.8)]' : 'text-white/70'}`} />
+          </aside>
+
+          {/* Mobile Filter Drawer */}
+          {showMobileFilters && (
+            <div className="fixed inset-0 z-50 bg-white overflow-auto lg:hidden" onClick={() => setShowMobileFilters(false)}>
+              <div className="p-4" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center justify-between mb-4 pb-4 border-b border-[#F0F0F0]">
+                  <h3 className="text-lg font-semibold text-[#212121]">Filters</h3>
+                  <button onClick={() => setShowMobileFilters(false)} className="text-[#878787] hover:text-[#212121] cursor-pointer">
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+                {/* Mobile filter content - same filter options */}
+                <div className="space-y-6">
+                  <div>
+                    <h4 className="text-sm font-medium text-[#212121] mb-3">Sort By</h4>
+                    <Select value={sortBy} onValueChange={setSortBy}>
+                      <SelectTrigger className="bg-white border-[#E0E0E0] text-[#212121] rounded-sm h-10 text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border-[#F0F0F0] text-[#212121] rounded-sm">
+                        <SelectItem value="relevance">Relevance</SelectItem>
+                        <SelectItem value="price_asc">Price: Low to High</SelectItem>
+                        <SelectItem value="price_desc">Price: High to Low</SelectItem>
+                        <SelectItem value="rating">Highest Rated</SelectItem>
+                        <SelectItem value="newest">Newest</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-[#212121] mb-3">Categories</h4>
+                    {categories.map(cat => (
+                      <label key={cat.id} className="flex items-center gap-2.5 py-2 cursor-pointer text-sm">
+                        <Checkbox checked={selectedCategories.includes(cat.id)} onCheckedChange={() => toggleCategory(cat.id)}
+                          className="border-[#C4C4C4] data-[state=checked]:bg-[#2874F0] data-[state=checked]:border-[#2874F0]" />
+                        <span className="flex-1 text-[#212121]">{cat.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-[#212121] mb-3">Minimum Rating</h4>
+                    <div className="flex gap-1">
+                      {[1,2,3,4,5].map(star => (
+                        <button key={star} onClick={() => setMinRatingFilter(star === minRatingFilter ? 0 : star)}
+                          className="hover:scale-110 transition-transform cursor-pointer">
+                          <Star className={`h-6 w-6 ${star <= minRatingFilter ? 'fill-[#FF9F00] text-[#FF9F00]' : 'text-[#E0E0E0]'}`} />
                         </button>
-                      </div>
-                      <div className="p-4 flex flex-col flex-1 relative z-10">
-                        <div className="flex items-center gap-2 mb-3">
-                          <Badge variant="outline" className="text-[10px] px-2 py-0.5 bg-white/5 border-white/10 text-white/70 backdrop-blur-md">{prompt.recommendedAI || 'General'}</Badge>
-                          {prompt.qualityScore && <Badge className={`text-[10px] px-2 py-0.5 border-0 ${prompt.qualityScore >= 0.8 ? 'bg-neon-blue/20 text-neon-blue border-neon-blue/30' : 'bg-white/5 text-white/70'}`}>Q: {Math.round(prompt.qualityScore * 100)}</Badge>}
-                          <span className="text-[10px] text-white/50 flex items-center gap-1 ml-auto"><Eye className="h-3 w-3" /> {prompt.viewCount}</span>
-                        </div>
-                        <h3 className="font-bold text-white text-base line-clamp-1 mb-1 group-hover:text-neon-blue transition-colors h-[24px]">{prompt.title}</h3>
-                        <p className="text-xs text-white/50 line-clamp-1 h-[16px]">{prompt.description}</p>
-                        
-                        <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/10">
-                          <div className="flex items-center gap-4 text-xs text-white/60 font-medium">
-                            <span className="flex items-center gap-1"><Star className="h-4 w-4 text-neon-blue fill-neon-blue shadow-[0_0_5px_rgba(0,210,255,0.8)]" />{prompt.rating?.toFixed(1)}</span>
-                            <span className="flex items-center gap-1.5"><Download className="h-4 w-4" />{prompt.downloadCount}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <button onClick={() => { performSearch(1); setShowMobileFilters(false) }}
+                    className="w-full bg-[#2874F0] text-white font-medium py-3 rounded-sm text-sm cursor-pointer">
+                    Apply Filters
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Product Grid */}
+          <div className="flex-1">
+            {localLoading ? (
+              <div className="flex items-center justify-center py-24">
+                <Loader2 className="h-8 w-8 animate-spin text-[#2874F0]" />
+              </div>
+            ) : displayPrompts.length === 0 ? (
+              <div className="text-center py-24 bg-white border border-[#F0F0F0] rounded-sm">
+                <Search className="h-12 w-12 text-[#C4C4C4] mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-[#212121]">No prompts found</h3>
+                <p className="text-sm text-[#878787] mt-1">Try adjusting your filters or search terms</p>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {displayPrompts.map(prompt => (
+                    <Link key={prompt.id} href={`/prompt/${prompt.id}`}>
+                      <Card className="flipkart-card overflow-hidden h-full flex flex-col group cursor-pointer">
+                        <div className="relative h-36 bg-[#F1F3F6] flex items-center justify-center overflow-hidden">
+                          {getCoverImage(prompt) ? (
+                            <img src={getCoverImage(prompt)} alt={prompt.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                          ) : (
+                            <Sparkles className="h-10 w-10 text-[#C4C4C4]" />
+                          )}
+                          <div className="absolute top-2 right-2 flex flex-col gap-1">
+                            {prompt.isFree && <span className="flipkart-badge-free">FREE</span>}
+                            {prompt.discount > 0 && <span className="flipkart-badge-discount">-{prompt.discount}%</span>}
                           </div>
-                          <div className="flex flex-col text-right">
-                            <span className="text-[10px] text-white/30 line-through h-3">
-                              {prompt.originalPrice && prompt.originalPrice > prompt.price ? formatPrice(prompt.originalPrice) : ''}
+                          <button onClick={(e) => handleWishlist(prompt.id, e)}
+                            className="absolute top-2 left-2 p-1.5 rounded-full bg-white/80 hover:bg-white transition-all cursor-pointer"
+                            aria-label={wishlistedPromptIds.has(prompt.id) ? 'Remove from wishlist' : 'Add to wishlist'}>
+                            <Heart className={`h-4 w-4 ${wishlistedPromptIds.has(prompt.id) ? 'fill-[#FF6161] text-[#FF6161]' : 'text-[#878787]'}`} />
+                          </button>
+                        </div>
+                        <div className="p-3 flex flex-col flex-1">
+                          <p className="text-[10px] font-medium text-[#878787] uppercase tracking-wide mb-1">{prompt.recommendedAI || 'General'}</p>
+                          <h3 className="text-sm font-medium text-[#212121] line-clamp-1 mb-1 group-hover:text-[#2874F0] transition-colors">{prompt.title}</h3>
+                          <p className="text-xs text-[#878787] line-clamp-1 mb-2 flex-1">{prompt.description}</p>
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="flipkart-rating">
+                              <Star className="h-3 w-3 fill-white" /> {prompt.rating?.toFixed(1)}
                             </span>
-                            {prompt.isFree ? (
-                              <span className="text-neon-blue font-extrabold text-lg drop-shadow-[0_0_8px_rgba(0,210,255,0.5)]">FREE</span>
+                            <span className="text-xs text-[#878787]">{prompt.reviewCount || 0} ratings</span>
+                          </div>
+                          <div className="flex items-center flex-wrap">
+                            <span className="flipkart-price">{prompt.isFree ? 'FREE' : formatPrice(prompt.price, selectedCurrency)}</span>
+                            {prompt.originalPrice && prompt.originalPrice > prompt.price && (
+                              <>
+                                <span className="flipkart-original-price">{formatPrice(prompt.originalPrice, selectedCurrency)}</span>
+                                <span className="flipkart-discount">{Math.round((1 - prompt.price / prompt.originalPrice) * 100)}% off</span>
+                              </>
+                            )}
+                          </div>
+                          <div className="mt-3">
+                            {isInCart(prompt.id) ? (
+                              <div className="w-full text-center text-xs font-medium text-[#388E3C] bg-[#F1F3F6] py-2 rounded-sm cursor-not-allowed">
+                                <ShoppingCart className="h-3.5 w-3.5 inline mr-1" /> In Cart
+                              </div>
                             ) : (
-                              <span className="font-extrabold text-white text-lg drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">{formatPrice(prompt.price)}</span>
+                              <button onClick={(e) => handleAddToCart(prompt, e)}
+                                className="w-full text-center text-xs font-medium text-white bg-[#FF9F00] hover:bg-[#FB641B] py-2 rounded-sm transition-colors cursor-pointer">
+                                <ShoppingCart className="h-3.5 w-3.5 inline mr-1" /> Add to Cart
+                              </button>
                             )}
                           </div>
                         </div>
-                        <div className="mt-4 flex gap-3">
-                          {isInCart(prompt.id) ? (
-                            <Button size="sm" className="flex-1 text-xs h-10 font-bold bg-white/10 text-white/50 border border-white/5 cursor-not-allowed rounded-full">
-                              In Cart
-                            </Button>
-                          ) : (
-                            <Button size="sm" className="flex-1 text-xs h-10 font-bold bg-white text-black hover:bg-neon-blue hover:text-black hover:shadow-[0_0_15px_rgba(0,210,255,0.6)] rounded-full transition-all" onClick={(e) => handleAddToCart(prompt, e)}>
-                              <ShoppingCart className="h-4 w-4 mr-2" /> Add
-                            </Button>
-                          )}
-                          <button onClick={(e) => handleLike(prompt.id, e)}
-                            className={`flex items-center justify-center w-10 h-10 rounded-full border transition-all ${likedPromptIds.has(prompt.id) ? 'bg-neon-pink/20 border-neon-pink/50 text-neon-pink shadow-[0_0_10px_rgba(255,0,128,0.3)]' : 'border-white/20 text-white/60 hover:bg-white/10 hover:border-white/30 bg-white/5'}`}>
-                            <Heart className={`h-4 w-4 ${likedPromptIds.has(prompt.id) ? 'fill-neon-pink text-neon-pink' : ''}`} />
-                          </button>
-                        </div>
-                      </div>
-                    </Card>
-                  </Link>
-                ))}
-              </div>
-
-              {/* Pagination */}
-              {displayTotalPages > 1 && (
-                <div className="flex items-center justify-center gap-3 mt-12">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => goToPage(displayPage - 1)}
-                    disabled={displayPage <= 1}
-                    className="glass-panel border-white/20 text-white hover:bg-white/10 rounded-full h-10 w-10 p-0"
-                  >
-                    <ChevronLeft className="h-5 w-5" />
-                  </Button>
-                  {Array.from({ length: Math.min(displayTotalPages, 10) }).map((_, i) => {
-                    let pageNum: number
-                    if (displayTotalPages <= 10) {
-                      pageNum = i + 1
-                    } else if (displayPage <= 5) {
-                      pageNum = i + 1
-                    } else if (displayPage >= displayTotalPages - 4) {
-                      pageNum = displayTotalPages - 9 + i
-                    } else {
-                      pageNum = displayPage - 5 + i
-                    }
-                    return (
-                      <Button
-                        key={i}
-                        variant={displayPage === pageNum ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => goToPage(pageNum)}
-                        className={`rounded-full h-10 w-10 p-0 font-bold ${displayPage === pageNum ? 'bg-gradient-to-tr from-neon-blue to-neon-purple text-white shadow-[0_0_15px_rgba(0,210,255,0.4)] border-0' : 'glass-panel border-white/20 text-white/70 hover:bg-white/10 hover:text-white'}`}
-                      >
-                        {pageNum}
-                      </Button>
-                    )
-                  })}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => goToPage(displayPage + 1)}
-                    disabled={displayPage >= displayTotalPages}
-                    className="glass-panel border-white/20 text-white hover:bg-white/10 rounded-full h-10 w-10 p-0"
-                  >
-                    <ChevronRight className="h-5 w-5" />
-                  </Button>
+                      </Card>
+                    </Link>
+                  ))}
                 </div>
-              )}
-            </>
-          )}
+
+                {/* Pagination */}
+                {displayTotalPages > 1 && (
+                  <div className="flex items-center justify-center gap-2 mt-8">
+                    <button
+                      onClick={() => goToPage(displayPage - 1)}
+                      disabled={displayPage <= 1}
+                      className="px-3 py-1.5 text-sm border border-[#E0E0E0] bg-white text-[#212121] rounded-sm hover:bg-[#F1F3F6] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </button>
+                    {Array.from({ length: Math.min(displayTotalPages, 8) }).map((_, i) => {
+                      let pageNum: number
+                      if (displayTotalPages <= 8) pageNum = i + 1
+                      else if (displayPage <= 4) pageNum = i + 1
+                      else if (displayPage >= displayTotalPages - 3) pageNum = displayTotalPages - 7 + i
+                      else pageNum = displayPage - 4 + i
+                      return (
+                        <button
+                          key={i}
+                          onClick={() => goToPage(pageNum)}
+                          className={`px-3 py-1.5 text-sm rounded-sm cursor-pointer ${
+                            displayPage === pageNum
+                              ? 'bg-[#2874F0] text-white font-medium'
+                              : 'border border-[#E0E0E0] bg-white text-[#212121] hover:bg-[#F1F3F6]'
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      )
+                    })}
+                    <button
+                      onClick={() => goToPage(displayPage + 1)}
+                      disabled={displayPage >= displayTotalPages}
+                      className="px-3 py-1.5 text-sm border border-[#E0E0E0] bg-white text-[#212121] rounded-sm hover:bg-[#F1F3F6] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>

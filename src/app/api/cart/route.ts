@@ -36,8 +36,8 @@ export async function GET() {
     };
 
     return NextResponse.json({ success: true, data: safeCart });
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -83,8 +83,8 @@ export async function POST(req: NextRequest) {
 
     const [safePrompt] = await sanitizePromptsForUser([item.prompt], user);
     return NextResponse.json({ success: true, data: { ...item, prompt: safePrompt } });
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -111,7 +111,7 @@ export async function DELETE(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true });
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

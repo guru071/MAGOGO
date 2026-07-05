@@ -13,7 +13,7 @@ export async function signupWithSupabase(email: string, password: string, name: 
   const { data, error } = await admin.auth.admin.createUser({
     email,
     password,
-    email_confirm: true,
+    email_confirm: false,
     user_metadata: { name },
   })
 
@@ -49,6 +49,19 @@ export async function signupWithSupabase(email: string, password: string, name: 
       role: 'BUYER',
     },
   })
+
+  // Send verification email via Supabase
+  try {
+    const supabase = await createSupabaseServerClient()
+    await supabase.auth.resend({
+      type: 'signup',
+      email,
+      options: { emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auth/callback` },
+    })
+  } catch (e) {
+    console.error('[auth] Failed to send verification email:', e)
+  }
+
   return { user: data.user, profile }
 }
 

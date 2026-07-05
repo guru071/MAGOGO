@@ -1,19 +1,18 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useStore, formatPrice } from '@/store/marketplace'
 import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { format } from 'date-fns'
-import { ShoppingCart, Download, ExternalLink } from 'lucide-react'
+import { ShoppingCart, ExternalLink, TrendingUp as TrendingUpIcon } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 export default function SellerSalesHistoryPage() {
   const { user, selectedCurrency } = useStore()
   const [orders, setOrders] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-
   useEffect(() => {
     if (user?.isSeller) {
       fetch('/api/orders?type=sold')
@@ -25,7 +24,7 @@ export default function SellerSalesHistoryPage() {
         })
         .finally(() => setLoading(false))
     } else {
-      setLoading(false)
+      queueMicrotask(() => setLoading(false))
     }
   }, [user])
 
@@ -36,6 +35,32 @@ export default function SellerSalesHistoryPage() {
   if (!user?.isSeller) {
     return <div className="p-8 text-center text-white">Please onboard as a seller first.</div>
   }
+
+  // Process data for charts
+  const processChartData = () => {
+    if (!orders || orders.length === 0) return [];
+    
+    // Group by date
+    const dailyData: Record<string, number> = {};
+    const dailySales: Record<string, number> = {};
+    
+    // Sort orders oldest to newest for chart
+    const sortedOrders = [...orders].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    
+    sortedOrders.forEach(order => {
+      const date = format(new Date(order.createdAt), 'MMM dd');
+      dailyData[date] = (dailyData[date] || 0) + (order.sellerAmount || 0);
+      dailySales[date] = (dailySales[date] || 0) + 1;
+    });
+
+    return Object.keys(dailyData).map(date => ({
+      date,
+      revenue: Number(dailyData[date].toFixed(2)),
+      sales: dailySales[date]
+    }));
+  };
+
+  const chartData = processChartData();
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -56,7 +81,43 @@ export default function SellerSalesHistoryPage() {
           </Link>
         </Card>
       ) : (
-        <div className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
+        <div className="space-y-6">
+          {chartData.length > 0 && (
+            <Card className="glass-panel border-white/10 p-6">
+              <div className="mb-6 flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-bold text-white flex items-center gap-2"><TrendingUpIcon className="h-5 w-5 text-neon-blue" /> Earnings Trend</h3>
+                  <p className="text-sm text-white/50">Your revenue over time</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-white/50">Total Earnings</p>
+                  <p className="text-2xl font-black text-emerald-400">{formatPrice(orders.reduce((sum, o) => sum + o.sellerAmount, 0), selectedCurrency)}</p>
+                </div>
+              </div>
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                    <XAxis dataKey="date" stroke="rgba(255,255,255,0.3)" fontSize={12} tickLine={false} axisLine={false} />
+                    <YAxis stroke="rgba(255,255,255,0.3)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value}`} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
+                      itemStyle={{ color: '#10b981', fontWeight: 'bold' }}
+                    />
+                    <Area type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </Card>
+          )}
+
+          <div className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm text-white/80">
               <thead className="bg-white/5 text-white/60 uppercase text-xs">
@@ -110,6 +171,7 @@ export default function SellerSalesHistoryPage() {
               </tbody>
             </table>
           </div>
+        </div>
         </div>
       )}
     </div>

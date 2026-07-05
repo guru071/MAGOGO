@@ -2,7 +2,7 @@ import { db } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth-helpers';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const user = await getCurrentUser();
     if (!user || !user.isSeller) {
@@ -298,8 +298,6 @@ export async function GET(req: NextRequest) {
       .sort((a, b) => b.count - a.count)
       .slice(0, 10);
 
-    let aiRecommendations: any = null;
-
     return NextResponse.json({
       success: true,
       data: {
@@ -365,7 +363,7 @@ export async function GET(req: NextRequest) {
         refundBreakdown,
       },
     });
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

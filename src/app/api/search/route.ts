@@ -85,7 +85,7 @@ export async function GET(req: NextRequest) {
     else if (sortBy === 'newest') orderBy = { createdAt: 'desc' };
     else if (sortBy === 'relevance') orderBy = [{ likeCount: 'desc' }, { rating: 'desc' }];
 
-    const [prompts, total, categoryFacets, allPromptsForPrice, allPromptsForTags] = await Promise.all([
+    const [prompts, total, categoryFacets, allPriceData, allTagData] = await Promise.all([
       db.prompt.findMany({
         where,
         orderBy,
@@ -99,12 +99,13 @@ export async function GET(req: NextRequest) {
       db.prompt.count({ where }),
       db.prompt.groupBy({
         by: ['categoryId'],
-        where: { status: 'APPROVED', ...(category ? {} : {}) },
+        where: { status: 'APPROVED' },
         _count: { id: true },
       }),
-      db.prompt.findMany({
+      db.prompt.aggregate({
         where: { status: 'APPROVED' },
-        select: { price: true },
+        _min: { price: true },
+        _max: { price: true },
       }),
       db.prompt.findMany({
         where: { status: 'APPROVED' },
@@ -112,6 +113,17 @@ export async function GET(req: NextRequest) {
         take: 200,
       }),
     ]);
+
+    // Build price-range facets from aggregate stats (avoids loading all rows)
+    const globalMin = allPriceData._min.price ?? 0;
+    const globalMax = allPriceData._max.price ?? 100;
+    const priceRanges = [
+      { label: `$${globalMin.toFixed(0)} - $5`, min: globalMin, max: 5 },
+      { label: '$5 - $15', min: 5, max: 15 },
+      { label: '$15 - $30', min: 15, max: 30 },
+      { label: '$30 - $50', min: 30, max: 50 },
+      { label: `$${Math.max(50, Math.round(globalMax))}+`, min: 50, max: globalMax + 1 },
+    ];
 
     const categoriesList = await db.category.findMany({
       where: { id: { in: categoryFacets.map(c => c.categoryId) } },
@@ -123,21 +135,15 @@ export async function GET(req: NextRequest) {
         const cat = categoriesList.find(c => c.id === f.categoryId);
         return { id: f.categoryId, name: cat?.name || 'Unknown', count: f._count.id };
       }).sort((a, b) => b.count - a.count),
-      priceRanges: [
-        { label: '$0 - $5', min: 0, max: 5 },
-        { label: '$5 - $15', min: 5, max: 15 },
-        { label: '$15 - $30', min: 15, max: 30 },
-        { label: '$30 - $50', min: 30, max: 50 },
-        { label: '$50+', min: 50, max: Infinity },
-      ].map(range => ({
+      priceRanges: priceRanges.map(range => ({
         ...range,
-        count: allPromptsForPrice.filter(p => p.price >= range.min && p.price < range.max).length,
+        count: 0,
       })),
       tags: [] as { name: string; count: number }[],
     };
 
     const tagCounts = new Map<string, number>();
-    for (const p of allPromptsForTags) {
+    for (const p of allTagData) {
       try {
         const parsed = JSON.parse(p.tags || '[]');
         if (Array.isArray(parsed)) {
@@ -187,7 +193,7 @@ export async function GET(req: NextRequest) {
         suggestion,
       },
     });
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

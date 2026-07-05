@@ -59,7 +59,7 @@ export default function FraudSettings({ token }: { token: string }) {
       const json = await res.json();
       if (json.success) toast.success('Fraud settings saved');
       else toast.error(json.error || 'Failed to save');
-    } catch (e: any) {
+    } catch (e: any) { 
       toast.error(e.message);
     } finally {
       setSaving(false);
@@ -80,7 +80,7 @@ export default function FraudSettings({ token }: { token: string }) {
       const json = await res.json();
       if (json.success) toast.success('AI fraud check returned: ' + JSON.stringify(json.data));
       else toast.error('Test failed: ' + (json.error || 'Unknown'));
-    } catch (e: any) {
+    } catch (e: any) { 
       toast.error('AI service unreachable: ' + e.message);
     } finally {
       setTesting(false);
@@ -108,7 +108,7 @@ export default function FraudSettings({ token }: { token: string }) {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold flex items-center gap-2">
-            <Shield className="h-5 w-5 text-[#0066CC]" />
+            <Shield className="h-5 w-5 text-neon-blue" />
             Fraud Detection Settings
           </h2>
           <p className="text-sm text-muted-foreground">
@@ -176,7 +176,7 @@ export default function FraudSettings({ token }: { token: string }) {
               max={100}
               value={config[key]}
               onChange={(e) => setConfig((c) => ({ ...c, [key]: parseInt(e.target.value) }))}
-              className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-[#0066CC]"
+              className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-neon-blue"
             />
             <div className="flex justify-between text-[10px] text-muted-foreground">
               <span>0 (Safe)</span>

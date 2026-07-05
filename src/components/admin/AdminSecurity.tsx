@@ -195,7 +195,7 @@ export default function AdminSecurity({ token }: { token: string }) {
 
   const getEventIcon = (action: string) => {
     if (action.includes('BAN') || action.includes('BLOCK_IP')) return <ShieldX className="h-4 w-4 text-red-500" />;
-    if (action.includes('UNBLOCK_IP')) return <ShieldCheck className="h-4 w-4 text-[#0066CC]" />;
+    if (action.includes('UNBLOCK_IP')) return <ShieldCheck className="h-4 w-4 text-neon-blue" />;
     if (action.includes('LOCK')) return <ShieldAlert className="h-4 w-4 text-amber-500" />;
     if (action.includes('FAILED_LOGIN')) return <UserX className="h-4 w-4 text-red-400" />;
     return <Activity className="h-4 w-4 text-slate-400" />;
@@ -233,7 +233,7 @@ export default function AdminSecurity({ token }: { token: string }) {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h2 className="text-lg font-semibold flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-[#0066CC]" />
+            <ShieldCheck className="h-5 w-5 text-neon-blue" />
             Security Center
           </h2>
           <p className="text-sm text-muted-foreground">
@@ -279,7 +279,7 @@ export default function AdminSecurity({ token }: { token: string }) {
         <Card className="p-4">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-              <ShieldCheck className="h-5 w-5 text-[#0066CC]" />
+              <ShieldCheck className="h-5 w-5 text-neon-blue" />
             </div>
             <div>
               <p className="text-2xl font-bold">{loginStats?.successCount ?? 0}</p>
@@ -319,7 +319,7 @@ export default function AdminSecurity({ token }: { token: string }) {
             <ScrollArea className="max-h-80">
               {blacklisted.length === 0 ? (
                 <div className="text-center py-8">
-                  <ShieldCheck className="h-8 w-8 text-[#0066CC] mx-auto mb-2" />
+                  <ShieldCheck className="h-8 w-8 text-neon-blue mx-auto mb-2" />
                   <p className="text-sm text-muted-foreground">No blocked IPs — all clear!</p>
                 </div>
               ) : (
@@ -343,7 +343,7 @@ export default function AdminSecurity({ token }: { token: string }) {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-[#0066CC] hover:text-[#0055AA] hover:bg-blue-50 dark:hover:bg-blue-900/20 shrink-0"
+                        className="text-neon-blue hover:text-[neon-blue] hover:bg-blue-50 dark:hover:bg-blue-900/20 shrink-0"
                         onClick={() => handleUnblockIP(entry.ip)}
                       >
                         <Unlock className="h-4 w-4" />
@@ -395,7 +395,7 @@ export default function AdminSecurity({ token }: { token: string }) {
                           </div>
                           <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                             <div
-                              className={`h-full rounded-full transition-all ${isHigh ? 'bg-red-500' : 'bg-[#0066CC]'}`}
+                              className={`h-full rounded-full transition-all ${isHigh ? 'bg-red-500' : 'bg-neon-blue'}`}
                               style={{ width: `${pct}%` }}
                             />
                           </div>
@@ -432,7 +432,7 @@ export default function AdminSecurity({ token }: { token: string }) {
           <ScrollArea className="max-h-72">
             {recentFailed.length === 0 ? (
               <div className="text-center py-6">
-                <ShieldCheck className="h-6 w-6 text-[#0066CC] mx-auto mb-1" />
+                <ShieldCheck className="h-6 w-6 text-neon-blue mx-auto mb-1" />
                 <p className="text-sm text-muted-foreground">No failed login attempts</p>
               </div>
             ) : (
@@ -543,7 +543,7 @@ export default function AdminSecurity({ token }: { token: string }) {
             <ScrollArea className="max-h-72">
               {failedByIP.length === 0 ? (
                 <div className="text-center py-6">
-                  <ShieldCheck className="h-6 w-6 text-[#0066CC] mx-auto mb-1" />
+                  <ShieldCheck className="h-6 w-6 text-neon-blue mx-auto mb-1" />
                   <p className="text-sm text-muted-foreground">No suspicious IP activity</p>
                 </div>
               ) : (

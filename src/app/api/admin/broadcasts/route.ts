@@ -1,11 +1,12 @@
 import { db } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth-helpers';
 import { NextRequest, NextResponse } from 'next/server';
+import { sanitizeInput } from '@/lib/security';
 
 // ---------------------------------------------------------------------------
 // GET – list all broadcasts (Notification records with type = 'BROADCAST')
 // ---------------------------------------------------------------------------
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const user = await getCurrentUser();
     if (!user || user.role !== 'ADMIN') {
@@ -49,9 +50,9 @@ export async function GET(req: NextRequest) {
     }));
 
     return NextResponse.json({ success: true, data: broadcasts });
-  } catch (e: any) {
+  } catch { 
     return NextResponse.json(
-      { success: false, error: e.message || 'Internal server error' },
+      { success: false, error: 'Internal server error' },
       { status: 500 },
     );
   }
@@ -99,8 +100,8 @@ export async function POST(req: NextRequest) {
     await db.notification.createMany({
       data: activeUsers.map((u) => ({
         userId: u.id,
-        title: `[${type || 'SYSTEM'}] ${title.trim()}`,
-        message: message.trim(),
+        title: `[${type || 'SYSTEM'}] ${sanitizeInput(title).trim()}`,
+        message: sanitizeInput(message).trim(),
         type: 'BROADCAST',
       })),
     });
@@ -121,9 +122,9 @@ export async function POST(req: NextRequest) {
         message: `Broadcast sent to ${activeUsers.length} active users`,
       },
     });
-  } catch (e: any) {
+  } catch { 
     return NextResponse.json(
-      { success: false, error: e.message || 'Internal server error' },
+      { success: false, error: 'Internal server error' },
       { status: 500 },
     );
   }

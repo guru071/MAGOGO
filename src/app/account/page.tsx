@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import Link from 'next/link'
-import { User, Package, Heart, Settings, LogOut, Wallet, TrendingUp, ShoppingBag } from 'lucide-react'
+import { User, Package, Heart, Settings, LogOut, TrendingUp, ShoppingBag } from 'lucide-react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 
@@ -14,7 +14,7 @@ export default function AccountPage() {
   const { user, fetchMe, logout } = useStore()
   const router = useRouter()
 
-  useEffect(() => { fetchMe() }, [])
+  useEffect(() => { fetchMe() }, [fetchMe])
 
   if (!user) {
     return (

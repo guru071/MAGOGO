@@ -3,7 +3,7 @@ import { getCurrentUser } from '@/lib/auth-helpers';
 import { NextRequest, NextResponse } from 'next/server';
 import { sanitizePromptsForUser } from '@/lib/prompt-security';
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const user = await getCurrentUser();
     if (!user) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
       success: true,
       data: items.map(item => ({ ...item, prompt: promptById.get(item.promptId) || item.prompt })),
     });
-  } catch (e: any) { return NextResponse.json({ success: false, error: e.message }, { status: 500 }); }
+  } catch {  return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 }); }
 }
 
 export async function POST(req: NextRequest) {
@@ -35,5 +35,5 @@ export async function POST(req: NextRequest) {
       await db.wishlist.create({ data: { userId: user.id!, promptId } });
       return NextResponse.json({ success: true, data: { wishlisted: true } });
     }
-  } catch (e: any) { return NextResponse.json({ success: false, error: e.message }, { status: 500 }); }
+  } catch {  return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 }); }
 }

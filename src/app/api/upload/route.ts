@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
         
         if (aiRes.ok) {
           const result = await aiRes.json();
-          const nsfwScore = result.find((r: any) => r.label === 'nsfw')?.score || 0;
+          const nsfwScore = result.find((r: { label: string; score: number }) => r.label === 'nsfw')?.score || 0;
           if (nsfwScore > 0.6) {
              return NextResponse.json({ success: false, error: 'Upload rejected: Inappropriate content detected by AI Moderation.' }, { status: 400 });
           }
@@ -46,9 +46,9 @@ export async function POST(req: NextRequest) {
     // Compress image if larger than 500KB
     if (buffer.length > 500 * 1024) {
       try {
-        finalBuffer = (await sharp(buffer)
+        finalBuffer = Buffer.from(await sharp(buffer)
           .jpeg({ quality: 75 })
-          .toBuffer()) as any;
+          .toBuffer());
         finalContentType = 'image/jpeg';
         finalExt = 'jpg';
       } catch (err) {
@@ -62,10 +62,10 @@ export async function POST(req: NextRequest) {
     const { error } = await supabase.storage.from('prompts').upload(filename, finalBuffer, { contentType: finalContentType });
     
     if (error) {
-      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+      return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
     }
     
     const { data: { publicUrl } } = supabase.storage.from('prompts').getPublicUrl(filename);
     return NextResponse.json({ success: true, url: publicUrl });
-  } catch (e: any) { return NextResponse.json({ success: false, error: e.message }, { status: 500 }); }
+  } catch {  return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 }); }
 }

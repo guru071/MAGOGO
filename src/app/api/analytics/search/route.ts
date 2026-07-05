@@ -36,8 +36,8 @@ export async function POST(req: NextRequest) {
       }
       throw error;
     }
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -61,7 +61,6 @@ export async function GET(req: NextRequest) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2021') {
       return NextResponse.json({ success: true, data: [] });
     }
-    const message = error instanceof Error ? error.message : 'Failed to load search analytics';
-    return NextResponse.json({ success: false, error: message }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Failed to load search analytics' }, { status: 500 });
   }
 }

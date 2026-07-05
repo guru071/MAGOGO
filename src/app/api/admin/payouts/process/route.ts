@@ -2,7 +2,7 @@ import { db } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth-helpers';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(req: NextRequest) {
+export async function POST(_req: NextRequest) {
   try {
     const user = await getCurrentUser();
     if (!user || user.role !== 'ADMIN') return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 });
@@ -19,5 +19,5 @@ export async function POST(req: NextRequest) {
       results.push(payout);
     }
     return NextResponse.json({ success: true, data: { processed: results.length, payouts: results } });
-  } catch (e: any) { return NextResponse.json({ success: false, error: e.message }, { status: 500 }); }
+  } catch {  return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 }); }
 }

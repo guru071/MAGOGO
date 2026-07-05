@@ -2,6 +2,7 @@ import { db } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth-helpers';
 import { NextRequest, NextResponse } from 'next/server';
 import { sanitizePromptsForUser } from '@/lib/prompt-security';
+import { sanitizeInput } from '@/lib/security';
 
 function slugify(t: string) { return t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Date.now().toString(36); }
 
@@ -46,7 +47,7 @@ export async function GET(req: NextRequest) {
       db.prompt.count({ where })
     ]);
 
-    let responsePrompts = prompts as any[];
+    const responsePrompts = prompts as any[];
 
 
     const data = {
@@ -58,7 +59,7 @@ export async function GET(req: NextRequest) {
     };
 
     return NextResponse.json({ success: true, data });
-  } catch (e: any) { return NextResponse.json({ success: false, error: e.message }, { status: 500 }); }
+  } catch {  return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 }); }
 }
 
 export async function POST(req: NextRequest) {
@@ -68,6 +69,9 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { title, description, promptText, sampleImages, categoryId, tags, recommendedAI, price, isFree, discount, razorpayPaymentId, razorpayOrderId, razorpaySignature } = body;
     if (!title || !description || !promptText || !categoryId) return NextResponse.json({ success: false, error: 'Missing required fields' }, { status: 400 });
+    const sanitizedTitle = sanitizeInput(title);
+    const sanitizedDescription = sanitizeInput(description);
+    const sanitizedPromptText = sanitizeInput(promptText);
 
     const { getFeeConfig, calculateFees } = await import('@/lib/fees');
     const feeConfig = await getFeeConfig();
@@ -81,7 +85,7 @@ export async function POST(req: NextRequest) {
         const cat = await db.category.findUnique({ where: { id: categoryId } });
         if (cat) categoryName = cat.name;
       }
-      const feeBreakdown = calculateFees(finalPrice, feeConfig, promptText.length, categoryName);
+      const feeBreakdown = calculateFees(finalPrice, feeConfig, sanitizedPromptText.length, categoryName);
       listingFee = feeBreakdown.totalFees;
     }
 
@@ -142,7 +146,7 @@ export async function POST(req: NextRequest) {
 
       const p = await tx.prompt.create({
         data: {
-          title, slug: slugify(title), description, promptText,
+          title: sanitizedTitle, slug: slugify(sanitizedTitle), description: sanitizedDescription, promptText: sanitizedPromptText,
           sampleImages: JSON.stringify(sampleImages || []), categoryId,
           tags: JSON.stringify(tags || []), recommendedAI: JSON.stringify(recommendedAI || []),
           price: finalPrice, isFree: isFree || false,
@@ -162,5 +166,5 @@ export async function POST(req: NextRequest) {
 
 
     return NextResponse.json({ success: true, data: prompt }, { status: 201 });
-  } catch (e: any) { return NextResponse.json({ success: false, error: e.message }, { status: 500 }); }
+  } catch {  return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 }); }
 }

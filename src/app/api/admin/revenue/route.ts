@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
     const since = new Date()
     since.setDate(since.getDate() - days)
 
-    const [revenueRows, totalRevenue, recentOrders] = await Promise.all([
+    const [, totalRevenue, recentOrders] = await Promise.all([
       db.platformRevenue.findMany({
         where: { createdAt: { gte: since } },
         orderBy: { createdAt: 'desc' },
@@ -79,5 +79,5 @@ export async function GET(req: NextRequest) {
         })),
       },
     })
-  } catch (e: any) { return NextResponse.json({ success: false, error: e.message }, { status: 500 }) }
+  } catch {  return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 }) }
 }

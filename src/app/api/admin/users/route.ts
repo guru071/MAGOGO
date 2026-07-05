@@ -16,8 +16,8 @@ export async function GET(req: NextRequest) {
     if (role && role !== 'ALL') where.role = role;
     if (search) where.OR = [{ name: { contains: search } }, { email: { contains: search } }];
     if (status === 'banned') where.isActive = false;
-    if (status === 'locked') { where.lockedUntil = { gt: new Date() }; }
-    if (status === 'active') { where.isActive = true; where.OR = where.OR || []; }
+    if (status === 'banned') { where.isActive = false; }
+    if (status === 'active') { where.isActive = true; }
     const [users, total] = await Promise.all([
       db.user.findMany({
         where,
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
       db.user.count({ where }),
     ]);
     return NextResponse.json({ success: true, data: { users, total, pages: Math.ceil(total / limit) } });
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

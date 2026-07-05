@@ -10,9 +10,9 @@ import { DollarSign, ShoppingBag, Users, Crown, Package, FileText, Clock, CheckC
 
 const DOW_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTH_LABELS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const DOW_COLORS = ['#0066CC','#FF6600','#10B981','#8B5CF6','#EC4899','#F59E0B','#06B6D4'];
-const PIE_COLORS = ['#0066CC','#FF6600','#10B981','#8B5CF6','#EC4899','#F59E0B','#06B6D4','#14B8A6','#F97316','#6366F1'];
-const FUNNEL_COLORS = ['#0066CC','#2563EB','#3B82F6','#60A5FA'];
+const DOW_COLORS = ['neon-blue','#ff0080','#10B981','#8B5CF6','#EC4899','#F59E0B','#06B6D4'];
+const PIE_COLORS = ['neon-blue','#ff0080','#10B981','#8B5CF6','#EC4899','#F59E0B','#06B6D4','#14B8A6','#F97316','#6366F1'];
+const FUNNEL_COLORS = ['neon-blue','#2563EB','#3B82F6','#60A5FA'];
 
 const ACTION_COLORS: Record<string, string> = {
   PURCHASE: 'bg-blue-100 text-blue-700', UPLOAD: 'bg-blue-100 text-blue-700', LOGIN: 'bg-blue-100 text-blue-700',
@@ -67,8 +67,8 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
     : revenueData;
 
   const kpis = [
-    { label: 'Revenue', value: `$${(a?.totalRevenue || 0).toFixed(2)}`, icon: DollarSign, color: 'text-[#0066CC]', bg: 'bg-[#0066CC]', delta: a?.revenueGrowth, badge: true },
-    { label: 'Orders', value: a?.totalOrders || 0, icon: ShoppingBag, color: 'text-[#FF6600]', bg: 'bg-[#FF6600]', delta: a?.orderGrowth, badge: true },
+    { label: 'Revenue', value: `$${(a?.totalRevenue || 0).toFixed(2)}`, icon: DollarSign, color: 'text-neon-blue', bg: 'bg-neon-blue', delta: a?.revenueGrowth, badge: true },
+    { label: 'Orders', value: a?.totalOrders || 0, icon: ShoppingBag, color: 'text-neon-pink', bg: 'bg-neon-pink', delta: a?.orderGrowth, badge: true },
     { label: 'New Users', value: a?.newUsers || 0, icon: Users, color: 'text-rose-600', bg: 'bg-rose-500', delta: a?.userGrowth, badge: true },
     { label: 'Avg Order', value: `$${a?.avgOrderValue?.toFixed(2) || '0.00'}`, icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-500', delta: 0 },
     { label: 'Conversion', value: `${a?.conversionRate?.toFixed(1) || 0}%`, icon: Target, color: 'text-purple-600', bg: 'bg-purple-500', delta: 0 },
@@ -171,7 +171,7 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
         </Card>
         <Card className="glass-panel p-4 shadow-[0_0_20px_rgba(0,0,0,0.3)]">
           <h3 className="font-bold mb-4 flex items-center gap-2 text-white">
-            <BarChart3 className="h-4 w-4 text-[#FF6600] drop-shadow-[0_0_5px_rgba(255,102,0,0.8)]" /> Orders & Users
+            <BarChart3 className="h-4 w-4 text-neon-pink drop-shadow-[0_0_5px_rgba(255,102,0,0.8)]" /> Orders & Users
           </h3>
           {ordersData.length === 0 ? (
             <div className="h-[220px] flex items-center justify-center text-sm text-white/40">No data</div>
@@ -182,7 +182,7 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
                 <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#ffffff66' }} interval={6} />
                 <YAxis tick={{ fontSize: 10, fill: '#ffffff66' }} />
                 <RTooltip contentStyle={{ fontSize: 12, borderRadius: 8, backgroundColor: '#000000cc', borderColor: '#ffffff2a', color: '#fff' }} />
-                <Bar dataKey="count" fill="#FF6600" radius={[4, 4, 0, 0]} name="Orders" opacity={0.8} />
+                <Bar dataKey="count" fill="#ff0080" radius={[4, 4, 0, 0]} name="Orders" opacity={0.8} />
                 <Line type="monotone" dataKey="users" stroke="#10B981" strokeWidth={2} name="New Users" dot={false} />
               </ComposedChart>
             </ResponsiveContainer>
@@ -271,7 +271,7 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
         {/* Retention Cohorts */}
         <Card className="glass-panel p-4 shadow-[0_0_20px_rgba(0,0,0,0.3)]">
           <h3 className="font-bold mb-4 flex items-center gap-2 text-sm text-white">
-            <Repeat className="h-4 w-4 text-[#FF6600] drop-shadow-[0_0_5px_rgba(255,102,0,0.8)]" /> Retention Cohorts (Weekly)
+            <Repeat className="h-4 w-4 text-neon-pink drop-shadow-[0_0_5px_rgba(255,102,0,0.8)]" /> Retention Cohorts (Weekly)
           </h3>
           {retention.length === 0 ? (
             <div className="h-[200px] flex items-center justify-center text-xs text-white/40">Insufficient data for cohort analysis</div>
@@ -291,7 +291,7 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
                             className="w-full rounded-sm transition-all hover:opacity-80"
                             style={{
                               height: `${Math.max(4, s.retention * 1.5)}px`,
-                              backgroundColor: s.retention > 50 ? '#00d2ff' : s.retention > 20 ? '#FF6600' : '#ffffff22',
+                              backgroundColor: s.retention > 50 ? '#00d2ff' : s.retention > 20 ? '#ff0080' : '#ffffff22',
                               opacity: wi === 0 ? 1 : s.retention / 100,
                             }}
                             title={`Week ${s.week}: ${s.retention}%`}
@@ -407,7 +407,7 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
         )}
         {analytics?.topSellers?.length > 0 && (
           <Card className="glass-panel p-4 shadow-[0_0_20px_rgba(0,0,0,0.3)]">
-            <h3 className="font-bold mb-3 flex items-center gap-2 text-white"><Trophy className="h-4 w-4 text-[#FF6600]" /> Top Sellers</h3>
+            <h3 className="font-bold mb-3 flex items-center gap-2 text-white"><Trophy className="h-4 w-4 text-neon-pink" /> Top Sellers</h3>
             <ScrollArea className="max-h-[300px] pr-2">
               <div className="space-y-2">
               {analytics.topSellers.map((seller: any, i: number) => {
@@ -415,7 +415,7 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
                 const pct = maxRev > 0 ? (seller.revenue / maxRev) * 100 : 0;
                 return (
                   <motion.div key={seller.id} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03 }} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-                    <span className="text-sm font-black w-5 text-center text-[#FF6600]">{i < 3 ? ['🥇','🥈','🥉'][i] : `#${i+1}`}</span>
+                    <span className="text-sm font-black w-5 text-center text-neon-pink">{i < 3 ? ['🥇','🥈','🥉'][i] : `#${i+1}`}</span>
                     <div className="h-10 w-10 rounded-full bg-gradient-to-br from-neon-blue to-neon-purple flex items-center justify-center text-white text-sm font-black shadow-lg border border-white/20">{seller.name?.[0]?.toUpperCase() || '?'}</div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
@@ -423,7 +423,7 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
                         <span className="font-black text-neon-blue text-sm ml-2">${seller.revenue?.toFixed(2)}</span>
                       </div>
                       <div className="flex-1 h-1.5 bg-black/40 rounded-full overflow-hidden mt-1">
-                        <motion.div className="h-full rounded-full bg-gradient-to-r from-neon-blue to-[#FF6600]" initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.5, delay: i * 0.03 }} />
+                        <motion.div className="h-full rounded-full bg-gradient-to-r from-neon-blue to-[#ff0080]" initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.5, delay: i * 0.03 }} />
                       </div>
                       <div className="flex gap-2 text-[10px] text-white/50 mt-1 font-medium">
                         <span>{seller.sales} sales</span>
@@ -445,11 +445,11 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
 
       {/* Quick Actions */}
       <Card className="glass-panel p-5 shadow-[0_0_20px_rgba(0,0,0,0.3)]">
-        <h3 className="font-bold mb-4 flex items-center gap-2 text-white"><Zap className="h-5 w-5 text-[#FF6600] drop-shadow-[0_0_5px_rgba(255,102,0,0.8)]" /> Quick Actions</h3>
+        <h3 className="font-bold mb-4 flex items-center gap-2 text-white"><Zap className="h-5 w-5 text-neon-pink drop-shadow-[0_0_5px_rgba(255,102,0,0.8)]" /> Quick Actions</h3>
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-          {s?.pendingPrompts > 0 && <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2 bg-black/40 border-neon-blue/30 hover:bg-neon-blue/20 hover:border-neon-blue hover:text-white text-white/80 transition-all rounded-2xl" onClick={() => loadTab('prompts')}><CheckCircle className="h-6 w-6 text-[#FF6600]" /><span className="text-xs font-bold">Approve Pending</span><Badge className="bg-[#FF6600] text-white text-[10px] border-0">{s.pendingPrompts}</Badge></Button>}
+          {s?.pendingPrompts > 0 && <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2 bg-black/40 border-neon-blue/30 hover:bg-neon-blue/20 hover:border-neon-blue hover:text-white text-white/80 transition-all rounded-2xl" onClick={() => loadTab('prompts')}><CheckCircle className="h-6 w-6 text-neon-pink" /><span className="text-xs font-bold">Approve Pending</span><Badge className="bg-neon-pink text-white text-[10px] border-0">{s.pendingPrompts}</Badge></Button>}
           <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2 bg-black/40 border-white/10 hover:bg-white/10 hover:border-white/30 hover:text-white text-white/80 transition-all rounded-2xl" onClick={() => loadTab('payouts')}><Banknote className="h-6 w-6 text-emerald-400" /><span className="text-xs font-bold">Process Payouts</span></Button>
-          <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2 bg-black/40 border-white/10 hover:bg-white/10 hover:border-white/30 hover:text-white text-white/80 transition-all rounded-2xl" onClick={() => loadTab('broadcasts')}><Megaphone className="h-6 w-6 text-[#FF6600]" /><span className="text-xs font-bold">Send Broadcast</span></Button>
+          <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2 bg-black/40 border-white/10 hover:bg-white/10 hover:border-white/30 hover:text-white text-white/80 transition-all rounded-2xl" onClick={() => loadTab('broadcasts')}><Megaphone className="h-6 w-6 text-neon-pink" /><span className="text-xs font-bold">Send Broadcast</span></Button>
           <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2 bg-black/40 border-white/10 hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-400 text-white/80 transition-all rounded-2xl" onClick={() => loadTab('reports')}><Flag className="h-6 w-6 text-red-500" /><span className="text-xs font-bold">View Reports</span></Button>
           <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2 bg-black/40 border-white/10 hover:bg-indigo-500/10 hover:border-indigo-500/30 hover:text-indigo-400 text-white/80 transition-all rounded-2xl" onClick={() => loadTab('security')}><Shield className="h-6 w-6 text-indigo-400" /><span className="text-xs font-bold">Security</span></Button>
         </div>

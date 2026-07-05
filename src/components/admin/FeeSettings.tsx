@@ -59,7 +59,7 @@ export default function FeeSettings() {
       if (json.success) {
         setConfig({ ...DEFAULT_CONFIG, ...json.data })
       }
-    } catch (e) {
+    } catch (e: any) {
       toast.error('Failed to load fee config')
     } finally {
       setLoading(false)
@@ -102,7 +102,7 @@ export default function FeeSettings() {
       } else {
         toast.error(json.error || 'Failed to save')
       }
-    } catch (e: any) {
+    } catch (e: any) { 
       toast.error(e.message || 'Failed to save')
     } finally {
       setSaving(false)

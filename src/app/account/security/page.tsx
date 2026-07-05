@@ -20,7 +20,7 @@ export default function SecurityPage() {
         <Shield className="h-16 w-16 text-slate-200 mx-auto mb-4" />
         <h2 className="text-xl font-bold text-slate-700">Sign in to manage security</h2>
         <p className="text-slate-500 mt-2 mb-6">Update your password and account settings</p>
-        <Button className="bg-[#0066CC] text-white" onClick={() => setShowAuthModal(true)}>Sign In</Button>
+        <Button className="bg-neon-blue text-black font-bold" onClick={() => setShowAuthModal(true)}>Sign In</Button>
       </div>
     )
   }
@@ -50,7 +50,7 @@ export default function SecurityPage() {
       setCurrentPassword('')
       setNewPassword('')
       setConfirmPassword('')
-    } catch (e: any) {
+    } catch (e: any) { 
       toast.error(e.message || 'Failed to update password')
     } finally {
       setLoading(false)
@@ -60,7 +60,7 @@ export default function SecurityPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
       <div className="flex items-center gap-3 mb-8">
-        <Shield className="h-8 w-8 text-[#0066CC]" />
+        <Shield className="h-8 w-8 text-neon-blue" />
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Security Settings</h1>
           <p className="text-sm text-slate-500">Manage your account security and password</p>
@@ -69,7 +69,7 @@ export default function SecurityPage() {
 
       <Card className="p-6 border-slate-200">
         <h2 className="font-bold text-slate-800 mb-1 flex items-center gap-2">
-          <Lock className="h-4 w-4 text-[#0066CC]" /> Change Password
+          <Lock className="h-4 w-4 text-neon-blue" /> Change Password
         </h2>
         <p className="text-xs text-slate-400 mb-6">Use a strong password with at least 6 characters</p>
 
@@ -86,7 +86,7 @@ export default function SecurityPage() {
             <label className="text-xs font-medium text-slate-600 mb-1 block">Confirm New Password</label>
             <Input type="password" placeholder="Confirm new password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
           </div>
-          <Button onClick={handleChangePassword} disabled={loading} className="bg-[#0066CC] text-white">
+          <Button onClick={handleChangePassword} disabled={loading} className="bg-neon-blue text-black font-bold">
             {loading ? 'Updating...' : 'Update Password'}
           </Button>
         </div>
@@ -94,7 +94,7 @@ export default function SecurityPage() {
 
       <Card className="p-6 border-slate-200 mt-6">
         <h2 className="font-bold text-slate-800 mb-1 flex items-center gap-2">
-          <KeyRound className="h-4 w-4 text-[#0066CC]" /> Account Information
+          <KeyRound className="h-4 w-4 text-neon-blue" /> Account Information
         </h2>
         <div className="mt-4 space-y-3 text-sm">
           <div className="flex items-center gap-2">

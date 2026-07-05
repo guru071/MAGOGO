@@ -31,7 +31,7 @@ export default function AdminCoupons({ token }: { token: string }) {
   const [deleting, setDeleting] = useState(false);
 
   const fetchCoupons = async () => {
-    try { setCoupons(await api(`/api/admin/coupons?token=${token}`)); } catch (e) { console.error('[admin] AdminCoupons:', e); } finally { setLoading(false); }
+    try { setCoupons(await api(`/api/admin/coupons?token=${token}`)); } catch (e: any) { console.error('[admin] AdminCoupons:', e); } finally { setLoading(false); }
   };
 
   useEffect(() => {
@@ -50,7 +50,7 @@ export default function AdminCoupons({ token }: { token: string }) {
       setForm({ code: '', discount: '', maxUses: '', minAmount: '', expiresAt: '' });
       setOpen(false);
       fetchCoupons();
-    } catch (e: any) { toast.error(e.message); } finally { setSaving(false); }
+    } catch (e: any) {  toast.error(e.message); } finally { setSaving(false); }
   };
 
   const toggleActive = async (c: any) => {
@@ -58,7 +58,7 @@ export default function AdminCoupons({ token }: { token: string }) {
       await api(`/api/admin/coupons/${c.id}`, { method: 'PUT', headers: { 'x-token': token }, body: JSON.stringify({ isActive: !c.isActive }) });
       toast.success(`Coupon ${c.isActive ? 'deactivated' : 'activated'}`);
       fetchCoupons();
-    } catch (e: any) { toast.error(e.message); }
+    } catch (e: any) {  toast.error(e.message); }
   };
 
   const handleDelete = async () => {
@@ -69,7 +69,7 @@ export default function AdminCoupons({ token }: { token: string }) {
       toast.success('Coupon deleted');
       setDeleteTarget(null);
       fetchCoupons();
-    } catch (e: any) { toast.error(e.message); } finally { setDeleting(false); }
+    } catch (e: any) {  toast.error(e.message); } finally { setDeleting(false); }
   };
 
   return (

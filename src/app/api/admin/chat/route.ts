@@ -1,6 +1,7 @@
 import { db } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth-helpers';
 import { NextRequest, NextResponse } from 'next/server';
+import { sanitizeInput } from '@/lib/security';
 
 // Get chat sessions (list of users who have chatted) and messages for a specific user
 export async function GET(req: NextRequest) {
@@ -49,8 +50,8 @@ export async function GET(req: NextRequest) {
 
       return NextResponse.json({ success: true, data: Array.from(sessionsMap.values()) });
     }
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -60,20 +61,21 @@ export async function POST(req: NextRequest) {
     if (!admin || admin.role !== 'ADMIN') return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 403 });
 
     const { content, receiverId } = await req.json();
-    if (!content?.trim() || !receiverId) return NextResponse.json({ success: false, error: 'Content and receiverId required' }, { status: 400 });
+    const sanitizedContent = sanitizeInput(content || '');
+    if (!sanitizedContent || !receiverId) return NextResponse.json({ success: false, error: 'Content and receiverId required' }, { status: 400 });
 
     const message = await db.chatMessage.create({
       data: {
         senderId: admin.id!,
         receiverId: receiverId,
-        content: content.trim(),
+        content: sanitizedContent,
         messageType: 'TEXT',
       },
     });
 
     return NextResponse.json({ success: true, data: message }, { status: 201 });
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -92,7 +94,7 @@ export async function PUT(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true });
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

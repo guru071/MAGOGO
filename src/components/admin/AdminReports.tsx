@@ -41,7 +41,7 @@ export default function AdminReports({ token }: { token: string }) {
   const [actionSubmitting, setActionSubmitting] = useState(false);
 
   const fetchReports = async () => {
-    try { setReports(await api(`/api/reports?token=${token}`)); } catch (e) { console.error('[admin] AdminReports:', e); } finally { setLoading(false); }
+    try { setReports(await api(`/api/reports?token=${token}`)); } catch (e: any) { console.error('[admin] AdminReports:', e); } finally { setLoading(false); }
   };
 
   useEffect(() => {
@@ -69,7 +69,7 @@ export default function AdminReports({ token }: { token: string }) {
       setActionTarget(null);
       setActionType(null);
       fetchReports();
-    } catch (e: any) { toast.error(e.message); } finally { setActionSubmitting(false); }
+    } catch (e: any) {  toast.error(e.message); } finally { setActionSubmitting(false); }
   };
 
   const filtered = filter === 'ALL' ? reports : reports.filter((r: any) => r.status === filter);

@@ -91,7 +91,7 @@ export function calculateFees(
   let paymentFeeAmt = amount * (config.paymentFeeRate / 100)
 
   // GST is applicable on the service fees (commission + closing fee + payment fee) in India
-  let taxableFees = commissionAmt + closingFee + paymentFeeAmt
+  const taxableFees = commissionAmt + closingFee + paymentFeeAmt
   let gstAmt = taxableFees * (config.gstRate / 100)
 
   let totalFees = commissionAmt + closingFee + paymentFeeAmt + gstAmt

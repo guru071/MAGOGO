@@ -45,10 +45,10 @@ export async function POST(req: NextRequest) {
           const rzPayout = await createRazorpayXPayout(fundAccount.id, data.amount, `pout_${Date.now()}_${sellerId.substring(0, 5)}`, 'MAGHGO Automated Payout');
           transactionId = rzPayout.id;
           notes += ` | RazorpayX ID: ${transactionId}`;
-        } catch (err: any) {
+        } catch (err: unknown) {
           console.error(`RazorpayX failed for seller ${sellerId}:`, err);
           status = 'FAILED'; // Money wasn't sent, but we still record the attempt
-          notes += ` | RazorpayX Error: ${err.message}`;
+          notes += ` | RazorpayX Error: ${(err as Error).message}`;
         }
       } else {
         notes += ` | Skipped automated wire: No valid bank details.`;
@@ -102,8 +102,8 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ success: true, data: results });
-  } catch (e: any) {
+  } catch (e: any) { 
     console.error('Payout Cron Error:', e);
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

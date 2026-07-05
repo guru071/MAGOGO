@@ -15,10 +15,10 @@ export const sendWelcomeEmail = async (email: string, name: string) => {
       subject: 'Welcome to MAGHGO!',
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h1 style="color: #0066CC;">Welcome to MAGHGO, ${name}!</h1>
+          <h1 style="color: #00d2ff;">Welcome to MAGHGO, ${name}!</h1>
           <p>We're thrilled to have you join the premier marketplace for AI prompts.</p>
           <p>Start exploring top-tier prompts and take your AI generation to the next level.</p>
-          <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}" style="display: inline-block; padding: 10px 20px; background-color: #FF6600; color: white; text-decoration: none; border-radius: 5px; margin-top: 10px;">Explore Prompts</a>
+          <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}" style="display: inline-block; padding: 10px 20px; background: linear-gradient(135deg, #00d2ff, #ff0080); color: white; text-decoration: none; border-radius: 5px; margin-top: 10px;">Explore Prompts</a>
         </div>
       `,
     });
@@ -40,10 +40,10 @@ export const sendReceiptEmail = async (email: string, promptTitle: string, amoun
       subject: `Your Receipt for ${promptTitle}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h1 style="color: #0066CC;">Thanks for your purchase!</h1>
+          <h1 style="color: #00d2ff;">Thanks for your purchase!</h1>
           <p>You have successfully purchased <strong>${promptTitle}</strong> for $${amount.toFixed(2)}.</p>
           <p>You can access your prompt immediately in your dashboard.</p>
-          <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/account/orders" style="display: inline-block; padding: 10px 20px; background-color: #0066CC; color: white; text-decoration: none; border-radius: 5px; margin-top: 10px;">View Order</a>
+          <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/account/orders" style="display: inline-block; padding: 10px 20px; background: linear-gradient(135deg, #00d2ff, #3a7bd5); color: white; text-decoration: none; border-radius: 5px; margin-top: 10px;">View Order</a>
         </div>
       `,
     });

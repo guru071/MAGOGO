@@ -13,5 +13,5 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     if (notification.userId !== user.id) return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 });
     await db.notification.update({ where: { id }, data: { isRead } });
     return NextResponse.json({ success: true });
-  } catch (e: any) { return NextResponse.json({ success: false, error: e.message }, { status: 500 }); }
+  } catch {  return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 }); }
 }

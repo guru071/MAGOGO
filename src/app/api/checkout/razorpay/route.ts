@@ -82,12 +82,12 @@ export async function POST(req: NextRequest) {
 
     // CRITICAL SECURITY FIX: Create PENDING orders in the database linked to the Razorpay Order ID.
     // This prevents malicious users from swapping promptIds during the verification step.
-    const pendingOrders = await db.$transaction(async (tx) => {
+    await db.$transaction(async (tx) => {
       const created: any[] = [];
-      for (const item of orderItems) {
+      for (const [idx, item] of orderItems.entries()) {
         const order = await tx.order.create({
           data: {
-            orderId: `ORD-${Date.now().toString(36).toUpperCase()}-${Math.floor(Math.random()*1000)}`,
+            orderId: `ORD-${Date.now().toString(36).toUpperCase()}-${idx}-${crypto.randomUUID().slice(0, 8)}`,
             buyerId: user.id!,
             promptId: item.promptId,
             sellerId: item.sellerId,
@@ -121,8 +121,8 @@ export async function POST(req: NextRequest) {
       amount: totalAmount
     });
     
-  } catch (e: any) { 
+  } catch (e: any) {  
     console.error('[checkout/razorpay]', e);
-    return NextResponse.json({ success: false, error: e.message || 'Failed to create order' }, { status: 500 }); 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 }); 
   }
 }

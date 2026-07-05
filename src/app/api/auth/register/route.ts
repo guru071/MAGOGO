@@ -1,4 +1,3 @@
-import { db } from '@/lib/db';
 import { signupWithSupabase } from '@/lib/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -14,8 +13,6 @@ export async function POST(req: NextRequest) {
 
     const { user, profile } = await signupWithSupabase(email, password, name, country);
 
-
-
     // Send Welcome Email
     import('@/lib/email').then(({ sendWelcomeEmail }) => {
       sendWelcomeEmail(profile.email, profile.name).catch(e => console.error('[email] register failed', e));
@@ -23,9 +20,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: { user: profile, supabaseUser: user },
+      data: { user: profile, supabaseUser: user, needsEmailConfirmation: !user.email_confirmed_at },
     });
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 400 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 400 });
   }
 }

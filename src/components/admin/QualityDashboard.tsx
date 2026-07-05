@@ -27,7 +27,7 @@ export default function QualityDashboard() {
       try {
         const data = await api('/api/admin/stats');
         if (!cancelled) setStats(data);
-      } catch (e: any) {
+      } catch (e: any) { 
         if (!cancelled) setError(e.message);
       } finally { if (!cancelled) setLoading(false); }
     })();
@@ -100,7 +100,7 @@ export default function QualityDashboard() {
         ...prev,
         prompts: prev.prompts?.map((p: any) => p.id === promptId ? { ...p, status: 'APPROVED' } : p),
       }));
-    } catch (e: any) { toast.error(e.message); }
+    } catch (e: any) {  toast.error(e.message); }
   };
 
   const handleRequestRevision = async (promptId: string) => {
@@ -115,7 +115,7 @@ export default function QualityDashboard() {
         ...prev,
         prompts: prev.prompts?.map((p: any) => p.id === promptId ? { ...p, status: 'REVISION' } : p),
       }));
-    } catch (e: any) { toast.error(e.message); }
+    } catch (e: any) {  toast.error(e.message); }
   };
 
   if (loading) {

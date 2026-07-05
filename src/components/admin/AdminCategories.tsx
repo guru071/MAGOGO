@@ -64,7 +64,7 @@ export default function AdminCategories({ token }: { token: string }) {
     try {
       const data = await api(`/api/admin/categories?token=${token}`);
       setCategories(data || []);
-    } catch (e: any) {
+    } catch (e: any) { 
       toast.error(e.message);
     } finally {
       setLoading(false);
@@ -135,7 +135,7 @@ export default function AdminCategories({ token }: { token: string }) {
       }
       setDialogOpen(false);
       fetchCategories();
-    } catch (e: any) {
+    } catch (e: any) { 
       toast.error(e.message);
     } finally {
       setSaving(false);
@@ -153,7 +153,7 @@ export default function AdminCategories({ token }: { token: string }) {
       toast.success('Category deleted');
       setDeleteTarget(null);
       fetchCategories();
-    } catch (e: any) {
+    } catch (e: any) { 
       toast.error(e.message);
     } finally {
       setDeleting(false);
@@ -169,7 +169,7 @@ export default function AdminCategories({ token }: { token: string }) {
       });
       toast.success(`Category ${cat.isActive ? 'deactivated' : 'activated'}`);
       fetchCategories();
-    } catch (e: any) {
+    } catch (e: any) { 
       toast.error(e.message);
     }
   };
@@ -209,7 +209,7 @@ export default function AdminCategories({ token }: { token: string }) {
           </div>
           <Button
             size="sm"
-            className="bg-[#0066CC] hover:bg-[#0055AA] text-white gap-1.5 shrink-0"
+            className="bg-neon-blue hover:bg-neon-blue text-white gap-1.5 shrink-0"
             onClick={openCreate}
           >
             <Plus className="h-4 w-4" />
@@ -260,7 +260,7 @@ export default function AdminCategories({ token }: { token: string }) {
 
                 {/* Name */}
                 <h3
-                  className="font-semibold text-sm mb-1 group-hover:text-[#0066CC] transition-colors cursor-pointer"
+                  className="font-semibold text-sm mb-1 group-hover:text-neon-blue transition-colors cursor-pointer"
                   onClick={() => openEdit(cat)}
                 >
                   {cat.name}
@@ -294,7 +294,7 @@ export default function AdminCategories({ token }: { token: string }) {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-8 px-2 text-xs gap-1 text-[#0066CC] hover:text-[#0055AA] hover:bg-blue-50"
+                    className="h-8 px-2 text-xs gap-1 text-neon-blue hover:text-neon-blue hover:bg-blue-50"
                     onClick={() => openEdit(cat)}
                   >
                     <Pencil className="h-3.5 w-3.5" />
@@ -316,7 +316,7 @@ export default function AdminCategories({ token }: { token: string }) {
                   <Switch
                     checked={cat.isActive}
                     onCheckedChange={() => toggleActive(cat)}
-                    className="data-[state=checked]:bg-[#0066CC]"
+                    className="data-[state=checked]:bg-neon-blue"
                   />
                 </div>
               </Card>
@@ -351,7 +351,7 @@ export default function AdminCategories({ token }: { token: string }) {
                 {!editingId && (
                   <button
                     type="button"
-                    className="text-[10px] text-[#0066CC] hover:underline"
+                    className="text-[10px] text-neon-blue hover:underline"
                     onClick={() => setAutoSlug(!autoSlug)}
                   >
                     {autoSlug ? 'manual' : 'auto'}
@@ -432,7 +432,7 @@ export default function AdminCategories({ token }: { token: string }) {
             <Button
               onClick={handleSave}
               disabled={saving || !form.name.trim()}
-              className="w-full bg-[#0066CC] hover:bg-[#0055AA] text-white"
+              className="w-full bg-neon-blue hover:bg-neon-blue text-white"
             >
               {saving && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
               {editingId ? 'Update Category' : 'Create Category'}

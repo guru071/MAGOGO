@@ -1,10 +1,9 @@
 import { db } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth-helpers';
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
 
-export async function GET(req: NextRequest) {
+
+export async function GET(_req: NextRequest) {
   try {
     const user = await getCurrentUser();
     if (!user || user.role !== 'ADMIN') return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 });
@@ -23,8 +22,8 @@ export async function GET(req: NextRequest) {
         await db.user.count();
         supabaseConnected = true;
       }
-    } catch (e: any) {
-      supabaseError = e.message;
+    } catch (e: unknown) { 
+      supabaseError = e instanceof Error ? e.message : String(e);
       supabaseConnected = false;
     }
 
@@ -34,8 +33,8 @@ export async function GET(req: NextRequest) {
     try {
       await db.user.count();
       dbConnected = true;
-    } catch (e: any) {
-      dbError = e.message;
+    } catch (e: unknown) { 
+      dbError = e instanceof Error ? e.message : String(e);
     }
 
     // Get DB size using Postgres function
@@ -104,7 +103,7 @@ export async function GET(req: NextRequest) {
         },
       },
     });
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

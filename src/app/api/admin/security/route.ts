@@ -14,7 +14,7 @@ import {
 // GET — Security dashboard data
 // ---------------------------------------------------------------------------
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const user = await getCurrentUser();
     if (!user || user.role !== 'ADMIN') {
@@ -103,8 +103,8 @@ export async function GET(req: NextRequest) {
         },
       },
     });
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -184,7 +184,7 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         );
     }
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

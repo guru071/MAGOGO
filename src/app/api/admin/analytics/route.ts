@@ -19,15 +19,6 @@ function fillDays<T extends { day: string }>(rows: T[], from: Date, to: Date, de
   return filled;
 }
 
-/** Simple moving average smoothing */
-function movingAverage(series: number[], window: number): number[] {
-  return series.map((_, i) => {
-    const start = Math.max(0, i - window + 1);
-    const slice = series.slice(start, i + 1);
-    return slice.reduce((a, b) => a + b, 0) / slice.length;
-  });
-}
-
 /** Exponential smoothing forecast (Holt-Winters style) */
 function expSmoothingForecast(series: { value: number }[], forecastDays = 7): { forecast: { day: string; value: number }[]; model: { alpha: number; level: number; trend: number; mse: number } } {
   const n = series.length;
@@ -468,7 +459,7 @@ export async function GET(req: NextRequest) {
         },
       },
     });
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message || 'Internal server error' }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

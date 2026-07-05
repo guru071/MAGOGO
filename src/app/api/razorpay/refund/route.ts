@@ -128,7 +128,7 @@ export async function POST(req: NextRequest) {
         method: paymentRefund ? 'razorpay' : 'balance_credit',
       },
     });
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

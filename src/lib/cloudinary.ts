@@ -12,7 +12,7 @@ export function isConfigured(): boolean {
 }
 
 /** Upload a buffer to Cloudinary and return the result */
-export async function uploadBuffer(buffer: Buffer, folder = 'uploads'): Promise<any> {
+export async function uploadBuffer(buffer: Buffer, folder = 'uploads'): Promise<unknown> {
   return new Promise((resolve, reject) => {
     cloudinary.uploader
       .upload_stream({ folder, resource_type: 'auto' }, (error, result) => {
@@ -24,17 +24,17 @@ export async function uploadBuffer(buffer: Buffer, folder = 'uploads'): Promise<
 }
 
 /** Upload a base64 string to Cloudinary */
-export async function uploadBase64(base64: string, folder = 'uploads'): Promise<any> {
+export async function uploadBase64(base64: string, folder = 'uploads'): Promise<unknown> {
   return cloudinary.uploader.upload(base64, { folder, resource_type: 'auto' });
 }
 
 /** Delete an image by public_id */
-export async function deleteImage(publicId: string): Promise<any> {
+export async function deleteImage(publicId: string): Promise<unknown> {
   return cloudinary.uploader.destroy(publicId);
 }
 
 /** Get a transformed URL for an image */
-export function getTransformedUrl(publicId: string, options: Record<string, any> = {}): string {
+export function getTransformedUrl(publicId: string, options: any = {}): string {
   return cloudinary.url(publicId, {
     secure: true,
     ...options,

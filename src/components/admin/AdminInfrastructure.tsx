@@ -56,8 +56,8 @@ export default function AdminInfrastructure({ token }: { token: string }) {
     {
       name: 'Database (SQLite)',
       icon: Database,
-      color: 'text-[#0066CC]',
-      bg: 'bg-[#0066CC]',
+      color: 'text-neon-blue',
+      bg: 'bg-neon-blue',
       description: 'Local SQLite database via Prisma ORM',
       envVars: ['DATABASE_URL'],
       configured: true,

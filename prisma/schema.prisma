@@ -297,6 +297,12 @@ model PlatformSettings {
   updatedAt   DateTime @updatedAt
 }
 
+model SiteConfig {
+  id        String   @id @default("default")
+  data      Json
+  updatedAt DateTime @updatedAt
+}
+
 
 
 model Report {

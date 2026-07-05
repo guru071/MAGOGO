@@ -33,7 +33,7 @@ export async function DELETE(
     });
 
     return NextResponse.json({ success: true, message: 'Prompt deleted successfully' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[API] DELETE /api/seller/prompts/[id] error:', error);
     return NextResponse.json({ success: false, error: 'Failed to delete prompt' }, { status: 500 });
   }
@@ -76,7 +76,7 @@ export async function PATCH(
     });
 
     return NextResponse.json({ success: true, message: 'Price updated successfully', data: { price: Number(price), isFree: Number(price) === 0 } });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[API] PATCH /api/seller/prompts/[id] error:', error);
     return NextResponse.json({ success: false, error: 'Failed to update prompt' }, { status: 500 });
   }

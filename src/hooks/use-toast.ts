@@ -30,8 +30,6 @@ function genId() {
   return count.toString()
 }
 
-const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>()
-
 function reducer(state: ToastState, action: ToastAction): ToastState {
   switch (action.type) {
     case "ADD_TOAST":

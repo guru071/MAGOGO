@@ -36,8 +36,8 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({ success: true, data: profile });
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -46,7 +46,7 @@ export async function DELETE() {
     const supabase = await createSupabaseServerClient();
     await supabase.auth.signOut();
     return NextResponse.json({ success: true });
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

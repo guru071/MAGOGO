@@ -25,7 +25,7 @@ export default function AdminPayouts({ token }: { token: string }) {
   const [processing, setProcessing] = useState(false);
 
   const fetchPayouts = async () => {
-    try { setPayouts(await api(`/api/admin/payouts?token=${token}`)); } catch (e) { console.error('[admin] AdminPayouts:', e); } finally { setLoading(false); }
+    try { setPayouts(await api(`/api/admin/payouts?token=${token}`)); } catch (e: any) { console.error('[admin] AdminPayouts:', e); } finally { setLoading(false); }
   };
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export default function AdminPayouts({ token }: { token: string }) {
       const result = await api('/api/admin/payouts/process', { method: 'POST', headers: { 'x-token': token } });
       toast.success(result?.message || 'All payouts processed');
       fetchPayouts();
-    } catch (e: any) { toast.error(e.message); } finally { setProcessing(false); }
+    } catch (e: any) {  toast.error(e.message); } finally { setProcessing(false); }
   };
 
   const filtered = filter === 'ALL' ? payouts : payouts.filter((p: any) => p.status === filter);

@@ -1,6 +1,7 @@
 import { db } from '@/lib/db';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 import { NextRequest, NextResponse } from 'next/server';
+import { sanitizeInput } from '@/lib/security';
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,6 +12,7 @@ export async function POST(req: NextRequest) {
     }
 
     const { bankName, bankAccount, bankIfsc, upiId, paypalEmail, paymentMethod, bio } = await req.json();
+    const sanitizedBio = sanitizeInput(bio || '');
 
     const profile = await db.user.findUnique({ where: { authUserId: user.id } });
     if (!profile) {
@@ -34,12 +36,12 @@ export async function POST(req: NextRequest) {
       data: {
         isSeller: true,
         role: profile.role === 'BUYER' ? 'SELLER' : profile.role,
-        bankName, bankAccount, bankIfsc, upiId, paypalEmail, paymentMethod, bio,
+        bankName, bankAccount, bankIfsc, upiId, paypalEmail, paymentMethod, bio: sanitizedBio,
       },
     });
 
     return NextResponse.json({ success: true, data: updated });
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

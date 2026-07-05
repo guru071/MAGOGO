@@ -15,11 +15,11 @@ const statusColors: Record<string, string> = {
   REFUNDED: 'bg-purple-500/20 text-purple-400 border border-purple-500/30',
 }
 
-const getCoverImage = (prompt: any) => {
+const getCoverImage = (prompt: { sampleImages?: string | string[] } | undefined) => {
   try {
     const images = typeof prompt?.sampleImages === 'string' ? JSON.parse(prompt.sampleImages) : (prompt?.sampleImages || []);
     return Array.isArray(images) && images.length > 0 && typeof images[0] === 'string' ? images[0] : null;
-  } catch (e) {
+  } catch { 
     return null;
   }
 };
@@ -29,7 +29,7 @@ export default function OrdersPage() {
 
   useEffect(() => {
     if (user) fetchOrders('bought')
-  }, [user])
+  }, [user, fetchOrders])
 
   if (!user) {
     return (

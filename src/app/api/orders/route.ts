@@ -1,7 +1,7 @@
 import { db } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth-helpers';
 import { NextRequest, NextResponse } from 'next/server';
-import { getFeeConfig, calculateFees, FeeBreakdown } from '@/lib/fees';
+import { getFeeConfig, calculateFees } from '@/lib/fees';
 
 export async function GET(req: NextRequest) {
   try {
@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
     const where = type === 'sold' ? { sellerId: user.id! } : { buyerId: user.id! };
     const orders = await db.order.findMany({ where, include: { prompt: { select: { id: true, title: true, sampleImages: true, price: true, isFree: true } }, buyer: { select: { id: true, name: true, avatar: true } } }, orderBy: { createdAt: 'desc' }, take: 50 });
     return NextResponse.json({ success: true, data: orders });
-  } catch (e: any) { return NextResponse.json({ success: false, error: e.message }, { status: 500 }); }
+  } catch {  return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 }); }
 }
 
 export async function POST(req: NextRequest) {
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
 
       const order = await tx.order.create({
         data: {
-          orderId: `ORD-${Date.now().toString(36).toUpperCase()}`,
+          orderId: `ORD-${Date.now().toString(36).toUpperCase()}-${crypto.randomUUID().slice(0, 8)}`,
           buyerId: user.id!,
           promptId,
           sellerId: prompt.sellerId,
@@ -159,5 +159,5 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true, data: result }, { status: 201 })
-  } catch (e: any) { return NextResponse.json({ success: false, error: e.message }, { status: 500 }); }
+  } catch {  return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 }); }
 }

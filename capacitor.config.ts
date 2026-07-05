@@ -5,9 +5,22 @@ const config: CapacitorConfig = {
   appName: 'MAGHGO',
   webDir: 'out',
   server: {
-    url: 'https://maghgo.goatech.tech',
-    cleartext: true
-  }
+    androidScheme: 'https',
+    cleartext: true,
+  },
+  plugins: {
+    PushNotifications: {
+      presentationOptions: ['badge', 'sound', 'alert'],
+    },
+    SplashScreen: {
+      launchShowDuration: 2000,
+      backgroundColor: '#2874F0',
+    },
+    GoogleAuth: {
+      scopes: ['profile', 'email'],
+      serverClientId: process.env.NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID || '',
+    },
+  },
 };
 
 export default config;

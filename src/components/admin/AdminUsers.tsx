@@ -60,7 +60,7 @@ export default function AdminUsers({ token, onViewActivity }: { token: string; o
           setTotal(data.total || 0);
           setPages(data.pages || 1);
         }
-      } catch (e: any) { if (!cancelled) toast.error(e.message); }
+      } catch (e: any) {  if (!cancelled) toast.error(e.message); }
       if (!cancelled) setLoading(false);
     })();
     return () => { cancelled = true; };
@@ -71,7 +71,7 @@ export default function AdminUsers({ token, onViewActivity }: { token: string; o
       await api(`/api/admin/users/${id}`, { method: 'PUT', headers: { 'x-token': token }, body: JSON.stringify(body) });
       toast.success('User updated');
       setRefresh(r => r + 1);
-    } catch (e: any) { toast.error(e.message); }
+    } catch (e: any) {  toast.error(e.message); }
   };
 
   const openBanDialog = (user: any) => {
@@ -94,7 +94,7 @@ export default function AdminUsers({ token, onViewActivity }: { token: string; o
       setBanUser(null);
       setBanReason('');
       setRefresh(r => r + 1);
-    } catch (e: any) { toast.error(e.message); }
+    } catch (e: any) {  toast.error(e.message); }
     setBanning(false);
   };
 
@@ -107,7 +107,7 @@ export default function AdminUsers({ token, onViewActivity }: { token: string; o
       });
       toast.success(`User "${user.name}" has been unbanned`);
       setRefresh(r => r + 1);
-    } catch (e: any) { toast.error(e.message); }
+    } catch (e: any) {  toast.error(e.message); }
   };
 
   return (

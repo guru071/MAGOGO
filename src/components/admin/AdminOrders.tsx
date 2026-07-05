@@ -70,7 +70,7 @@ export default function AdminOrders({ token }: { token: string }) {
           setTotalValue(data.totalValue || 0);
           setStatusCounts(data.statusCounts || {});
         }
-      } catch (e: any) { if (!cancelled) toast.error(e.message); }
+      } catch (e: any) {  if (!cancelled) toast.error(e.message); }
       if (!cancelled) setLoading(false);
     })();
     return () => { cancelled = true; };
@@ -90,7 +90,7 @@ export default function AdminOrders({ token }: { token: string }) {
       setRefundOrder(null);
       setRefundReason('');
       setRefresh(r => r + 1);
-    } catch (e: any) { toast.error(e.message); }
+    } catch (e: any) {  toast.error(e.message); }
     setRefunding(false);
   };
 
@@ -110,7 +110,7 @@ export default function AdminOrders({ token }: { token: string }) {
       });
       toast.success(`Order status updated to ${newStatus}`);
       setRefresh(r => r + 1);
-    } catch (e: any) { toast.error(e.message); } finally { setUpdatingStatus(null); }
+    } catch (e: any) {  toast.error(e.message); } finally { setUpdatingStatus(null); }
   };
 
   const canChangeStatus = (status: string) => status !== 'COMPLETED' && status !== 'REFUNDED';
@@ -241,7 +241,7 @@ export default function AdminOrders({ token }: { token: string }) {
                         {canChangeStatus(o.status) ? (
                           <div className="flex items-center gap-1.5">
                             {updatingStatus === o.id ? (
-                              <Loader2 className="h-3.5 w-3.5 animate-spin text-[#0066CC]" />
+                              <Loader2 className="h-3.5 w-3.5 animate-spin text-neon-blue" />
                             ) : (
                               <Select value={o.status} onValueChange={(v) => handleStatusChange(o.id, v)}>
                                 <SelectTrigger className="h-7 w-[120px] text-[10px]">

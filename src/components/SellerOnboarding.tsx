@@ -88,15 +88,15 @@ export function SellerOnboarding() {
           <div className="pt-4 border-t border-white/10">
             <Label className="text-base font-bold text-white/90 mb-4 block">Payout Method</Label>
             <RadioGroup value={form.paymentMethod} onValueChange={(v) => handleChange('paymentMethod', v)} className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
-              <div className="flex items-center space-x-2 border rounded-xl p-3 hover:border-[#0066CC]/50 cursor-pointer transition-colors bg-black/40">
+              <div className="flex items-center space-x-2 border rounded-xl p-3 hover:border-neon-blue/50 cursor-pointer transition-colors bg-black/40">
                 <RadioGroupItem value="BANK_TRANSFER" id="BANK_TRANSFER" />
                 <Label htmlFor="BANK_TRANSFER" className="cursor-pointer flex items-center gap-2"><Building className="h-4 w-4 text-white/50"/> Bank</Label>
               </div>
-              <div className="flex items-center space-x-2 border rounded-xl p-3 hover:border-[#0066CC]/50 cursor-pointer transition-colors bg-black/40">
+              <div className="flex items-center space-x-2 border rounded-xl p-3 hover:border-neon-blue/50 cursor-pointer transition-colors bg-black/40">
                 <RadioGroupItem value="UPI" id="UPI" />
                 <Label htmlFor="UPI" className="cursor-pointer flex items-center gap-2"><Smartphone className="h-4 w-4 text-white/50"/> UPI</Label>
               </div>
-              <div className="flex items-center space-x-2 border rounded-xl p-3 hover:border-[#0066CC]/50 cursor-pointer transition-colors bg-black/40">
+              <div className="flex items-center space-x-2 border rounded-xl p-3 hover:border-neon-blue/50 cursor-pointer transition-colors bg-black/40">
                 <RadioGroupItem value="PAYPAL" id="PAYPAL" />
                 <Label htmlFor="PAYPAL" className="cursor-pointer flex items-center gap-2"><CreditCard className="h-4 w-4 text-white/50"/> PayPal</Label>
               </div>

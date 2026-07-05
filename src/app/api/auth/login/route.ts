@@ -1,5 +1,6 @@
 import { db } from '@/lib/db';
 import { loginWithSupabase } from '@/lib/auth';
+import { createSupabaseServerClient } from '@/lib/supabase-server';
 import { NextRequest, NextResponse } from 'next/server';
 import { isIPBlacklisted, blockIP, createAuditLog } from '@/lib/security';
 
@@ -42,7 +43,19 @@ export async function POST(req: NextRequest) {
     const { device, browser } = parseUserAgent(ua);
 
     try {
-      const { session, profile } = await loginWithSupabase(email, password);
+      const { session, user, profile } = await loginWithSupabase(email, password);
+
+      // Check email verification
+      if (!user.email_confirmed_at) {
+        const supabase = await createSupabaseServerClient()
+        await supabase.auth.signOut()
+        try {
+          await db.loginHistory.create({
+            data: { userId: profile.id, ipAddress: ip, userAgent: ua || undefined, device, browser, status: 'FAILED' },
+          });
+        } catch (e) { console.error('[auth/login] failed login history create error', e); }
+        return NextResponse.json({ success: false, error: 'EMAIL_NOT_VERIFIED' }, { status: 403 });
+      }
 
       try {
         await db.loginHistory.create({
@@ -52,20 +65,21 @@ export async function POST(req: NextRequest) {
       } catch (e) { console.error('[auth/login] login history create error', e); /* DB unavailable — skip logging */ }
 
       return NextResponse.json({ success: true, data: { user: profile, supabaseSession: session } });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('LOGIN ERROR DETAILS:', err);
       try {
         await db.loginHistory.create({
           data: { userId: null, ipAddress: ip, userAgent: ua || undefined, device, browser, status: 'FAILED' },
         });
       } catch (e2) { console.error('[auth/login] failed login history create error', e2); /* DB unavailable — skip logging */ }
-      const message = typeof err?.message === 'string' && err.message.toLowerCase().includes('suspended')
-        ? err.message
+      const error = err as { message?: string };
+      const message = typeof error.message === 'string' && error.message.toLowerCase().includes('suspended')
+        ? error.message
         : 'Invalid email or password';
       return NextResponse.json({ success: false, error: message }, { status: 401 });
     }
-  } catch (e: any) { 
+  } catch (e) {  
     console.error('OUTER LOGIN ERROR:', e);
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 }); 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 }); 
   }
 }

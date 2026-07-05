@@ -46,7 +46,7 @@ export default function FraudDashboard({ token }: { token: string }) {
       const json = await res.json();
       if (json.success) setData(json.data);
       else toast.error(json.error || 'Failed to load fraud cases');
-    } catch (e: any) {
+    } catch (e: any) { 
       toast.error(e.message);
     } finally {
       setLoading(false);
@@ -72,7 +72,7 @@ export default function FraudDashboard({ token }: { token: string }) {
       } else {
         toast.error(json.error || 'Action failed');
       }
-    } catch (e: any) {
+    } catch (e: any) { 
       toast.error(e.message);
     }
   };

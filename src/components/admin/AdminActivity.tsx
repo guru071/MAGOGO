@@ -75,7 +75,7 @@ export default function AdminActivity({ token, preFilterUserId, preFilterUserNam
           setTotal(data.total || 0);
           setActions(data.actions || []);
         }
-      } catch (e: any) { if (!cancelled) toast.error(e.message); }
+      } catch (e: any) {  if (!cancelled) toast.error(e.message); }
       if (!cancelled) setLoading(false);
     })();
     return () => { cancelled = true; };

@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { canViewPromptMetadata, sanitizePromptForUser } from '@/lib/prompt-security';
 import { deleteImage } from '@/lib/cloudinary';
 import { createSupabaseAdminClient } from '@/lib/supabase-admin';
+import { sanitizeInput } from '@/lib/security';
 
 async function deletePromptImages(sampleImages: string) {
   try {
@@ -54,7 +55,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     const hasPurchased = sanitizedPrompt.accessReason === 'PURCHASED';
 
     return NextResponse.json({ success: true, data: { ...sanitizedPrompt, hasPurchased } });
-  } catch (e: any) { return NextResponse.json({ success: false, error: e.message }, { status: 500 }); }
+  } catch {  return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 }); }
 }
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -68,10 +69,15 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const body = await req.json();
     const updateData: any = {};
     const allowed = ['title', 'description', 'promptText', 'sampleImages', 'categoryId', 'tags', 'recommendedAI', 'price', 'isFree', 'discount', 'originalPrice', 'status', 'isFeatured', 'isTrending', 'isPremium'];
-    for (const k of allowed) { if (body[k] !== undefined) updateData[k] = typeof body[k] === 'object' && k !== 'price' && k !== 'discount' ? JSON.stringify(body[k]) : body[k]; }
+    for (const k of allowed) {
+      if (body[k] !== undefined) {
+        const val = typeof body[k] === 'object' && k !== 'price' && k !== 'discount' ? JSON.stringify(body[k]) : body[k];
+        updateData[k] = typeof val === 'string' ? sanitizeInput(val) : val;
+      }
+    }
     const prompt = await db.prompt.update({ where: { id }, data: updateData });
     return NextResponse.json({ success: true, data: prompt });
-  } catch (e: any) { return NextResponse.json({ success: false, error: e.message }, { status: 500 }); }
+  } catch {  return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 }); }
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -85,5 +91,5 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     await deletePromptImages(existing.sampleImages);
     await db.prompt.delete({ where: { id } });
     return NextResponse.json({ success: true });
-  } catch (e: any) { return NextResponse.json({ success: false, error: e.message }, { status: 500 }); }
+  } catch {  return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 }); }
 }

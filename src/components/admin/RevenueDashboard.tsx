@@ -9,8 +9,8 @@ import { formatPrice } from '@/store/marketplace'
 import { BarChart, Bar, PieChart as RPieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts'
 import { toast } from 'sonner'
 
-const COLORS = ['#0066CC', '#FF6600', '#10B981', '#8B5CF6', '#EC4899', '#F59E0B', '#06B6D4']
-const PIE_COLORS = ['#0066CC', '#FF6600', '#F59E0B', '#10B981']
+const COLORS = ['neon-blue', '#ff0080', '#10B981', '#8B5CF6', '#EC4899', '#F59E0B', '#06B6D4']
+const PIE_COLORS = ['neon-blue', '#ff0080', '#F59E0B', '#10B981']
 
 function formatUSD(amount: number): string {
   return `$${amount.toFixed(2)}`
@@ -31,7 +31,7 @@ export default function RevenueDashboard() {
       } else {
         toast.error(j.error || 'Failed to load revenue data')
       }
-    } catch (e: any) {
+    } catch (e: any) { 
       toast.error('Failed to load revenue data')
       console.error('[RevenueDashboard]', e)
     } finally {
@@ -56,8 +56,8 @@ export default function RevenueDashboard() {
 
   const summaryCards = [
     { label: 'Total Revenue', value: formatUSD(summary.totalRevenue || 0), icon: DollarSign, color: 'text-emerald-600', bg: 'bg-emerald-100' },
-    { label: 'Commission', value: formatUSD(summary.totalCommission || 0), icon: Percent, color: 'text-[#0066CC]', bg: 'bg-blue-100' },
-    { label: 'GST Collected', value: formatUSD(summary.totalGst || 0), icon: Landmark, color: 'text-[#FF6600]', bg: 'bg-orange-100' },
+    { label: 'Commission', value: formatUSD(summary.totalCommission || 0), icon: Percent, color: 'text-neon-blue', bg: 'bg-blue-100' },
+    { label: 'GST Collected', value: formatUSD(summary.totalGst || 0), icon: Landmark, color: 'text-neon-pink', bg: 'bg-orange-100' },
     { label: 'Closing Fees', value: formatUSD(summary.totalClosingFee || 0), icon: Receipt, color: 'text-purple-600', bg: 'bg-purple-100' },
     { label: 'Payment Fees', value: formatUSD(summary.totalPaymentFee || 0), icon: TrendingUp, color: 'text-pink-600', bg: 'bg-pink-100' },
   ]
@@ -65,7 +65,7 @@ export default function RevenueDashboard() {
   if (loading && !data) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-[#0066CC]" />
+        <Loader2 className="h-8 w-8 animate-spin text-neon-blue" />
       </div>
     )
   }
@@ -145,7 +145,7 @@ export default function RevenueDashboard() {
                     }}
                   />
                   <Bar dataKey="commission" stackId="a" fill="#00d2ff" radius={[0, 0, 0, 0]} />
-                  <Bar dataKey="gst" stackId="a" fill="#FF6600" />
+                  <Bar dataKey="gst" stackId="a" fill="#ff0080" />
                   <Bar dataKey="closingFee" stackId="a" fill="#F59E0B" />
                   <Bar dataKey="paymentFee" stackId="a" fill="#10B981" radius={[4, 4, 0, 0]} />
                 </BarChart>
@@ -158,7 +158,7 @@ export default function RevenueDashboard() {
         <Card className="glass-panel shadow-[0_0_20px_rgba(0,0,0,0.3)]">
           <div className="p-5 border-b border-white/10 bg-black/40 rounded-t-2xl">
             <h3 className="font-bold text-white flex items-center gap-2">
-              <PieChart className="h-5 w-5 text-[#FF6600] drop-shadow-[0_0_5px_rgba(255,102,0,0.8)]" /> Fee Distribution
+              <PieChart className="h-5 w-5 text-neon-pink drop-shadow-[0_0_5px_rgba(255,102,0,0.8)]" /> Fee Distribution
             </h3>
           </div>
           <div className="p-5">
@@ -236,7 +236,7 @@ export default function RevenueDashboard() {
                     {o.fees ? (
                       <>
                         <td className="p-4 text-right text-neon-blue font-medium">${o.fees.commission.toFixed(2)}</td>
-                        <td className="p-4 text-right text-[#FF6600] font-medium">${o.fees.gst.toFixed(2)}</td>
+                        <td className="p-4 text-right text-neon-pink font-medium">${o.fees.gst.toFixed(2)}</td>
                         <td className="p-4 text-right text-amber-400 font-medium">${o.fees.closingFee.toFixed(2)}</td>
                         <td className="p-4 text-right text-emerald-400 font-medium">${o.fees.paymentFee.toFixed(2)}</td>
                         <td className="p-4 text-right font-black text-white bg-white/5">${o.fees.total.toFixed(2)}</td>

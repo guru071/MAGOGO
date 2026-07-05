@@ -23,10 +23,9 @@ export default function AccountSettingsPage() {
     paypalEmail: '',
     paymentMethod: 'BANK_TRANSFER'
   })
-
   useEffect(() => {
     if (user) {
-      setForm({
+      queueMicrotask(() => setForm({
         name: user.name || '',
         bio: user.bio || '',
         bankName: user.bankName || '',
@@ -35,7 +34,7 @@ export default function AccountSettingsPage() {
         upiId: user.upiId || '',
         paypalEmail: user.paypalEmail || '',
         paymentMethod: user.paymentMethod || 'BANK_TRANSFER'
-      })
+      }))
     }
   }, [user])
 

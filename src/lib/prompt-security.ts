@@ -20,10 +20,6 @@ function isSellerOwner(prompt: PromptAccessFields, user: PromptAccessUser): bool
   return Boolean(user?.id && prompt.sellerId && prompt.sellerId === user.id);
 }
 
-function isFreePrompt(prompt: PromptAccessFields): boolean {
-  return prompt.isFree === true || Number(prompt.price || 0) <= 0;
-}
-
 export function canViewPromptMetadata(prompt: PromptAccessFields, user: PromptAccessUser): boolean {
   return prompt.status === 'APPROVED' || isAdmin(user) || isSellerOwner(prompt, user);
 }

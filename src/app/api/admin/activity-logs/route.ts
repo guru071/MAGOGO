@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
         actions: distinctActions.map((a: any) => a.action),
       },
     });
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

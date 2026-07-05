@@ -199,7 +199,7 @@ export default function LandingPage() {
               <div className="col-span-full py-12 text-center"><Loader2 className="h-8 w-8 animate-spin text-neon-purple mx-auto" /></div>
             ) : categories.length === 0 ? (
               <div className="col-span-full py-12 text-center text-white/40">No categories available</div>
-            ) : categories.slice(0, 12).map((cat: any, i: number) => {
+            ) : categories.map((cat: any, i: number) => {
               const style = CATEGORY_STYLES[cat.slug] || { icon: Sparkles, color: 'text-white' };
               const Icon = style.icon;
               return (

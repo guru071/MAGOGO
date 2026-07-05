@@ -1,9 +1,0 @@
-{
-  "appId": "com.maghgo.app",
-  "appName": "MAGHGO",
-  "webDir": "out",
-  "bundledWebRuntime": false,
-  "server": {
-    "cleartext": true
-  }
-}

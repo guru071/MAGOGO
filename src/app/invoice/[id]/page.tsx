@@ -5,12 +5,12 @@ import { useParams, useRouter } from 'next/navigation'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { ArrowLeft, Download, Printer, CheckCircle2 } from 'lucide-react'
+import { ArrowLeft, Printer, CheckCircle2 } from 'lucide-react'
 
 export default function InvoicePage() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
-  const [order, setOrder] = useState<any>(null)
+  const [order, setOrder] = useState<any | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -163,7 +163,7 @@ export default function InvoicePage() {
           {/* Footer */}
           <div className="border-t border-white/20 mt-16 pt-8 text-center text-white/50 text-sm">
             <p className="font-medium text-white/90">Thank you for your purchase!</p>
-            <p className="mt-1">If you have any questions about this invoice, please contact support@aiprompthub.com</p>
+            <p className="mt-1">If you have any questions about this invoice, please contact support@maghgo.com</p>
           </div>
           
         </Card>

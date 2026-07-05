@@ -35,11 +35,11 @@ export default async function Image({ params }: { params: { id: string } }) {
           }}
         >
           {/* Background decoration */}
-          <div style={{ position: 'absolute', top: -100, right: -100, width: 400, height: 400, background: '#0066CC', filter: 'blur(100px)', opacity: 0.3, borderRadius: '50%' }} />
-          <div style={{ position: 'absolute', bottom: -100, left: -100, width: 400, height: 400, background: '#FF6600', filter: 'blur(100px)', opacity: 0.2, borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', top: -100, right: -100, width: 400, height: 400, background: '#00d2ff', filter: 'blur(100px)', opacity: 0.3, borderRadius: '50%' }} />
+          <div style={{ position: 'absolute', bottom: -100, left: -100, width: 400, height: 400, background: '#ff0080', filter: 'blur(100px)', opacity: 0.2, borderRadius: '50%' }} />
           
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '40px' }}>
-            <div style={{ background: '#FF6600', color: 'white', padding: '6px 16px', borderRadius: '20px', fontSize: 24, fontWeight: 'bold', marginRight: '16px' }}>MAGHGO</div>
+            <div style={{ background: 'linear-gradient(135deg, #00d2ff, #ff0080)', color: 'white', padding: '6px 16px', borderRadius: '20px', fontSize: 24, fontWeight: 'bold', marginRight: '16px' }}>MAGHGO</div>
             <div style={{ color: '#94a3b8', fontSize: 24 }}>AI Prompt Marketplace</div>
           </div>
 
@@ -78,7 +78,7 @@ export default async function Image({ params }: { params: { id: string } }) {
       ),
       { ...size }
     );
-  } catch (e: any) {
+  } catch { 
     return new Response('Failed to generate image', { status: 500 });
   }
 }

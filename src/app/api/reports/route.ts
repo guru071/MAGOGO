@@ -1,6 +1,7 @@
 import { db } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth-helpers';
 import { NextRequest, NextResponse } from 'next/server';
+import { sanitizeInput } from '@/lib/security';
 
 export async function GET(req: NextRequest) {
   try {
@@ -25,8 +26,8 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true, data: reports });
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -37,13 +38,15 @@ export async function POST(req: NextRequest) {
 
     const { promptId, reason, description } = await req.json();
     if (!promptId || !reason) return NextResponse.json({ success: false, error: 'promptId and reason required' }, { status: 400 });
+    const sanitizedReason = sanitizeInput(reason);
+    const sanitizedDescription = sanitizeInput(description || '');
 
     // Check if user already reported this prompt
     const existing = await db.report.findFirst({ where: { reporterId: user.id!, promptId } });
     if (existing) return NextResponse.json({ success: false, error: 'You have already reported this prompt' }, { status: 400 });
 
     const report = await db.report.create({
-      data: { reporterId: user.id!, promptId, reason, description },
+      data: { reporterId: user.id!, promptId, reason: sanitizedReason, description: sanitizedDescription },
     });
 
     await db.activityLog.create({
@@ -51,7 +54,7 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true, data: report }, { status: 201 });
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

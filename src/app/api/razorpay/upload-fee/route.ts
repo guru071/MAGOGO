@@ -27,8 +27,8 @@ export async function POST(req: Request) {
 
     const order = await createOrder(totalFees, `upload_fee_${user.id}`, { userId: user.id, feeType: 'upload' })
     return NextResponse.json({ success: true, orderId: order.id, feeUsd: totalFees })
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Upload Fee Razorpay Error:', err)
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 })
   }
 }

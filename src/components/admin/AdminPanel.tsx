@@ -32,6 +32,7 @@ import {
   HelpCircle,
   MessageCircle,
   Zap,
+  Layout,
 } from 'lucide-react';
 
 import Dashboard from './Dashboard';
@@ -51,10 +52,13 @@ import QualitySettings from './QualitySettings';
 import QualityDashboard from './QualityDashboard';
 import FeeSettings from './FeeSettings';
 import RevenueDashboard from './RevenueDashboard';
+import FraudDashboard from './FraudDashboard';
+import FraudSettings from './FraudSettings';
 import AdminComments from './AdminComments';
 
 import AdminSupportChat from './AdminSupportChat';
 import AdminFlashDeals from './AdminFlashDeals';
+import AdminSiteConfig from './AdminSiteConfig';
 
 // ---------------------------------------------------------------------------
 // Tab definitions
@@ -77,9 +81,11 @@ const TABS = [
   { key: 'settings', label: 'Settings', icon: Settings },
   { key: 'infrastructure', label: 'Infrastructure', icon: Server },
   { key: 'security', label: 'Security', icon: ShieldCheck },
+  { key: 'fraud', label: 'Fraud Detection', icon: ShieldCheck },
   { key: 'quality', label: 'Quality', icon: Beaker },
   { key: 'fees', label: 'Fees', icon: DollarSign },
   { key: 'revenue', label: 'Revenue', icon: TrendingUp },
+  { key: 'site-config', label: 'Site Config', icon: Layout },
 ] as const;
 
 type TabKey = (typeof TABS)[number]['key'];
@@ -189,7 +195,7 @@ function SidebarNav({
                 }}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
                   isActive
-                    ? 'bg-[#0066CC] text-white shadow-lg shadow-[#0066CC]/30'
+                    ? 'bg-neon-blue text-white shadow-lg shadow-neon-blue/30'
                     : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
                 }`}
               >
@@ -204,7 +210,7 @@ function SidebarNav({
       {/* User section */}
       <div className="p-3 border-t border-slate-700/50">
         <div className="flex items-center gap-3">
-          <div className="h-9 w-9 shrink-0 rounded-full bg-[#FF6600] flex items-center justify-center text-xs font-bold text-white">
+          <div className="h-9 w-9 shrink-0 rounded-full bg-neon-pink flex items-center justify-center text-xs font-bold text-white">
             {user?.name?.[0]?.toUpperCase() || 'A'}
           </div>
           <div className="flex-1 min-w-0">
@@ -291,6 +297,13 @@ export default function AdminPanel({ token, user, onLogout }: AdminPanelProps) {
         return <AdminInfrastructure token={token} />;
       case 'security':
         return <AdminSecurity token={token} />;
+      case 'fraud':
+        return (
+          <div className="space-y-8">
+            <FraudDashboard token={token} />
+            <FraudSettings token={token} />
+          </div>
+        );
       case 'quality':
         return (
           <div className="space-y-8">
@@ -302,6 +315,8 @@ export default function AdminPanel({ token, user, onLogout }: AdminPanelProps) {
         return <FeeSettings />;
       case 'revenue':
         return <RevenueDashboard />;
+      case 'site-config':
+        return <AdminSiteConfig />;
       default:
         return null;
     }

@@ -36,5 +36,5 @@ export async function POST(req: NextRequest) {
     const feeConfig = config || await getFeeConfig()
     const breakdown = calculateFees(amount || 0, feeConfig)
     return NextResponse.json({ success: true, data: breakdown })
-  } catch (e: any) { return NextResponse.json({ success: false, error: e.message }, { status: 500 }) }
+  } catch {  return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 }) }
 }

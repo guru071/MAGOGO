@@ -2,41 +2,38 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { useStore, formatPrice, CURRENCIES } from '@/store/marketplace'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Card } from '@/components/ui/card'
-import { Textarea } from '@/components/ui/textarea'
+import { useStore, formatPrice } from '@/store/marketplace'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { toast } from 'sonner'
 import Link from 'next/link'
-import Image from 'next/image'
 import {
-  Heart, ShoppingCart, Star, Eye, Download, Sparkles,
-  MessageSquare, Share2, ArrowLeft, Loader2, Check, Flag,
-  User as UserIcon, Clock, ShieldCheck, Zap,
-  ChevronRight, Code, Lock
+  Heart, ShoppingCart, Star, Download, Sparkles,
+  MessageSquare, Loader2, Check, Flag,
+  Users, ShieldCheck, Zap,
+  ChevronRight, Code, Lock, Store
 } from 'lucide-react'
 import ReportModal from '@/components/marketplace/ReportModal'
+import CommentSection from '@/components/marketplace/CommentSection'
 
 export default function PromptDetailPage() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
   const {
-    selectedPrompt, comments, promptReviews, loading,
-    user, selectedCurrency, cart, likedPromptIds, wishlistedPromptIds,
-    fetchPromptDetail, toggleLike, toggleWishlist, addToCart,
-    addComment, addReview, setShowAuthModal, setAuthMode,
+    selectedPrompt, loading,
+    user, selectedCurrency, cart, wishlistedPromptIds,
+    fetchPromptDetail, toggleWishlist, addToCart,
+    setShowAuthModal,
   } = useStore()
 
-  const [commentText, setCommentText] = useState('')
   const [reviewRating, setReviewRating] = useState(5)
   const [reviewComment, setReviewComment] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [reportOpen, setReportOpen] = useState(false)
   const [qnaList, setQnaList] = useState<any[]>([])
   const [questionText, setQuestionText] = useState('')
+  const [submittingReview, setSubmittingReview] = useState(false)
+  const [reviews, setReviews] = useState<any[]>([])
 
   useEffect(() => {
     if (id) {
@@ -45,32 +42,31 @@ export default function PromptDetailPage() {
         if (d.success) setQnaList(d.data)
       }).catch(console.error)
     }
-  }, [id])
+  }, [id, fetchPromptDetail])
 
   if (loading || !selectedPrompt) {
     return (
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <Skeleton className="h-8 w-48 mb-4" />
-        <Skeleton className="h-64 w-full rounded-xl mb-6" />
-        <Skeleton className="h-4 w-3/4 mb-2" />
-        <Skeleton className="h-4 w-1/2" />
+      <div className="max-w-6xl mx-auto px-4 py-8 bg-[#F1F3F6] min-h-screen">
+        <Skeleton className="h-6 w-48 mb-4" />
+        <div className="flex gap-8">
+          <div className="flex-1">
+            <Skeleton className="h-80 w-full mb-4" />
+          </div>
+          <div className="w-80">
+            <Skeleton className="h-96 w-full" />
+          </div>
+        </div>
       </div>
     )
   }
 
   const prompt = selectedPrompt
-  const isLiked = likedPromptIds.has(prompt.id)
   const isWishlisted = wishlistedPromptIds.has(prompt.id)
   const isInCart = cart.some(c => c.id === prompt.id)
-  const isOwner = (prompt as any).accessReason === 'OWNER'
-  const isAdmin = (prompt as any).accessReason === 'ADMIN'
-  const hasPurchased = (prompt as any).accessReason === 'PURCHASED'
-  const hasAccess = (prompt as any).hasAccess
-
-  const handleLike = async () => {
-    const result = await toggleLike(prompt.id)
-    if (result) toast.success(result ? 'Liked!' : 'Removed like')
-  }
+  const isOwner = prompt.accessReason === 'OWNER'
+  const isAdmin = prompt.accessReason === 'ADMIN'
+  const hasPurchased = prompt.accessReason === 'PURCHASED'
+  const hasAccess = prompt.hasAccess
 
   const handleWishlist = async () => {
     const result = await toggleWishlist(prompt.id)
@@ -88,12 +84,12 @@ export default function PromptDetailPage() {
       });
       const data = await res.json();
       if (data.success || data.error === 'Item already in cart') {
-        addToCart(prompt); // Optimistic UI update
+        addToCart(prompt);
         toast.success('Added to cart!');
       } else {
         toast.error(data.error);
       }
-    } catch (e) {
+    } catch {
       toast.error('Failed to add to cart');
     } finally {
       setSubmitting(false);
@@ -106,18 +102,30 @@ export default function PromptDetailPage() {
     router.push('/checkout')
   }
 
-  const handleReview = async () => {
+  const submitReview = async () => {
     if (!user) { setShowAuthModal(true); return }
-    if (!reviewComment.trim()) return
-    setSubmitting(true)
-    const result = await addReview(prompt.id, reviewRating, reviewComment)
-    setSubmitting(false)
-    
-    if (result && result.success) {
-      setReviewComment('')
-      toast.success('Review submitted')
-    } else {
-      toast.error(result?.error || 'Failed to submit review')
+    setSubmittingReview(true)
+    try {
+      const res = await fetch(`/api/prompts/${id}/reviews`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rating: reviewRating, comment: reviewComment })
+      })
+      const data = await res.json()
+      if (data.success) {
+        toast.success('Review submitted successfully!')
+        setReviewComment('')
+        setReviewRating(5)
+        fetch(`/api/prompts/${id}/reviews`).then(r => r.json()).then(d => {
+          if (d.success) setReviews(d.data)
+        })
+      } else {
+        toast.error(data.error || 'Failed to submit review')
+      }
+    } catch {
+      toast.error('An error occurred')
+    } finally {
+      setSubmittingReview(false)
     }
   }
 
@@ -145,289 +153,302 @@ export default function PromptDetailPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-      <div className="text-sm breadcrumbs text-white/50 mb-6 flex items-center gap-2">
-        <Link href="/" className="hover:text-neon-blue transition-colors">Home</Link>
-        <ChevronRight className="h-3 w-3" />
-        <Link href={`/browse?category=${prompt.category?.slug}`} className="hover:text-neon-pink transition-colors">{prompt.category?.name}</Link>
-        <ChevronRight className="h-3 w-3" />
-        <span className="text-white font-medium truncate">{prompt.title}</span>
+    <div className="bg-[#F1F3F6] min-h-screen">
+      {/* Breadcrumb */}
+      <div className="bg-white border-b border-[#F0F0F0]">
+        <div className="max-w-7xl mx-auto px-4 py-2">
+          <div className="flex items-center gap-2 text-xs text-[#878787]">
+            <Link href="/" className="text-[#2874F0] hover:text-[#1a5dc7]">Home</Link>
+            <ChevronRight className="h-3 w-3" />
+            <Link href={`/browse?category=${prompt.category?.slug}`} className="text-[#2874F0] hover:text-[#1a5dc7]">{prompt.category?.name || 'Category'}</Link>
+            <ChevronRight className="h-3 w-3" />
+            <span className="text-[#212121] truncate max-w-[200px]">{prompt.title}</span>
+          </div>
+        </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Left Column - Images & Details */}
-        <div className="flex-1 space-y-8 w-full min-w-0">
-          <div className="relative h-[400px] sm:h-[500px] rounded-2xl glass-panel-heavy flex items-center justify-center overflow-hidden border border-white/10 group">
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10 pointer-events-none opacity-50"></div>
-            {(() => {
-              let images = [];
-              try { images = typeof prompt.sampleImages === 'string' ? JSON.parse(prompt.sampleImages) : (prompt.sampleImages || []); } catch (e) {}
-              if (Array.isArray(images) && images.length > 0 && typeof images[0] === 'string') {
-                return <img src={images[0]} alt={prompt.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />;
-              }
-              return <Sparkles className="h-32 w-32 text-white/20" />;
-            })()}
-            <div className="absolute top-4 right-4 flex gap-2 z-20">
-              {prompt.isFree && <Badge className="bg-neon-blue text-black border-0 shadow-[0_0_15px_rgba(0,210,255,0.5)] px-3 py-1 text-sm font-bold">FREE</Badge>}
-              {prompt.discount > 0 && <Badge variant="destructive" className="bg-neon-pink text-white border-0 shadow-[0_0_15px_rgba(255,0,128,0.5)] px-3 py-1 text-sm font-bold">-{prompt.discount}% OFF</Badge>}
-              {prompt.isFeatured && <Badge className="bg-amber-400 text-black border-0 shadow-[0_0_15px_rgba(251,191,36,0.5)] px-3 py-1 text-sm font-bold">AMAZON'S CHOICE</Badge>}
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Left: Product Images + Description */}
+          <div className="flex-1 space-y-4 min-w-0">
+            {/* Main Image */}
+            <div className="bg-white border border-[#F0F0F0] rounded-sm p-4 flex items-center justify-center min-h-[300px] sm:min-h-[400px]">
+              {(() => {
+                let images = [];
+                try { images = typeof prompt.sampleImages === 'string' ? JSON.parse(prompt.sampleImages) : (prompt.sampleImages || []); } catch {}
+                if (Array.isArray(images) && images.length > 0 && typeof images[0] === 'string') {
+                  return <img src={images[0]} alt={prompt.title} className="max-w-full max-h-[400px] object-contain" />;
+                }
+                return <Sparkles className="h-24 w-24 text-[#C4C4C4]" />;
+              })()}
             </div>
-          </div>
 
-          <div className="glass-panel p-6 sm:p-8 rounded-2xl">
-            <h2 className="text-2xl font-bold text-white mb-4 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">Product Description</h2>
-            <p className="text-white/70 leading-relaxed text-lg">{prompt.description}</p>
-            
-            <div className="mt-8">
-              <h3 className="font-bold text-white mb-3 flex items-center gap-2"><Code className="h-5 w-5 text-neon-blue drop-shadow-[0_0_5px_rgba(0,210,255,0.5)]" /> The Prompt</h3>
-              {hasAccess ? (
-                <div className="p-5 rounded-xl bg-black/60 border border-white/10 text-neon-blue font-mono text-sm leading-relaxed whitespace-pre-wrap shadow-inner relative group liquid-glass">
-                  {(isOwner || isAdmin) && (
-                    <div className="mb-4 p-2 bg-white/5 rounded text-xs text-white/70 border border-white/10 flex items-center gap-2">
-                      <ShieldCheck className="h-4 w-4 text-neon-blue" />
-                      Visible to you because you are {isOwner ? 'the seller' : 'an admin'}. Buyers will not see this until they purchase.
-                    </div>
-                  )}
-                  {prompt.promptText}
-                  <Button size="sm" variant="secondary" className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-white/20 hover:bg-white/30 text-white border-0" onClick={() => { navigator.clipboard.writeText(prompt.promptText || ''); toast.success('Copied to clipboard'); }}>Copy</Button>
-                </div>
-              ) : (
-                <div className="p-6 rounded-xl glass-panel border-white/10 text-center liquid-glass">
-                  <Lock className="h-8 w-8 text-white/40 mx-auto mb-2 drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]" />
-                  <p className="text-white/60 font-medium text-lg">Purchase to unlock the prompt</p>
+            {/* Description */}
+            <div className="bg-white border border-[#F0F0F0] rounded-sm p-6">
+              <h2 className="text-lg font-semibold text-[#212121] mb-4">Product Description</h2>
+              <p className="text-sm text-[#212121] leading-relaxed">{prompt.description}</p>
+
+              {/* Tags */}
+              {prompt.tags && (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {(() => {
+                    let tags: string[] = [];
+                    try { tags = typeof prompt.tags === 'string' && prompt.tags.startsWith('[') ? JSON.parse(prompt.tags) : prompt.tags.split(','); } catch { tags = prompt.tags.split(','); }
+                    if (!Array.isArray(tags)) tags = [tags as string];
+                    return tags.map((tag: string, i: number) => (
+                      <span key={i} className="text-xs bg-[#F1F3F6] text-[#878787] px-2 py-1 rounded-sm">{tag?.trim?.() || tag}</span>
+                    ));
+                  })()}
                 </div>
               )}
-            </div>
 
-            {prompt.tags && (
-              <div className="mt-6 flex flex-wrap gap-2">
-                {(() => {
-                  let tags: string[] = [];
-                  try { tags = typeof prompt.tags === 'string' && prompt.tags.startsWith('[') ? JSON.parse(prompt.tags) : prompt.tags.split(','); } catch (e) { tags = prompt.tags.split(','); }
-                  if (!Array.isArray(tags)) tags = [tags as string];
-                  return tags.map((tag: string, i: number) => (
-                    <Badge key={i} variant="outline" className="glass-panel text-white/80 hover:bg-white/10 hover:text-white border-white/20 transition-colors">{tag?.trim?.() || tag}</Badge>
-                  ));
-                })()}
-              </div>
-            )}
-          </div>
-
-          {/* Customer Questions & Answers */}
-          <div className="glass-panel p-6 sm:p-8 rounded-2xl">
-            <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">Customer questions & answers</h2>
-            
-            <div className="flex gap-3 mb-8">
-              <Input value={questionText} onChange={(e) => setQuestionText(e.target.value)} placeholder="Have a question? Ask the seller..." className="flex-1 bg-black/40 border-white/20 text-white focus:border-neon-blue focus:ring-neon-blue rounded-xl h-12" />
-              <Button onClick={handleAskQuestion} disabled={submitting || !questionText.trim()} className="bg-neon-blue hover:bg-neon-blue/80 text-black font-bold px-8 rounded-xl shadow-[0_0_15px_rgba(0,210,255,0.4)] h-12">
-                Ask
-              </Button>
-            </div>
-
-            <div className="space-y-6">
-              {qnaList.length === 0 ? (
-                <p className="text-white/40 text-center py-4 italic">No questions yet. Be the first to ask!</p>
-              ) : (
-                qnaList.map((qna: any) => (
-                  <div key={qna.id} className="pb-6 border-b border-white/10 last:border-0 last:pb-0">
-                    <div className="flex gap-4">
-                      <div className="font-black text-neon-pink w-8 drop-shadow-[0_0_5px_rgba(255,0,128,0.5)]">Q:</div>
-                      <div className="flex-1">
-                        <p className="font-medium text-white">{qna.question}</p>
-                        <p className="text-xs text-white/40 mt-1">Asked by {qna.author?.name || 'Customer'} on {new Date(qna.createdAt).toLocaleDateString()}</p>
-                      </div>
-                    </div>
-                    {qna.answerText && (
-                      <div className="flex gap-4 mt-4">
-                        <div className="font-black text-neon-blue w-8 drop-shadow-[0_0_5px_rgba(0,210,255,0.5)]">A:</div>
-                        <div className="flex-1 p-4 rounded-xl glass-panel border-white/10">
-                          <p className="text-white/80">{qna.answerText}</p>
-                          <p className="text-xs text-white/40 mt-3 flex items-center gap-2 border-t border-white/10 pt-2">
-                            Answered by <Badge variant="outline" className="text-[10px] bg-white/5 text-neon-blue border-neon-blue/30">Seller</Badge> <span className="font-semibold text-white/60">{qna.answer?.name}</span>
-                          </p>
-                        </div>
+              {/* Prompt text */}
+              <div className="mt-6">
+                <h3 className="font-semibold text-sm text-[#212121] mb-2 flex items-center gap-2">
+                  <Code className="h-4 w-4 text-[#2874F0]" /> The Prompt
+                </h3>
+                {hasAccess ? (
+                  <div className="p-4 bg-[#F1F3F6] border border-[#E0E0E0] rounded-sm text-sm text-[#212121] font-mono leading-relaxed whitespace-pre-wrap relative">
+                    {(isOwner || isAdmin) && (
+                      <div className="mb-3 p-2 bg-[#E3F2FD] rounded text-xs text-[#2874F0] flex items-center gap-2">
+                        <ShieldCheck className="h-4 w-4" />
+                        Visible to you because you are {isOwner ? 'the seller' : 'an admin'}.
                       </div>
                     )}
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-          
-          {/* Reviews */}
-          <div className="glass-panel p-6 sm:p-8 rounded-2xl w-full">
-            <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">Customer Reviews</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full">
-              <div className="lg:col-span-1">
-                <div className="flex items-center gap-4 mb-8">
-                  <span className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-amber-300 to-amber-500 drop-shadow-[0_0_15px_rgba(251,191,36,0.3)]">{prompt.rating.toFixed(1)}</span>
-                  <div className="flex flex-col">
-                    <div className="flex text-amber-400 drop-shadow-[0_0_5px_rgba(251,191,36,0.5)]"><Star className="fill-amber-400 h-5 w-5"/><Star className="fill-amber-400 h-5 w-5"/><Star className="fill-amber-400 h-5 w-5"/><Star className="fill-amber-400 h-5 w-5"/><Star className="h-5 w-5"/></div>
-                    <span className="text-sm text-white/50 mt-1">{prompt.reviewCount} global ratings</span>
-                  </div>
-                </div>
-
-                <div className="glass-panel-heavy p-6 rounded-2xl border-white/10 liquid-glass">
-                  <h4 className="font-bold text-white mb-2">Review this product</h4>
-                  <p className="text-sm text-white/50 mb-4">Share your thoughts with other customers</p>
-                  <div className="flex items-center gap-2 mb-6">
-                    {[1, 2, 3, 4, 5].map(r => (
-                      <button key={r} onClick={() => setReviewRating(r)} className="hover:scale-125 transition-transform hover:rotate-6">
-                        <Star className={`h-8 w-8 transition-colors ${r <= reviewRating ? 'fill-amber-400 text-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.8)]' : 'text-white/20'}`} />
-                      </button>
-                    ))}
-                  </div>
-                  <Textarea value={reviewComment} onChange={(e) => setReviewComment(e.target.value)} placeholder="Write your review here..." rows={4} className="mb-4 bg-black/40 border-white/20 text-white focus:border-neon-blue focus:ring-neon-blue rounded-xl w-full resize-none" />
-                  <Button onClick={handleReview} disabled={submitting || !reviewComment.trim()} className="w-full bg-neon-purple hover:bg-neon-purple/80 text-white font-bold h-12 rounded-xl shadow-[0_0_15px_rgba(58,123,213,0.5)]">
-                    {submitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} Submit Review
-                  </Button>
-                </div>
-              </div>
-              <div className="lg:col-span-2 space-y-6">
-                {promptReviews.length === 0 ? (
-                  <div className="py-16 px-6 text-center glass-panel rounded-2xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center h-full min-h-[300px]">
-                    <div className="h-16 w-16 bg-white/5 rounded-full flex items-center justify-center shadow-inner border border-white/10 mb-4">
-                      <MessageSquare className="h-8 w-8 text-white/30" />
-                    </div>
-                    <h3 className="text-xl font-bold text-white mb-2 drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]">No reviews yet</h3>
-                    <p className="text-white/50 max-w-sm text-center leading-relaxed">
-                      Be the first to share your experience with this prompt! Your feedback helps other buyers make informed decisions.
-                    </p>
+                    {prompt.promptText}
+                    <button
+                      onClick={() => { navigator.clipboard.writeText(prompt.promptText || ''); toast.success('Copied to clipboard'); }}
+                      className="absolute top-2 right-2 text-xs bg-white border border-[#E0E0E0] px-2 py-1 rounded-sm hover:bg-[#F1F3F6] transition-colors cursor-pointer"
+                      aria-label="Copy prompt text"
+                    >
+                      Copy
+                    </button>
                   </div>
                 ) : (
-                  promptReviews.map((review: any) => (
-                    <div key={review.id} className="pb-6 border-b border-white/10 last:border-0 last:pb-0">
-                      <div className="flex items-center gap-4 mb-3">
-                        <div className="h-12 w-12 rounded-full glass-panel flex items-center justify-center bg-gradient-to-tr from-neon-blue/20 to-neon-purple/20 border-white/20">
-                          <UserIcon className="h-6 w-6 text-white/70" />
-                        </div>
-                        <div>
-                          <p className="font-bold text-white tracking-wide">{review.user?.name || 'Customer'}</p>
-                          <div className="flex items-center gap-3 mt-0.5">
-                            <div className="flex text-amber-400 drop-shadow-[0_0_5px_rgba(251,191,36,0.5)]">
-                              {Array.from({ length: 5 }).map((_, i) => (
-                                <Star key={i} className={`h-3.5 w-3.5 ${i < review.rating ? 'fill-amber-400' : 'text-white/20'}`} />
-                              ))}
-                            </div>
-                            <span className="text-xs font-semibold text-emerald-400 flex items-center gap-1 drop-shadow-[0_0_5px_rgba(16,185,129,0.4)]"><ShieldCheck className="h-3.5 w-3.5"/> Verified Purchase</span>
-                          </div>
+                  <div className="p-6 bg-[#F1F3F6] border border-[#E0E0E0] rounded-sm text-center">
+                    <Lock className="h-6 w-6 text-[#878787] mx-auto mb-2" />
+                    <p className="text-sm text-[#878787]">Purchase to unlock the prompt</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Q&A Section */}
+            <div className="bg-white border border-[#F0F0F0] rounded-sm p-6">
+              <h2 className="text-lg font-semibold text-[#212121] mb-4">Customer Questions & Answers</h2>
+              <div className="flex gap-3 mb-6">
+                <Input
+                  value={questionText}
+                  onChange={(e) => setQuestionText(e.target.value)}
+                  placeholder="Have a question? Ask the seller..."
+                  className="flex-1 bg-white border-[#E0E0E0] text-[#212121] placeholder:text-[#878787] rounded-sm h-10 text-sm"
+                  aria-label="Ask a question"
+                />
+                <button
+                  onClick={handleAskQuestion}
+                  disabled={submitting || !questionText.trim()}
+                  className="bg-[#2874F0] text-white px-6 rounded-sm text-sm font-medium hover:bg-[#1a5dc7] disabled:opacity-50 cursor-pointer"
+                >
+                  Ask
+                </button>
+              </div>
+              <div className="space-y-4">
+                {qnaList.length === 0 ? (
+                  <p className="text-sm text-[#878787] text-center py-4 italic">No questions yet.</p>
+                ) : (
+                  qnaList.map((qna: any) => (
+                    <div key={qna.id} className="pb-4 border-b border-[#F0F0F0] last:border-0 last:pb-0">
+                      <div className="flex gap-3">
+                        <div className="font-bold text-[#2874F0] shrink-0">Q:</div>
+                        <div className="flex-1">
+                          <p className="font-medium text-sm text-[#212121]">{qna.question}</p>
+                          <p className="text-xs text-[#878787] mt-1">Asked by {qna.author?.name || 'Customer'} on {new Date(qna.createdAt).toLocaleDateString()}</p>
                         </div>
                       </div>
-                      <p className="text-white/80 leading-relaxed ml-16">{review.comment}</p>
+                      {qna.answerText && (
+                        <div className="flex gap-3 mt-3 ml-4">
+                          <div className="font-bold text-[#388E3C] shrink-0">A:</div>
+                          <div className="flex-1 p-3 bg-[#F1F3F6] rounded-sm">
+                            <p className="text-sm text-[#212121]">{qna.answerText}</p>
+                            <p className="text-xs text-[#878787] mt-2">Answered by {qna.answer?.name || 'Seller'}</p>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))
                 )}
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Right Column - Buy Box (Sticky) */}
-        <div className="w-full lg:w-[400px] shrink-0 relative">
-          <div className="sticky top-24 space-y-4">
-            <Card className="glass-panel-heavy p-8 border-white/20 liquid-glass rounded-3xl relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
-              <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70 mb-3 tracking-tight relative z-10">{prompt.title}</h1>
-              <div className="flex items-center gap-3 mb-6 relative z-10">
-                <Badge variant="outline" className="border-neon-blue/50 text-neon-blue bg-neon-blue/10 font-bold px-3 py-1 shadow-[0_0_10px_rgba(0,210,255,0.2)]">{prompt.recommendedAI}</Badge>
-                <span className="text-white/30">|</span>
-                <span className="flex items-center gap-1.5 text-sm text-amber-400 font-bold drop-shadow-[0_0_5px_rgba(251,191,36,0.5)]"><Star className="h-4 w-4 fill-amber-400"/> {prompt.rating.toFixed(1)}</span>
-              </div>
-              
-              <div className="mb-8 relative z-10">
-                {prompt.isFree ? (
-                  <span className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-200 drop-shadow-[0_0_15px_rgba(52,211,153,0.5)]">FREE</span>
-                ) : (
-                  <div>
-                    {prompt.discount > 0 && (
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-neon-pink font-black text-xl drop-shadow-[0_0_10px_rgba(255,0,128,0.5)]">-{prompt.discount}%</span>
-                        <span className="text-white/40 line-through text-md font-medium">{formatPrice(prompt.originalPrice || prompt.price, selectedCurrency)}</span>
-                      </div>
-                    )}
-                    <div className="flex items-start">
-                      {(() => {
-                        const formatted = formatPrice(prompt.price, selectedCurrency);
-                        const symbol = formatted.replace(/[0-9.,]/g, '').trim() || '$';
-                        const amount = formatted.replace(/[^0-9.,]/g, '').trim();
-                        return (
-                          <>
-                            <span className="text-xl font-bold mt-1 text-white/80">{symbol}</span>
-                            <span className="text-6xl font-black text-white tracking-tighter drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">{amount}</span>
-                          </>
-                        );
-                      })()}
-                    </div>
+            <CommentSection promptId={prompt.id} />
+
+            {/* Reviews */}
+            <div className="bg-white border border-[#F0F0F0] rounded-sm p-6">
+              <h2 className="text-lg font-semibold text-[#212121] mb-4">Customer Reviews</h2>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="text-3xl font-bold text-[#212121]">{prompt.rating.toFixed(1)}</div>
+                <div className="flex flex-col">
+                  <div className="flex text-[#FF9F00]">
+                    {[1,2,3,4,5].map(i => <Star key={i} className={`h-4 w-4 ${i <= Math.round(prompt.rating) ? 'fill-[#FF9F00]' : 'text-[#E0E0E0]'}`} />)}
                   </div>
-                )}
+                  <span className="text-xs text-[#878787] mt-0.5">{prompt.reviewCount || 0} ratings</span>
+                </div>
               </div>
 
-              <div className="space-y-4 relative z-10">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-1">
+                  {hasPurchased && !isOwner && !reviews.find((r: any) => r.userId === user?.id) && (
+                    <div className="bg-[#F1F3F6] p-4 rounded-sm">
+                      <h4 className="font-medium text-sm text-[#212121] mb-2">Rate this product</h4>
+                      <div className="flex gap-1 mb-3">
+                        {[1, 2, 3, 4, 5].map(r => (
+                          <button key={r} onClick={() => setReviewRating(r)}
+                            className="hover:scale-110 transition-transform cursor-pointer" aria-label={`Rate ${r} stars`}>
+                            <Star className={`h-6 w-6 ${r <= reviewRating ? 'fill-[#FF9F00] text-[#FF9F00]' : 'text-[#C4C4C4]'}`} />
+                          </button>
+                        ))}
+                      </div>
+                      <textarea
+                        value={reviewComment}
+                        onChange={(e) => setReviewComment(e.target.value)}
+                        placeholder="Write your review..."
+                        rows={3}
+                        className="w-full text-sm border border-[#E0E0E0] rounded-sm p-2 mb-3 bg-white text-[#212121] placeholder:text-[#878787] focus:outline-none focus:border-[#2874F0] resize-none"
+                        aria-label="Review comment"
+                      />
+                      <button
+                        onClick={submitReview}
+                        disabled={submittingReview || !reviewComment.trim()}
+                        className="w-full bg-[#2874F0] text-white text-sm font-medium py-2 rounded-sm hover:bg-[#1a5dc7] disabled:opacity-50 cursor-pointer"
+                      >
+                        {submittingReview && <Loader2 className="h-3 w-3 animate-spin inline mr-1" />} Submit Review
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <div className="lg:col-span-2 space-y-4">
+                  {reviews.length === 0 ? (
+                    <div className="text-center py-8 border border-dashed border-[#E0E0E0] rounded-sm">
+                      <MessageSquare className="h-8 w-8 text-[#C4C4C4] mx-auto mb-2" />
+                      <p className="text-sm text-[#878787]">No reviews yet</p>
+                    </div>
+                  ) : (
+                    reviews.map((review: any) => (
+                      <div key={review.id} className="pb-4 border-b border-[#F0F0F0] last:border-0 last:pb-0">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="h-8 w-8 rounded-full bg-[#F1F3F6] flex items-center justify-center overflow-hidden">
+                            {review.user?.avatar ? (
+                              <img src={review.user.avatar} alt={`${review.user?.name || 'User'}'s avatar`} className="w-full h-full object-cover" />
+                            ) : (
+                              <Users className="h-4 w-4 text-[#878787]" />
+                            )}
+                          </div>
+                          <div>
+                            <p className="font-medium text-sm text-[#212121]">{review.user?.name || 'Customer'}</p>
+                            <div className="flex text-[#FF9F00]">
+                              {Array.from({ length: 5 }).map((_, i) => (
+                                <Star key={i} className={`h-3 w-3 ${i < review.rating ? 'fill-[#FF9F00]' : 'text-[#E0E0E0]'}`} />
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        <p className="text-sm text-[#212121] ml-11">{review.comment}</p>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Buy Box */}
+          <div className="w-full lg:w-80 shrink-0">
+            <div className="bg-white border border-[#F0F0F0] rounded-sm p-6 sticky top-20">
+              <h1 className="text-lg font-semibold text-[#212121] mb-2">{prompt.title}</h1>
+
+              {prompt.isFree ? (
+                <div className="text-2xl font-bold text-[#388E3C] mb-4">FREE</div>
+              ) : (
+                <div className="mb-4">
+                  {prompt.discount > 0 && (
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="flipkart-discount text-sm">-{prompt.discount}%</span>
+                      <span className="flipkart-original-price">{formatPrice(prompt.originalPrice || prompt.price, selectedCurrency)}</span>
+                    </div>
+                  )}
+                  <div className="text-2xl font-bold text-[#212121]">{formatPrice(prompt.price, selectedCurrency)}</div>
+                  <p className="text-xs text-[#878787] mt-1">Inclusive of all taxes</p>
+                </div>
+              )}
+
+              {/* Seller info */}
+              <div className="flex items-center gap-2 mb-4 pb-4 border-b border-[#F0F0F0]">
+                <Store className="h-4 w-4 text-[#878787]" />
+                <span className="text-xs text-[#878787]">Sold by</span>
+                <Link href={`/store/${prompt.seller?.id}`} className="text-xs font-medium text-[#2874F0] hover:text-[#1a5dc7]">
+                  {prompt.seller?.name || 'Seller'}
+                </Link>
+              </div>
+
+              {/* Action buttons */}
+              <div className="space-y-3">
                 {isOwner || isAdmin ? (
-                  <div className="p-5 glass-panel bg-neon-blue/10 border-neon-blue/30 rounded-2xl">
-                    <p className="text-neon-blue font-bold text-center mb-4 flex items-center justify-center gap-2 drop-shadow-[0_0_5px_rgba(0,210,255,0.5)]">
-                      <ShieldCheck className="h-6 w-6" /> You are {isOwner ? 'the seller' : 'an admin'}
-                    </p>
+                  <div className="p-3 bg-[#E3F2FD] rounded-sm text-center">
+                    <p className="text-sm font-medium text-[#2874F0] mb-2">You are {isOwner ? 'the seller' : 'an admin'}</p>
                     <Link href={isOwner ? '/seller/prompts' : '/admin'}>
-                      <Button className="w-full bg-white hover:bg-white/90 text-black font-extrabold h-14 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.5)] transition-all">
-                        Manage Prompt
-                      </Button>
+                      <button className="w-full bg-[#2874F0] text-white font-medium py-2 rounded-sm text-sm hover:bg-[#1a5dc7] cursor-pointer">Manage</button>
                     </Link>
                   </div>
                 ) : hasPurchased ? (
-                  <div className="p-5 glass-panel bg-emerald-500/10 border-emerald-500/30 rounded-2xl">
-                    <p className="text-emerald-400 font-bold text-center mb-4 flex items-center justify-center gap-2 drop-shadow-[0_0_5px_rgba(52,211,153,0.5)]">
-                      <Check className="h-6 w-6" /> You own this prompt
-                    </p>
-                    {(prompt as any).purchasedOrderId && (
-                      <Link href={`/invoice/${(prompt as any).purchasedOrderId}`}>
-                        <Button className="w-full bg-emerald-400 hover:bg-emerald-300 text-black font-extrabold h-14 rounded-full shadow-[0_0_20px_rgba(52,211,153,0.5)] transition-all">
-                          View Invoice
-                        </Button>
+                  <div className="p-3 bg-[#E8F5E9] rounded-sm text-center">
+                    <p className="text-sm font-medium text-[#388E3C] mb-2">You own this prompt</p>
+                    {(prompt).purchasedOrderId && (
+                      <Link href={`/invoice/${(prompt).purchasedOrderId}`}>
+                        <button className="w-full bg-[#388E3C] text-white font-medium py-2 rounded-sm text-sm hover:bg-[#2E7D32] cursor-pointer">View Invoice</button>
                       </Link>
                     )}
                   </div>
                 ) : (
                   <>
                     {isInCart ? (
-                      <Button className="w-full glass-panel bg-white/5 border-emerald-500/50 text-emerald-400 font-extrabold h-14 rounded-full shadow-[0_0_15px_rgba(52,211,153,0.3)]" disabled>
-                        <Check className="h-6 w-6 mr-2" /> Added to Cart
-                      </Button>
+                      <div className="w-full text-center text-sm font-medium text-[#388E3C] bg-[#F1F3F6] py-3 rounded-sm cursor-not-allowed">
+                        <Check className="h-4 w-4 inline mr-1" /> Added to Cart
+                      </div>
                     ) : (
-                      <Button onClick={handleAddToCart} disabled={submitting} className="w-full glass-panel bg-white/10 hover:bg-white/20 text-white font-extrabold h-14 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all border-white/20">
-                        {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Add to Cart'}
-                      </Button>
+                      <button onClick={handleAddToCart} disabled={submitting}
+                        className="w-full bg-[#FF9F00] text-white font-medium py-3 rounded-sm text-sm hover:bg-[#FB641B] transition-colors cursor-pointer disabled:opacity-50">
+                        {submitting ? <Loader2 className="h-4 w-4 animate-spin inline" /> : <><ShoppingCart className="h-4 w-4 inline mr-1.5" /> Add to Cart</>}
+                      </button>
                     )}
-                    <Button onClick={handleBuyNow} disabled={submitting} className="w-full bg-neon-blue hover:bg-neon-blue/80 text-black font-black h-14 text-lg rounded-full shadow-[0_0_25px_rgba(0,210,255,0.6)] transition-all flex items-center justify-center">
-                      <Zap className="h-5 w-5 mr-2" /> Buy Now
-                    </Button>
+                    <button onClick={handleBuyNow} disabled={submitting}
+                      className="w-full bg-[#FB641B] text-white font-medium py-3 rounded-sm text-sm hover:bg-[#E55A14] transition-colors cursor-pointer disabled:opacity-50">
+                      <Zap className="h-4 w-4 inline mr-1.5" /> Buy Now
+                    </button>
                   </>
                 )}
               </div>
 
-              <div className="mt-8 flex flex-col gap-4 text-sm text-white/50 border-t border-white/10 pt-6 relative z-10">
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-2"><Lock className="h-4 w-4 text-white/40" /> Secure transaction</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-white/40">Sold by</span>
-                  <Link href={`/store/${prompt.seller?.id}`} className="text-neon-purple hover:text-neon-pink font-bold transition-colors">{prompt.seller?.name || 'Seller'}</Link>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-white/40">Returns</span>
-                  <span className="font-medium text-white/70">Eligible for Refund</span>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-center gap-6 mt-8 pt-6 border-t border-white/10 relative z-10">
-                <button onClick={handleWishlist} className={`flex items-center gap-2 text-sm font-bold transition-all ${isWishlisted ? 'text-neon-pink drop-shadow-[0_0_8px_rgba(255,0,128,0.6)]' : 'text-white/50 hover:text-white'}`}>
-                  <Heart className={`h-5 w-5 transition-colors ${isWishlisted ? 'fill-neon-pink' : ''}`} /> {isWishlisted ? 'Saved to List' : 'Add to List'}
+              {/* Actions */}
+              <div className="flex items-center justify-center gap-6 mt-6 pt-4 border-t border-[#F0F0F0]">
+                <button onClick={handleWishlist}
+                  className={`flex items-center gap-1.5 text-sm transition-colors cursor-pointer ${isWishlisted ? 'text-[#FF6161]' : 'text-[#878787] hover:text-[#212121]'}`}
+                  aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}>
+                  <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-[#FF6161]' : ''}`} /> Save
                 </button>
-                <button onClick={() => setReportOpen(true)} className="flex items-center gap-2 text-sm font-medium text-white/30 hover:text-red-400 hover:drop-shadow-[0_0_8px_rgba(248,113,113,0.5)] transition-all">
+                <button onClick={() => setReportOpen(true)}
+                  className="flex items-center gap-1.5 text-sm text-[#878787] hover:text-[#FF6161] transition-colors cursor-pointer"
+                  aria-label="Report this product">
                   <Flag className="h-4 w-4" /> Report
                 </button>
               </div>
-            </Card>
+
+              {/* Features */}
+              <div className="mt-4 space-y-2 text-xs text-[#878787]">
+                <div className="flex items-center gap-2"><Lock className="h-3 w-3" /> Secure transaction</div>
+                <div className="flex items-center gap-2"><ShieldCheck className="h-3 w-3" /> Eligible for refund</div>
+                <div className="flex items-center gap-2"><Download className="h-3 w-3" /> Instant digital access</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

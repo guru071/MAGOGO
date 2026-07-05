@@ -8,30 +8,49 @@ import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import {
   Plus, DollarSign, ShoppingBag, TrendingUp, Eye, Loader2,
-  Sparkles, Wallet, Store, Megaphone, Settings,
-  Star, Clock, ArrowUpRight, ArrowDownRight, Users, BarChart3,
-  AlertTriangle, Target, Zap, Award, Repeat, CreditCard,
-  TrendingDown, Hash, UserCheck, DollarSign as DollarIcon,
-  ShoppingCart, Activity, Receipt,
+  Sparkles, Wallet,
+  Star, ArrowUpRight, ArrowDownRight, Users, BarChart3,
+  AlertTriangle, Target, Zap, Repeat,
+  TrendingDown, Hash, Activity, Receipt,
 } from 'lucide-react'
 import { toast } from 'sonner'
-import dynamic from 'next/dynamic'
+import {
+  ComposedChart, Line, Area, Bar,
+  XAxis, YAxis, Tooltip as RTooltip, ResponsiveContainer,
+  CartesianGrid, PieChart, Pie, Cell, Legend
+} from 'recharts'
 
-const AreaChart = dynamic(() => import('recharts').then(m => m.AreaChart as any), { ssr: false }) as any
-const Area = dynamic(() => import('recharts').then(m => m.Area as any), { ssr: false }) as any
-const BarChart = dynamic(() => import('recharts').then(m => m.BarChart as any), { ssr: false }) as any
-const Bar = dynamic(() => import('recharts').then(m => m.Bar as any), { ssr: false }) as any
-const ComposedChart = dynamic(() => import('recharts').then(m => m.ComposedChart as any), { ssr: false }) as any
-const Line = dynamic(() => import('recharts').then(m => m.Line as any), { ssr: false }) as any
-const XAxis = dynamic(() => import('recharts').then(m => m.XAxis as any), { ssr: false }) as any
-const YAxis = dynamic(() => import('recharts').then(m => m.YAxis as any), { ssr: false }) as any
-const RTooltip = dynamic(() => import('recharts').then(m => m.Tooltip as any), { ssr: false }) as any
-const ResponsiveContainer = dynamic(() => import('recharts').then(m => m.ResponsiveContainer as any), { ssr: false }) as any
-const CartesianGrid = dynamic(() => import('recharts').then(m => m.CartesianGrid as any), { ssr: false }) as any
-const PieChart = dynamic(() => import('recharts').then(m => m.PieChart as any), { ssr: false }) as any
-const Pie = dynamic(() => import('recharts').then(m => m.Pie as any), { ssr: false }) as any
-const Cell = dynamic(() => import('recharts').then(m => m.Cell as any), { ssr: false }) as any
-const Legend = dynamic(() => import('recharts').then(m => m.Legend as any), { ssr: false }) as any
+interface DailySale { date: string; revenue: number; count: number }
+interface Forecast { date: string; predicted: number; lowerBound: number; upperBound: number }
+interface Anomaly { date: string; revenue: number; zScore: number }
+interface TopPrompt { id: string; title: string; price: number; isFree: boolean; status: string; views: number; downloads: number; rating: number; viewCount: number }
+interface PaymentMethod { method: string; revenue: number; count: number }
+interface ProductHeatmap { promptId: string; title: string; totalRevenue: number; bestDay: { day: string; count: number }[] }
+interface VelocityByPrompt { promptId: string; daysToFirstSale: number }
+interface PricingInsight { promptId: string; title: string; currentPrice: number; categoryAvg: number; suggestedPrice: number; downloads: number; potentialRevenueUplift: number }
+interface TrendKeyword { word: string; count: number }
+interface RefundBreakdown { status: string; count: number }
+interface AiRec { title?: string; query?: string; score?: number }
+interface CustomerInsights { totalBuyers: number; repeatBuyers: number; avgCustomerSpend: number; topBuyer?: { name: string; totalSpent: number } }
+interface SalesVelocity { avgDaysToFirstSale: number | null; bestSellingDay: string; avgSalesPerDay: number; velocityByPrompt?: VelocityByPrompt[] }
+interface PeriodComparison { revenueChange: number; salesChange: number }
+interface AnalyticsSummary { totalRevenue?: number; totalSales?: number; totalViews?: number; avgRating?: number; promptsCount?: number; repeatBuyerRate?: number; refundRate?: number }
+interface AnalyticsData {
+  summary?: AnalyticsSummary
+  dailySales?: DailySale[]
+  topPrompts?: TopPrompt[]
+  paymentBreakdown?: PaymentMethod[]
+  recommendations?: AiRec[]
+  forecast?: Forecast[]
+  anomalies?: Anomaly[]
+  productHeatmap?: ProductHeatmap[]
+  salesVelocity?: SalesVelocity
+  customerInsights?: CustomerInsights
+  pricingInsights?: PricingInsight[]
+  periodComparison?: PeriodComparison
+  trendingKeywords?: TrendKeyword[]
+  refundBreakdown?: RefundBreakdown[]
+}
 
 import { SellerOnboarding } from '@/components/SellerOnboarding'
 
@@ -50,8 +69,7 @@ function ChangeBadge({ value, label }: { value: number; label: string }) {
 export default function SellerDashboardPage() {
   const { user, prompts, fetchPrompts, fetchOrders, orders, selectedCurrency } = useStore()
   const [loading, setLoading] = useState(true)
-  const [analytics, setAnalytics] = useState<any>(null)
-  const [analyticsLoading, setAnalyticsLoading] = useState(true)
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
   const [recentOrders, setRecentOrders] = useState<any[]>([])
   const [ordersLoading, setOrdersLoading] = useState(true)
 
@@ -60,13 +78,13 @@ export default function SellerDashboardPage() {
       Promise.all([
         fetchPrompts({ sellerId: user.id }),
         fetchOrders('sales'),
-        fetch('/api/seller/analytics').then(r => r.json()).then(d => { if (d.success) setAnalytics(d.data); }).catch(e => { console.error('[seller] analytics error', e); toast.error('Failed to load analytics') }).finally(() => setAnalyticsLoading(false)),
+        fetch('/api/seller/analytics').then(r => r.json()).then(d => { if (d.success) setAnalytics(d.data); }).catch(e => { console.error('[seller] analytics error', e); toast.error('Failed to load analytics') }),
         fetch('/api/orders?type=sold').then(r => r.json()).then(d => { if (d.success) setRecentOrders(d.data.slice(0, 10)); }).catch(e => { console.error('[seller] fetch orders', e); }).finally(() => setOrdersLoading(false)),
       ]).finally(() => setLoading(false))
     } else {
       Promise.resolve().then(() => setLoading(false))
     }
-  }, [user])
+  }, [user, fetchPrompts, fetchOrders])
 
   if (!user) {
     return (
@@ -88,24 +106,24 @@ export default function SellerDashboardPage() {
 
   const a = analytics?.summary
   const dailySales = analytics?.dailySales || []
-  const topPrompts = analytics?.topPrompts || prompts.slice(0, 5).sort((a: any, b: any) => b.downloadCount - a.downloadCount)
+  const topPrompts = analytics?.topPrompts || prompts.slice(0, 5).sort((a, b) => b.downloadCount - a.downloadCount)
   const paymentMethods = analytics?.paymentBreakdown || []
   const aiRecs = analytics?.recommendations
   const forecast = analytics?.forecast || []
   const anomalies = analytics?.anomalies || []
   const productHeatmap = analytics?.productHeatmap || []
-  const salesVelocity = analytics?.salesVelocity || {}
-  const customerInsights = analytics?.customerInsights || {}
+  const salesVelocity = analytics?.salesVelocity || {} as SalesVelocity
+  const customerInsights = analytics?.customerInsights || {} as CustomerInsights
   const pricingInsights = analytics?.pricingInsights || []
-  const periodComparison = analytics?.periodComparison || {}
+  const periodComparison = analytics?.periodComparison || {} as PeriodComparison
   const trendingKeywords = analytics?.trendingKeywords || []
   const refundBreakdown = analytics?.refundBreakdown || []
 
   const convRate = totalViews > 0 ? ((a?.totalSales || totalSales) / (a?.totalViews || totalViews) * 100).toFixed(1) : '0';
 
   const chartData = [
-    ...(Array.isArray(dailySales) ? dailySales.map((d: any) => ({ ...d, predicted: null, lowerBound: null, upperBound: null })) : []),
-    ...forecast.map((f: any) => ({ date: f.date, revenue: null, count: null, predicted: f.predicted, lowerBound: f.lowerBound, upperBound: f.upperBound })),
+    ...(Array.isArray(dailySales) ? dailySales.map((d: DailySale) => ({ ...d, predicted: null, lowerBound: null, upperBound: null })) : []),
+    ...forecast.map((f: Forecast) => ({ date: f.date, revenue: null, count: null, predicted: f.predicted, lowerBound: f.lowerBound, upperBound: f.upperBound })),
   ];
 
   const statsCards = [
@@ -236,12 +254,12 @@ export default function SellerDashboardPage() {
               {forecast.length > 0 && (
                 <Badge className="bg-neon-blue/20 text-neon-blue border border-neon-blue/30 text-[10px]">
                   <Target className="h-3 w-3 mr-0.5" />
-                  {formatPrice(forecast.reduce((s: number, f: any) => s + f.predicted, 0), selectedCurrency)} projected
+                  {formatPrice(forecast.reduce((s: number, f: Forecast) => s + f.predicted, 0), selectedCurrency)} projected
                 </Badge>
               )}
             </div>
             <div className="p-6">
-              {chartData.length === 0 || chartData.every((d: any) => !d.revenue && !d.predicted) ? (
+              {chartData.length === 0 || chartData.every((d) => !d.revenue && !d.predicted) ? (
                 <div className="h-[250px] flex items-center justify-center text-sm text-white/40">No sales data yet. List your first prompt!</div>
               ) : (
                 <ResponsiveContainer width="100%" height={250}>
@@ -257,7 +275,7 @@ export default function SellerDashboardPage() {
                     <YAxis tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.4)' }} />
                     <RTooltip
                       contentStyle={{ fontSize: 12, borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'rgba(0,0,0,0.8)', color: 'white' }}
-                      formatter={(value: any, name: string) => {
+                      formatter={(value: number, name: string) => {
                         if (name === 'revenue') return [formatPrice(value, selectedCurrency), 'Revenue'];
                         if (name === 'predicted') return [formatPrice(value, selectedCurrency), 'Forecast'];
                         if (name === 'lowerBound') return [formatPrice(value, selectedCurrency), 'Lower Bound'];
@@ -285,7 +303,7 @@ export default function SellerDashboardPage() {
                 <Badge className="bg-amber-500/20 text-amber-400 border border-amber-500/30 ml-auto">{anomalies.length} anomaly(ies)</Badge>
               </div>
               <div className="p-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
-                {anomalies.map((an: any, i: number) => (
+                {anomalies.map((an: Anomaly, i: number) => (
                   <div key={i} className="glass-panel border border-white/10 rounded-xl p-3">
                     <p className="text-xs text-white/40">{an.date}</p>
                     <p className="font-bold text-white text-lg">{formatPrice(an.revenue, selectedCurrency)}</p>
@@ -380,7 +398,7 @@ export default function SellerDashboardPage() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {topPrompts.slice(0, 5).map((p: any, i: number) => (
+                    {topPrompts.slice(0, 5).map((p, i: number) => (
                       <div key={p.id} className="flex items-center justify-between p-3 rounded-xl glass-panel border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all">
                         <div className="flex items-center gap-3 min-w-0 flex-1">
                           <span className="text-xs font-mono text-white/30 w-5">{i + 1}</span>
@@ -392,9 +410,9 @@ export default function SellerDashboardPage() {
                             <div className="flex items-center gap-2 text-xs text-white/40 mt-0.5">
                               <span>{p.isFree ? 'Free' : formatPrice(p.price, selectedCurrency)}</span>
                               <span>·</span>
-                              <span><Eye className="h-3 w-3 inline mr-0.5"/>{p.views || p.viewCount || 0}</span>
+                              <span><Eye className="h-3 w-3 inline mr-0.5"/>{(p as any).views || (p as any).viewCount || 0}</span>
                               <span>·</span>
-                              <span><ShoppingBag className="h-3 w-3 inline mr-0.5"/>{p.downloads || 0}</span>
+                              <span><ShoppingBag className="h-3 w-3 inline mr-0.5"/>{(p as any).downloads || (p as any).downloadCount || 0}</span>
                               {p.rating > 0 && <><span>·</span><span><Star className="h-3 w-3 inline mr-0.5 text-amber-400"/>{p.rating}</span></>}
                             </div>
                           </div>
@@ -421,12 +439,12 @@ export default function SellerDashboardPage() {
                     <ResponsiveContainer width="100%" height={120}>
                       <PieChart>
                         <Pie data={paymentMethods} dataKey="revenue" nameKey="method" cx="50%" cy="50%" outerRadius={50} innerRadius={30}>
-                          {paymentMethods.map((_: any, i: number) => <Cell key={i} fill={DOW_COLORS[i % DOW_COLORS.length]} />)}
+                          {paymentMethods.map((_: PaymentMethod, i: number) => <Cell key={i} fill={DOW_COLORS[i % DOW_COLORS.length]} />)}
                         </Pie>
                         <RTooltip contentStyle={{ borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'rgba(0,0,0,0.8)', color: 'white' }} />
                       </PieChart>
                     </ResponsiveContainer>
-                    {paymentMethods.map((pm: any) => (
+                    {paymentMethods.map((pm: PaymentMethod) => (
                       <div key={pm.method} className="flex items-center justify-between p-2 rounded-lg hover:bg-white/5 text-sm transition-colors">
                         <span className="font-bold text-white">{pm.method}</span>
                         <div className="flex items-center gap-3">
@@ -465,8 +483,8 @@ export default function SellerDashboardPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {productHeatmap.map((ph: any) => {
-                      const promptData = prompts.find((p: any) => p.id === ph.promptId);
+                    {productHeatmap.map((ph: ProductHeatmap) => {
+                      const promptData = prompts.find((p) => p.id === ph.promptId);
                       return (
                         <tr key={ph.promptId} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                           <td className="p-3 font-bold text-white truncate max-w-[180px]">{ph.title}</td>
@@ -484,7 +502,7 @@ export default function SellerDashboardPage() {
                           </td>
                           <td className="p-3 text-right">
                             {(() => {
-                              const sv = salesVelocity.velocityByPrompt?.find((v: any) => v.promptId === ph.promptId);
+                              const sv = salesVelocity.velocityByPrompt?.find((v: VelocityByPrompt) => v.promptId === ph.promptId);
                               return sv ? (
                                 <span className="text-[11px] font-bold text-white/70">{sv.daysToFirstSale}d</span>
                               ) : (
@@ -494,7 +512,7 @@ export default function SellerDashboardPage() {
                           </td>
                           <td className="p-3">
                             <div className="flex gap-1">
-                              {ph.bestDay?.slice(0, 2).map((bd: any, bi: number) => (
+                              {ph.bestDay?.slice(0, 2).map((bd: { day: string; count: number }, bi: number) => (
                                 <Badge key={bi} variant="outline" className="text-[9px] border-white/20 text-white/50 font-normal bg-white/5">
                                   {bd.day} ({bd.count})
                                 </Badge>
@@ -530,7 +548,7 @@ export default function SellerDashboardPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {pricingInsights.map((pi: any) => (
+                    {pricingInsights.map((pi: PricingInsight) => (
                       <tr key={pi.promptId} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                         <td className="p-3 font-bold text-white truncate max-w-[200px]">{pi.title}</td>
                         <td className="p-3 text-right font-bold text-white">{formatPrice(pi.currentPrice, selectedCurrency)}</td>
@@ -566,7 +584,7 @@ export default function SellerDashboardPage() {
                 <h2 className="font-bold text-white">Trending Keywords in Your Store</h2>
               </div>
               <div className="p-6 flex flex-wrap gap-2">
-                {trendingKeywords.map((kw: any, i: number) => (
+                {trendingKeywords.map((kw: TrendKeyword, i: number) => (
                   <Badge key={i} className="bg-purple-500/20 text-purple-400 border border-purple-500/30 text-xs px-3 py-1.5 font-bold">
                     {kw.word}
                     <span className="ml-1.5 text-[10px] text-purple-400/60">x{kw.count}</span>
@@ -585,7 +603,7 @@ export default function SellerDashboardPage() {
                 <Badge className="bg-neon-pink/20 text-neon-pink border border-neon-pink/30 ml-auto">{a?.refundRate || 0}% rate</Badge>
               </div>
               <div className="p-6 grid grid-cols-2 lg:grid-cols-4 gap-3">
-                {refundBreakdown.map((rb: any, i: number) => (
+                {refundBreakdown.map((rb: RefundBreakdown, i: number) => (
                   <div key={i} className="p-3 rounded-xl glass-panel border border-white/10">
                     <p className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{rb.status}</p>
                     <p className="font-black text-white text-xl mt-1">{rb.count}</p>
@@ -604,7 +622,7 @@ export default function SellerDashboardPage() {
                 <p className="text-xs text-white/50 mt-1">Trending prompts to inspire your next listing</p>
               </div>
               <div className="relative z-10 p-6 grid grid-cols-2 lg:grid-cols-5 gap-3">
-                {Array.isArray(aiRecs) && aiRecs.slice(0, 5).map((rec: any, i: number) => (
+                {Array.isArray(aiRecs) && aiRecs.slice(0, 5).map((rec: AiRec, i: number) => (
                   <div key={i} className="p-3 rounded-xl glass-panel border border-white/10 text-center hover:bg-white/5 transition-all">
                     <p className="text-lg font-black text-neon-blue drop-shadow-[0_0_5px_rgba(0,210,255,0.5)]">#{i + 1}</p>
                     <p className="text-xs font-bold text-white truncate mt-1">{rec.title || rec.query || 'Trending'}</p>

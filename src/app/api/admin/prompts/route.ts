@@ -16,5 +16,5 @@ export async function GET(req: NextRequest) {
       db.prompt.count({ where })
     ]);
     return NextResponse.json({ success: true, data: { prompts, total, pages: Math.ceil(total / limit) } });
-  } catch (e: any) { return NextResponse.json({ success: false, error: e.message }, { status: 500 }); }
+  } catch {  return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 }); }
 }

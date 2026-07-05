@@ -134,7 +134,7 @@ export function sanitizeInput(input: string): string {
 }
 
 export function sanitizeObject<T extends Record<string, unknown>>(obj: T): T {
-  const sanitized: Record<string, unknown> = {};
+  const sanitized: any = {};
   for (const [key, value] of Object.entries(obj)) {
     if (typeof value === 'string') {
       sanitized[key] = sanitizeInput(value);
@@ -211,4 +211,59 @@ export function extractIP(request: Request | { headers: Headers }): string {
     headers.get('x-real-ip') ||
     'unknown'
   );
+}
+
+// ---------------------------------------------------------------------------
+// HTML entity escaping
+// ---------------------------------------------------------------------------
+
+export function sanitizeForHTML(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');
+}
+
+// ---------------------------------------------------------------------------
+// Origin / Referer validation (CSRF)
+// ---------------------------------------------------------------------------
+
+export function validateOrigin(req: Request): boolean {
+  const origin = req.headers.get('origin');
+  const referer = req.headers.get('referer');
+  const allowedOrigins = [
+    process.env.NEXT_PUBLIC_SITE_URL,
+    process.env.NEXT_PUBLIC_BASE_PATH,
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'capacitor://localhost',
+    'https://maghgo.com',
+  ].filter(Boolean) as string[];
+
+  const isValidOrigin = origin && allowedOrigins.some(a => origin.startsWith(a));
+  const isValidReferer = referer && allowedOrigins.some(a => referer.startsWith(a));
+
+  return !!(isValidOrigin || isValidReferer);
+}
+
+// ---------------------------------------------------------------------------
+// Admin role check helper
+// ---------------------------------------------------------------------------
+
+export function isAdmin(user: { role?: string } | null | undefined): boolean {
+  return user?.role === 'ADMIN';
+}
+
+// ---------------------------------------------------------------------------
+// Safe error message for production (never leak internals)
+// ---------------------------------------------------------------------------
+
+export function safeErrorMessage(error: unknown, fallback = 'Internal server error'): string {
+  if (process.env.NODE_ENV === 'development') {
+    return error instanceof Error ? error.message : String(error);
+  }
+  return fallback;
 }

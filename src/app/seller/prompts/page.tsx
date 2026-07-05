@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useStore, formatPrice, CURRENCIES } from '@/store/marketplace'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -32,16 +32,15 @@ export default function SellerPromptsPage() {
   const { user, selectedCurrency } = useStore()
   const [prompts, setPrompts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [editingPrompt, setEditingPrompt] = useState<any>(null)
+  const [editingPrompt, setEditingPrompt] = useState<any | null>(null)
   const [editPrice, setEditPrice] = useState<string>('')
   const [isUpdating, setIsUpdating] = useState(false)
-
   const fetchPrompts = async () => {
     try {
       const res = await fetch('/api/seller/prompts')
       const json = await res.json()
       if (json.success) setPrompts(json.data)
-    } catch (e) {
+    } catch { 
       toast.error('Failed to load your prompts')
     } finally {
       setLoading(false)
@@ -50,9 +49,9 @@ export default function SellerPromptsPage() {
 
   useEffect(() => {
     if (user?.isSeller) {
-      fetchPrompts()
+      queueMicrotask(() => fetchPrompts())
     } else {
-      setLoading(false)
+      queueMicrotask(() => setLoading(false))
     }
   }, [user])
 
@@ -66,7 +65,7 @@ export default function SellerPromptsPage() {
       } else {
         toast.error(json.error || 'Failed to delete prompt')
       }
-    } catch (e) {
+    } catch { 
       toast.error('An error occurred while deleting')
     }
   }
@@ -99,7 +98,7 @@ export default function SellerPromptsPage() {
       } else {
         toast.error(json.error || 'Failed to update price')
       }
-    } catch (e) {
+    } catch { 
       toast.error('An error occurred while updating')
     } finally {
       setIsUpdating(false)

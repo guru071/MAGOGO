@@ -12,7 +12,7 @@ function slugify(text: string): string {
     .replace(/^-|-$/g, '');
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const user = await getCurrentUser();
     if (!user || user.role !== 'ADMIN') return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 });
@@ -24,8 +24,8 @@ export async function GET(req: NextRequest) {
 
     const data = categories.map(c => ({ ...c, promptCount: c._count.prompts, _count: undefined }));
     return NextResponse.json({ success: true, data });
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true, data: category }, { status: 201 });
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -18,9 +18,10 @@ export async function GET(req: NextRequest) {
     const where: any = {};
     if (status) where.status = status;
     if (from || to) {
-      where.createdAt = {};
-      if (from) where.createdAt.gte = new Date(from);
-      if (to) where.createdAt.lte = new Date(to);
+      const dateFilter: Record<string, Date> = {};
+      if (from) dateFilter.gte = new Date(from);
+      if (to) dateFilter.lte = new Date(to);
+      where.createdAt = dateFilter as unknown;
     }
     if (search) {
       where.OR = [
@@ -52,7 +53,7 @@ export async function GET(req: NextRequest) {
       _count: { status: true },
     });
     const statusMap: Record<string, number> = {};
-    statusCounts.forEach((s: any) => { statusMap[s.status] = s._count.status; });
+    statusCounts.forEach((s: any) => { statusMap[s.status as string] = s._count.status; });
 
     return NextResponse.json({
       success: true,
@@ -64,7 +65,7 @@ export async function GET(req: NextRequest) {
         statusCounts: statusMap,
       },
     });
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

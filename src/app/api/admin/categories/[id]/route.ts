@@ -32,7 +32,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
     // If slug is being changed, check uniqueness
     if (updateData.slug && updateData.slug !== existing.slug) {
-      const slugExists = await db.category.findUnique({ where: { slug: updateData.slug } });
+      const slugExists = await db.category.findUnique({ where: { slug: updateData.slug as string } });
       if (slugExists) return NextResponse.json({ success: false, error: 'A category with this slug already exists' }, { status: 400 });
     }
 
@@ -51,8 +51,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
     const category = await db.category.update({ where: { id }, data: updateData });
     return NextResponse.json({ success: true, data: category });
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -74,7 +74,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
     await db.category.delete({ where: { id } });
     return NextResponse.json({ success: true });
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

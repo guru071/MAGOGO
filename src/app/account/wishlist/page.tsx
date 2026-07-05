@@ -1,10 +1,9 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useStore, formatPrice } from '@/store/marketplace'
+import { useStore, formatPrice, type Prompt } from '@/store/marketplace'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import { Heart, ArrowLeft, ShoppingCart, Sparkles, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -14,7 +13,7 @@ export default function WishlistPage() {
 
   useEffect(() => {
     if (user) fetchWishlist()
-  }, [user])
+  }, [user, fetchWishlist])
 
   const handleRemove = async (id: string) => {
     await toggleWishlist(id)
@@ -22,7 +21,7 @@ export default function WishlistPage() {
     fetchWishlist()
   }
 
-  const handleAddToCart = (prompt: any) => {
+  const handleAddToCart = (prompt: Prompt) => {
     addToCart(prompt)
     toast.success('Added to cart!')
   }

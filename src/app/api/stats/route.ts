@@ -15,7 +15,7 @@ export async function GET() {
       success: true,
       data: { totalUsers, totalSellers, totalPrompts, totalCategories },
     });
-  } catch (e: any) {
-    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  } catch { 
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -13,7 +13,7 @@ export async function GET() {
     }
 
     return NextResponse.json({ success: true, data: settings });
-  } catch (e: any) { return NextResponse.json({ success: false, error: e.message }, { status: 500 }); }
+  } catch {  return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 }); }
 }
 
 export async function PUT(req: NextRequest) {
@@ -39,5 +39,5 @@ export async function PUT(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true, data: settings });
-  } catch (e: any) { return NextResponse.json({ success: false, error: e.message }, { status: 500 }); }
+  } catch {  return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 }); }
 }

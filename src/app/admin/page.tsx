@@ -14,8 +14,8 @@ import Link from 'next/link'
 import { createSupabaseBrowserClient } from '@/lib/supabase-client'
 
 export default function AdminPage() {
-  const [session, setSession] = useState<any>(null)
-  const [user, setUser] = useState<any>(null)
+  const [session, setSession] = useState<any | null>(null)
+  const [user, setUser] = useState<any | null>(null)
   const [loading, setLoading] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -143,5 +143,5 @@ export default function AdminPage() {
     )
   }
 
-  return <AdminPanel token={session.access_token} user={user} onLogout={handleLogout} />
+  return <AdminPanel token={session.access_token as string} user={user} onLogout={handleLogout} />
 }

@@ -52,7 +52,7 @@ export default function AdminSettings({ token }: { token: string }) {
           });
           setValues(merged);
         }
-      } catch (e: any) { if (!cancelled) toast.error(e.message); }
+      } catch (e: any) {  if (!cancelled) toast.error(e.message); }
       if (!cancelled) setLoading(false);
     })();
     return () => { cancelled = true; };
@@ -70,7 +70,7 @@ export default function AdminSettings({ token }: { token: string }) {
       });
       setDbSettings(prev => ({ ...prev, [key]: currentValue }));
       toast.success(`Saved ${key}`);
-    } catch (e: any) { toast.error(e.message); }
+    } catch (e: any) {  toast.error(e.message); }
     setSaving(null);
   };
 
@@ -92,7 +92,7 @@ export default function AdminSettings({ token }: { token: string }) {
         return next;
       });
       toast.success(`Deleted ${key}`);
-    } catch (e: any) { toast.error(e.message); }
+    } catch (e: any) {  toast.error(e.message); }
   };
 
   const addSetting = async () => {
@@ -108,7 +108,7 @@ export default function AdminSettings({ token }: { token: string }) {
       setNewKey('');
       setNewValue('');
       toast.success('Setting added');
-    } catch (e: any) { toast.error(e.message); }
+    } catch (e: any) {  toast.error(e.message); }
   };
 
   if (loading) {

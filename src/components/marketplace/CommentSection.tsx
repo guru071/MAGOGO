@@ -49,9 +49,9 @@ export default function CommentSection({ promptId }: { promptId: string }) {
   const getReplies = (parentId: string) => comments.filter(c => c.parentId === parentId)
 
   return (
-    <div className="mt-8">
-      <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
-        <MessageSquare className="h-4 w-4 text-[#0066CC]" /> Comments ({topLevel.length})
+    <div className="bg-white border border-[#F0F0F0] rounded-sm p-6">
+      <h3 className="font-semibold text-sm text-[#212121] mb-4 flex items-center gap-2">
+        <MessageSquare className="h-4 w-4 text-[#2874F0]" /> Comments ({topLevel.length})
       </h3>
 
       {user ? (
@@ -59,48 +59,53 @@ export default function CommentSection({ promptId }: { promptId: string }) {
           <input value={input} onChange={e => setInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && submit(replyTo)}
             placeholder={replyTo ? 'Write a reply...' : 'Write a comment...'}
-            className="flex-1 text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:border-[#0066CC]" />
-          <Button onClick={() => submit(replyTo)} size="sm" className="bg-[#0066CC] text-white">
-            <Send className="h-3.5 w-3.5" />
-          </Button>
-          {replyTo && <Button onClick={() => { setReplyTo(null); setInput('') }} size="sm" variant="outline">Cancel</Button>}
+            className="flex-1 text-sm border border-[#E0E0E0] bg-white rounded-sm px-3 py-2 text-[#212121] placeholder:text-[#878787] focus:outline-none focus:border-[#2874F0] focus:ring-1 focus:ring-[#2874F0]"
+            aria-label={replyTo ? 'Write a reply' : 'Write a comment'} />
+          <button onClick={() => submit(replyTo)}
+            className="bg-[#2874F0] text-white px-3 rounded-sm hover:bg-[#1a5dc7] transition-colors cursor-pointer"
+            aria-label="Submit comment">
+            <Send className="h-4 w-4" />
+          </button>
+          {replyTo && <button onClick={() => { setReplyTo(null); setInput('') }}
+            className="text-xs text-[#2874F0] hover:underline cursor-pointer">Cancel</button>}
         </div>
       ) : (
-        <p className="text-sm text-slate-400 mb-6">
-          <button onClick={() => setShowAuthModal(true)} className="text-[#0066CC] hover:underline">Sign in</button> to leave a comment
+        <p className="text-sm text-[#878787] mb-6">
+          <button onClick={() => setShowAuthModal(true)} className="text-[#2874F0] hover:underline font-medium cursor-pointer">Sign in</button> to leave a comment
         </p>
       )}
 
       {loading ? (
-        <div className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin text-[#0066CC] mx-auto" /></div>
+        <div className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin text-[#2874F0] mx-auto" /></div>
       ) : topLevel.length === 0 ? (
-        <p className="text-sm text-slate-400 text-center py-6">No comments yet. Be the first!</p>
+        <p className="text-sm text-[#878787] text-center py-6">No comments yet. Be the first!</p>
       ) : topLevel.map(c => (
         <div key={c.id} className="mb-4">
           <div className="flex gap-3">
-            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#0066CC]/20 to-[#FF6600]/20 flex items-center justify-center text-xs font-bold text-[#0066CC] shrink-0">
+            <div className="h-8 w-8 rounded-full bg-[#F1F3F6] flex items-center justify-center text-xs font-bold text-[#2874F0] shrink-0">
               {(c.user.name || 'A')[0].toUpperCase()}
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-slate-800">{c.user.name}</span>
-                <span className="text-[10px] text-slate-400">{formatDistanceToNow(new Date(c.createdAt), { addSuffix: true })}</span>
+                <span className="text-sm font-medium text-[#212121]">{c.user.name}</span>
+                <span className="text-xs text-[#878787]">{formatDistanceToNow(new Date(c.createdAt), { addSuffix: true })}</span>
               </div>
-              <p className="text-sm text-slate-600 mt-0.5">{c.content}</p>
+              <p className="text-sm text-[#212121] mt-0.5">{c.content}</p>
               {user && (
-                <button onClick={() => { setReplyTo(c.id); setInput('') }} className="text-xs text-[#0066CC] hover:underline mt-1">Reply</button>
+                <button onClick={() => { setReplyTo(c.id); setInput('') }}
+                  className="text-xs text-[#2874F0] hover:underline mt-1 cursor-pointer">Reply</button>
               )}
               {getReplies(c.id).map(r => (
                 <div key={r.id} className="flex gap-2 mt-3 ml-2">
-                  <div className="h-6 w-6 rounded-full bg-gradient-to-br from-[#0066CC]/10 to-[#FF6600]/10 flex items-center justify-center text-[10px] font-bold text-[#0066CC] shrink-0">
+                  <div className="h-6 w-6 rounded-full bg-[#F1F3F6] flex items-center justify-center text-[10px] font-bold text-[#2874F0] shrink-0">
                     {(r.user.name || 'A')[0].toUpperCase()}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-medium text-slate-800">{r.user.name}</span>
-                      <span className="text-[10px] text-slate-400">{formatDistanceToNow(new Date(r.createdAt), { addSuffix: true })}</span>
+                      <span className="text-xs font-medium text-[#212121]">{r.user.name}</span>
+                      <span className="text-xs text-[#878787]">{formatDistanceToNow(new Date(r.createdAt), { addSuffix: true })}</span>
                     </div>
-                    <p className="text-xs text-slate-600">{r.content}</p>
+                    <p className="text-xs text-[#212121]">{r.content}</p>
                   </div>
                 </div>
               ))}

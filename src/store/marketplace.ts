@@ -70,7 +70,7 @@ export const COUNTRY_TO_CURRENCY: Record<string, string> = {
 };
 
 export const PAYMENT_METHODS = [
-  { value: 'RAZORPAY', label: 'Razorpay', desc: 'UPI, Net Banking, Cards' },
+  { value: 'RAZORPAY', label: 'Razorpay', desc: 'Credit Card, UPI, NetBanking' },
 ];
 
 export function getINRRate(): number {

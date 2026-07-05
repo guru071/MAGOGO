@@ -79,9 +79,9 @@ export async function POST() {
         },
       },
     });
-  } catch (e: any) {
+  } catch { 
     return NextResponse.json(
-      { success: false, error: e.message },
+      { success: false, error: 'Internal server error' },
       { status: 500 },
     );
   }

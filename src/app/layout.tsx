@@ -11,6 +11,7 @@ import { AuthModal } from "@/components/marketplace/AuthModal"
 import ChatButton from "@/components/marketplace/ChatButton"
 import { ThemeRenderer } from "@/components/marketplace/ThemeRenderer"
 import { BottomNav } from "@/components/marketplace/BottomNav"
+import { AppInitializer } from "@/components/marketplace/AppInitializer"
 import { usePathname } from "next/navigation"
 import { ThemeProvider } from "next-themes"
 
@@ -25,21 +26,21 @@ const geistMono = Geist_Mono({
 })
 
 function AppShell({ children }: { children: React.ReactNode }) {
-  const { fetchMe, user } = useStore()
+  const { fetchMe } = useStore()
   const pathname = usePathname()
   const isAdmin = pathname?.startsWith('/admin')
 
   useEffect(() => {
     fetchMe()
     fetchLiveRates()
-  }, [])
+  }, [fetchMe])
 
   if (isAdmin) {
     return <>{children}</>
   }
 
   return (
-    <div className="min-h-screen flex flex-col relative z-0 pb-20 md:pb-0 pt-[88px]">
+    <div className="min-h-screen flex flex-col relative">
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />
@@ -56,17 +57,18 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className="dark">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <title>MAGHGO — AI Prompt Marketplace</title>
         <meta name="description" content="Discover, buy and sell premium AI prompts for ChatGPT, Midjourney, DALL-E and more." />
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased selection:bg-neon-pink/30 selection:text-white bg-background text-foreground`}>
-        <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark" disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme="dark" disableTransitionOnChange>
           {/* Animated Universe Background (Conditional) */}
           <ThemeRenderer />
           
+          <AppInitializer />
           <main className="min-h-screen relative z-10 flex flex-col">
             <AppShell>{children}</AppShell>
             <Toaster theme="system" />

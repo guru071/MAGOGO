@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Loader2, Sparkles, MessageSquare, Palette, Gem, Code, Megaphone, Pen, Briefcase, Camera, Film, Music, GraduationCap, Brain, Box, Video, ArrowRight } from 'lucide-react'
 
-const CATEGORY_STYLES: Record<string, { icon: any; color: string; desc: string }> = {
+const CATEGORY_STYLES: Record<string, { icon: React.ComponentType<{ className?: string }>; color: string; desc: string }> = {
   chatgpt: { icon: MessageSquare, color: 'bg-green-100 text-green-700', desc: 'ChatGPT, GPT-4, GPT-4o prompts' },
   midjourney: { icon: Palette, color: 'bg-purple-100 text-purple-700', desc: 'Midjourney v6 image generation' },
   dalle: { icon: Gem, color: 'bg-pink-100 text-pink-700', desc: 'DALL-E 3 image creation' },
@@ -38,7 +38,7 @@ export default function CategoriesPage() {
   }, [])
 
   if (loading) {
-    return <div className="max-w-7xl mx-auto px-4 py-20 text-center"><Loader2 className="h-8 w-8 animate-spin text-[#0066CC] mx-auto" /></div>
+    return <div className="max-w-7xl mx-auto px-4 py-20 text-center"><Loader2 className="h-8 w-8 animate-spin text-neon-blue mx-auto" /></div>
   }
 
   return (

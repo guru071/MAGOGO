@@ -47,7 +47,7 @@ export default function AdminPrompts({ token }: { token: string }) {
           setTotal(data.total || 0);
           setPages(data.pages || 1);
         }
-      } catch (e: any) { if (!cancelled) toast.error(e.message); }
+      } catch (e: any) {  if (!cancelled) toast.error(e.message); }
       if (!cancelled) setLoading(false);
     })();
     return () => { cancelled = true; };
@@ -58,7 +58,7 @@ export default function AdminPrompts({ token }: { token: string }) {
       await api(`/api/admin/prompts/${id}`, { method: 'PUT', headers: { 'x-token': token }, body: JSON.stringify(body) });
       toast.success('Prompt updated');
       setRefresh(r => r + 1);
-    } catch (e: any) { toast.error(e.message); }
+    } catch (e: any) {  toast.error(e.message); }
   };
 
   const deletePrompt = async () => {
@@ -68,7 +68,7 @@ export default function AdminPrompts({ token }: { token: string }) {
       toast.success('Prompt deleted');
       setDeleteId(null);
       setRefresh(r => r + 1);
-    } catch (e: any) { toast.error(e.message); }
+    } catch (e: any) {  toast.error(e.message); }
   };
 
   return (

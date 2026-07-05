@@ -52,7 +52,7 @@ export default function AdminBroadcasts({ token }: { token: string }) {
           setPages(data.pages || 1);
           setTotal(data.total || 0);
         }
-      } catch (e: any) { if (!cancelled) toast.error(e.message); }
+      } catch (e: any) {  if (!cancelled) toast.error(e.message); }
       if (!cancelled) setLoading(false);
     })();
     return () => { cancelled = true; };
@@ -70,7 +70,7 @@ export default function AdminBroadcasts({ token }: { token: string }) {
       toast.success(`Broadcast "${data.title}" sent to ${data.recipientCount} active users`);
       setTitle(''); setMessage(''); setType('BROADCAST');
       setRefresh(r => r + 1);
-    } catch (e: any) { toast.error(e.message); }
+    } catch (e: any) {  toast.error(e.message); }
     setSending(false);
   };
 

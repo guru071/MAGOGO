@@ -2,7 +2,7 @@ import { db } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth-helpers';
 import { NextResponse } from 'next/server';
 
-export async function GET(req: Request) {
+export async function GET(_req: Request) {
   try {
     const user = await getCurrentUser();
     if (!user || (!user.isSeller && user.role !== 'ADMIN')) {
@@ -22,7 +22,7 @@ export async function GET(req: Request) {
     });
 
     return NextResponse.json({ success: true, data: prompts });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[API] GET /api/seller/prompts error:', error);
     return NextResponse.json({ success: false, error: 'Failed to fetch prompts' }, { status: 500 });
   }

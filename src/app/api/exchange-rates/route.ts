@@ -49,8 +49,8 @@ export async function GET() {
     cacheTimestamp = now;
 
     return NextResponse.json({ success: true, data: rates, cached: false });
-  } catch (error: any) {
-    console.error('[API] GET /api/exchange-rates error:', error.message);
+  } catch {
+    console.error('[API] GET /api/exchange-rates error');
     // Return fallback rates on error
     return NextResponse.json({ success: true, data: FALLBACK_RATES, cached: false, fallback: true });
   }
