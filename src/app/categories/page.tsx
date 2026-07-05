@@ -44,8 +44,8 @@ export default function CategoriesPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
       <div className="mb-10">
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">All Categories</h1>
-        <p className="text-slate-500 mt-2">Browse prompts by category to find exactly what you need</p>
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">All Categories</h1>
+        <p className="text-white/60 mt-2">Browse prompts by category to find exactly what you need</p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
@@ -55,17 +55,18 @@ export default function CategoriesPage() {
           return (
             <motion.div key={cat.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
               <Link href={`/browse?category=${cat.slug}`}>
-                <Card className="group p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 border-slate-100 h-full">
-                  <div className="flex items-start gap-4">
-                    <div className={`h-12 w-12 rounded-xl flex items-center justify-center shrink-0 ${style.color}`}>
+                <Card className="neon-border group p-6 glass-panel hover:bg-white/10 transition-all duration-300 border-white/10 bg-black/40 h-full relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <div className="flex items-start gap-4 relative z-10">
+                    <div className={`h-12 w-12 rounded-xl flex items-center justify-center shrink-0 bg-white/5 border border-white/10 ${style.color.replace(/bg-[a-z]+-100/, '')}`}>
                       <Icon className="h-6 w-6" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-bold text-slate-800 group-hover:text-[#0066CC] transition-colors">{cat.name}</h3>
-                      <p className="text-xs text-slate-400 mt-0.5">{style.desc}</p>
+                      <h3 className="font-bold text-white group-hover:text-neon-blue transition-colors">{cat.name}</h3>
+                      <p className="text-xs text-white/50 mt-0.5">{style.desc}</p>
                       <div className="flex items-center gap-2 mt-2">
-                        <Badge variant="secondary" className="text-[10px] bg-slate-100 text-slate-500">{cat.promptCount || 0} prompts</Badge>
-                        <span className="text-[10px] text-[#0066CC] opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5">
+                        <Badge variant="secondary" className="text-[10px] bg-white/10 text-white/70 hover:bg-white/20 border-0 backdrop-blur-md">{cat.promptCount || 0} prompts</Badge>
+                        <span className="text-[10px] text-neon-pink opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5">
                           Browse <ArrowRight className="h-3 w-3" />
                         </span>
                       </div>

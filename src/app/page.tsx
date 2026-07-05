@@ -210,7 +210,7 @@ export default function LandingPage() {
                     <div className={`h-14 w-14 rounded-full mb-4 flex items-center justify-center bg-white/5 border border-white/10 group-hover:scale-110 transition-transform ${style.color}`}>
                       <Icon className="h-7 w-7 drop-shadow-md group-hover:drop-shadow-[0_0_10px_currentColor]" />
                     </div>
-                    <p className="font-semibold text-sm text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-neon-blue group-hover:to-neon-pink transition-all">{cat.name}</p>
+                    <p className="font-semibold text-sm text-white group-hover:text-neon-blue transition-all">{cat.name}</p>
                     <p className="text-[10px] text-white/40 mt-1 uppercase font-semibold tracking-widest">{cat.promptCount || 0} items</p>
                   </Link>
                 </motion.div>
