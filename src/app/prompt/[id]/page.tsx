@@ -368,7 +368,7 @@ export default function PromptDetailPage() {
                     <p className="text-neon-blue font-bold text-center mb-4 flex items-center justify-center gap-2 drop-shadow-[0_0_5px_rgba(0,210,255,0.5)]">
                       <ShieldCheck className="h-6 w-6" /> You are {isOwner ? 'the seller' : 'an admin'}
                     </p>
-                    <Link href={`/admin/prompts/${prompt.id}`}>
+                    <Link href={isOwner ? '/seller/prompts' : '/admin'}>
                       <Button className="w-full bg-white hover:bg-white/90 text-black font-extrabold h-14 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.5)] transition-all">
                         Manage Prompt
                       </Button>
