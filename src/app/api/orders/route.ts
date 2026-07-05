@@ -1,7 +1,6 @@
 import { db } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth-helpers';
 import { NextRequest, NextResponse } from 'next/server';
-import { ai } from '@/lib/ai-client';
 import { getFeeConfig, calculateFees, FeeBreakdown } from '@/lib/fees';
 
 export async function GET(req: NextRequest) {

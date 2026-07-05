@@ -1,7 +1,6 @@
 import { db } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth-helpers';
 import { NextRequest, NextResponse } from 'next/server';
-import { ai } from '@/lib/ai-client';
 import { sanitizePromptsForUser } from '@/lib/prompt-security';
 
 function slugify(t: string) { return t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Date.now().toString(36); }
@@ -49,13 +48,6 @@ export async function GET(req: NextRequest) {
 
     let responsePrompts = prompts as any[];
 
-    // AI ranking for text searches
-    if (search && search.trim() && prompts.length > 0) {
-      const aiResult = await ai.search.rank(search, prompts as any, user?.id?.toString()).catch(e => { console.error('[prompts] AI ranking error', e); return null; });
-      if (aiResult?.success && aiResult.data) {
-        responsePrompts = (aiResult.data as any[]).slice(0, limit);
-      }
-    }
 
     const data = {
       prompts: await sanitizePromptsForUser(responsePrompts, user),
@@ -168,54 +160,6 @@ export async function POST(req: NextRequest) {
     const prompt = promptResult.prompt;
 
 
-    // AI fraud check (non-blocking)
-    ai.fraud.checkPrompt({
-      id: prompt!.id, title, description, promptText, tags,
-      categoryId, price: finalPrice, isFree, discount,
-    }).catch(e => { console.error('[prompts] fraud check error', e); });
-
-    // AI quality scoring (non-blocking)
-    ai.quality.score({
-      id: prompt!.id, title, description, promptText, tags,
-      categoryId, price: finalPrice, isFree, discount,
-      seller: { id: user.id, isVerified: user.isVerified, isSeller: user.isSeller, totalEarnings: user.totalEarnings },
-    }).catch(e => { console.error('[prompts] quality score error', e); });
-
-    // Generate and store Deep Learning embedding (non-blocking)
-    const textToEmbed = `${title} ${description} ${tags ? (Array.isArray(tags) ? tags.join(' ') : tags) : ''}`;
-    ai.search.embed(textToEmbed).then(async (res) => {
-      if (res.success && res.data) {
-        try {
-          await db.$executeRawUnsafe(`UPDATE "Prompt" SET embedding = '[${res.data.join(',')}]'::vector WHERE id = $1`, prompt!.id);
-        } catch (dbErr) {
-          console.error('[prompts] failed to save embedding to db', dbErr);
-        }
-      }
-    }).catch(e => console.error('[prompts] embedding generation error', e));
-
-    // Fire-and-forget quality check with auto-approve/reject
-    fetch(`${process.env.AI_SERVICE_URL || 'http://localhost:8000'}/api/quality`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: `${title} ${description}`, promptId: prompt!.id }),
-    }).then(async qRes => {
-      if (!qRes.ok) return;
-      const qData = await qRes.json();
-      if (qData && qData.score !== undefined) {
-        await db.prompt.update({ where: { id: prompt!.id }, data: { qualityScore: qData.score } });
-        const settings = await db.platformSettings.findFirst({ where: { key: 'quality_config' } });
-        if (settings?.value) {
-          const config = JSON.parse(settings.value as string);
-          if (config.enabled) {
-            if (qData.score < config.autoRejectThreshold) {
-              await db.prompt.update({ where: { id: prompt!.id }, data: { status: 'REJECTED' } });
-            } else if (qData.score >= config.autoApproveThreshold) {
-              await db.prompt.update({ where: { id: prompt!.id }, data: { status: 'APPROVED' } });
-            }
-          }
-        }
-      }
-    }).catch(e => { console.error('[prompts] auto-approve quality check error', e); });
 
     return NextResponse.json({ success: true, data: prompt }, { status: 201 });
   } catch (e: any) { return NextResponse.json({ success: false, error: e.message }, { status: 500 }); }

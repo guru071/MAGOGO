@@ -14,7 +14,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
 import { toast } from 'sonner'
-import { Loader2, CreditCard, Lock, ShoppingBag, Smartphone } from 'lucide-react'
+import { Loader2, CreditCard, Lock, ShoppingBag, Smartphone, ShieldCheck } from 'lucide-react'
 import Link from 'next/link'
 import Script from 'next/script'
 
@@ -236,8 +236,12 @@ export default function CheckoutPage() {
               {loading ? 'Processing...' : `Pay ${formatPrice(grandTotal, selectedCurrency)}`}
             </Button>
 
-            <div className="flex items-center justify-center gap-1.5 mt-4 text-xs text-white/40">
-              <Lock className="h-3 w-3" /> {paymentMethod === 'PLAY_STORE' ? 'Verified by Google Play' : 'Secured by Razorpay'}
+            <div className="flex flex-col items-center justify-center gap-2 mt-4 text-[10px] text-white/40 font-medium">
+              <div className="flex gap-4">
+                <span className="flex items-center gap-1"><ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />256-bit Secure</span>
+                <span className="flex items-center gap-1"><Lock className="h-3.5 w-3.5 text-neon-blue" />Verified by Razorpay</span>
+              </div>
+              <span className="flex items-center gap-1"><ShieldCheck className="h-3.5 w-3.5 text-amber-400" />PCI-DSS Certified</span>
             </div>
           </Card>
         </div>

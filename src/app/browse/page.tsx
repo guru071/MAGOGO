@@ -397,8 +397,8 @@ export default function BrowsePage() {
                           {prompt.qualityScore && <Badge className={`text-[10px] px-2 py-0.5 border-0 ${prompt.qualityScore >= 0.8 ? 'bg-neon-blue/20 text-neon-blue border-neon-blue/30' : 'bg-white/5 text-white/70'}`}>Q: {Math.round(prompt.qualityScore * 100)}</Badge>}
                           <span className="text-[10px] text-white/50 flex items-center gap-1 ml-auto"><Eye className="h-3 w-3" /> {prompt.viewCount}</span>
                         </div>
-                        <h3 className="font-bold text-white text-base line-clamp-2 mb-2 group-hover:text-neon-blue transition-colors min-h-[48px]">{prompt.title}</h3>
-                        <p className="text-xs text-white/50 line-clamp-2 min-h-[32px]">{prompt.description}</p>
+                        <h3 className="font-bold text-white text-base line-clamp-2 mb-2 group-hover:text-neon-blue transition-colors h-[48px]">{prompt.title}</h3>
+                        <p className="text-xs text-white/50 line-clamp-2 h-[32px]">{prompt.description}</p>
                         
                         <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/10">
                           <div className="flex items-center gap-4 text-xs text-white/60 font-medium">

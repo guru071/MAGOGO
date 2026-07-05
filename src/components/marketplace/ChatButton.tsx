@@ -43,7 +43,7 @@ export default function ChatButton() {
       {open && <ChatPanel onClose={() => setOpen(false)} />}
       <Button
         onClick={() => setOpen(!open)}
-        className="fixed bottom-24 md:bottom-6 right-4 md:right-6 h-14 w-14 rounded-full bg-neon-blue hover:bg-neon-blue/80 text-black shadow-xl shadow-[0_0_20px_rgba(0,210,255,0.5)] z-50 transition-all"
+        className="fixed bottom-24 md:bottom-6 left-4 md:left-auto md:right-6 h-14 w-14 rounded-full bg-neon-blue hover:bg-neon-blue/80 text-black shadow-xl shadow-[0_0_20px_rgba(0,210,255,0.5)] z-50 transition-all"
       >
         {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
       </Button>
@@ -192,7 +192,7 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <div className="fixed bottom-40 md:bottom-24 right-4 md:right-6 w-[90vw] md:w-80 lg:w-96 h-[500px] max-h-[60vh] md:max-h-[500px] glass-panel-heavy border border-white/20 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.8)] z-50 flex flex-col overflow-hidden">
+    <div className="fixed bottom-40 md:bottom-24 left-4 md:left-auto md:right-6 w-[90vw] md:w-80 lg:w-96 h-[500px] max-h-[60vh] md:max-h-[500px] glass-panel-heavy border border-white/20 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.8)] z-50 flex flex-col overflow-hidden">
       {/* Header */}
       <div className="bg-black/40 border-b border-white/10 p-4 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">

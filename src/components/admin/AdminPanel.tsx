@@ -52,7 +52,7 @@ import QualityDashboard from './QualityDashboard';
 import FeeSettings from './FeeSettings';
 import RevenueDashboard from './RevenueDashboard';
 import AdminComments from './AdminComments';
-import AdminQnA from './AdminQnA';
+
 import AdminSupportChat from './AdminSupportChat';
 import AdminFlashDeals from './AdminFlashDeals';
 
@@ -69,7 +69,6 @@ const TABS = [
   { key: 'coupons', label: 'Coupons', icon: Tag },
   { key: 'reports', label: 'Reports', icon: Flag },
   { key: 'comments', label: 'Comments', icon: MessageSquare },
-  { key: 'qna', label: 'Q&A', icon: HelpCircle },
   { key: 'support', label: 'Support', icon: MessageCircle },
   { key: 'flash', label: 'Flash Deals', icon: Zap },
   { key: 'payouts', label: 'Payouts', icon: Wallet },
@@ -275,8 +274,7 @@ export default function AdminPanel({ token, user, onLogout }: AdminPanelProps) {
         return <AdminReports token={token} />;
       case 'comments':
         return <AdminComments token={token} />;
-      case 'qna':
-        return <AdminQnA token={token} />;
+
       case 'support':
         return <AdminSupportChat token={token} adminId={user?.id} />;
       case 'flash':

@@ -299,15 +299,6 @@ export async function GET(req: NextRequest) {
       .slice(0, 10);
 
     let aiRecommendations: any = null;
-    try {
-      const res = await fetch(`${process.env.AI_SERVICE_URL || 'http://localhost:8000'}/api/v1/recommendations/trending?top_n=5`, {
-        signal: AbortSignal.timeout(2000),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        aiRecommendations = data.data || null;
-      }
-    } catch (e) { console.error('[seller/analytics] ai recommendations error', e); }
 
     return NextResponse.json({
       success: true,
@@ -339,7 +330,7 @@ export async function GET(req: NextRequest) {
           revenue: Math.round(Number(p.revenue) * 100) / 100,
           count: Number(p.count),
         })),
-        recommendations: aiRecommendations,
+
         forecast,
         anomalies,
         productHeatmap,
