@@ -367,6 +367,12 @@ export function Navbar() {
                     <Link href="/seller/upload" className="px-4 py-2.5 text-sm text-neon-pink hover:bg-neon-pink/10 rounded-xl" onClick={() => setMobileMenuOpen(false)}>Sell New Prompt</Link>
                   </>
                 )}
+                <button 
+                  onClick={() => { useStore.getState().setThemeStyle(useStore.getState().themeStyle === 'universe' ? 'normal' : 'universe'); setMobileMenuOpen(false); }}
+                  className="px-4 py-2.5 text-sm text-white/80 hover:bg-white/10 rounded-xl flex items-center gap-2 text-left"
+                >
+                  <Palette className="h-4 w-4" /> Toggle Theme
+                </button>
                 <button onClick={() => { handleLogout(); setMobileMenuOpen(false); }} className="px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/20 rounded-xl text-left">Sign Out</button>
               </>
             ) : (

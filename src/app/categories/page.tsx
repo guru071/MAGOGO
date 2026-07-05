@@ -48,7 +48,7 @@ export default function CategoriesPage() {
         <p className="text-slate-500 mt-2">Browse prompts by category to find exactly what you need</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
         {categories.map((cat: any, i: number) => {
           const style = CATEGORY_STYLES[cat.slug] || { icon: Sparkles, color: 'bg-slate-100 text-slate-700', desc: cat.description || '' }
           const Icon = style.icon

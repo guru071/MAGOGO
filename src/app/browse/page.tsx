@@ -372,7 +372,7 @@ export default function BrowsePage() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-6">
                 {displayPrompts.map(prompt => (
                   <Link key={prompt.id} href={`/prompt/${prompt.id}`}>
                     <Card className="neon-border glass-panel overflow-hidden h-full flex flex-col border-white/10 rounded-3xl group bg-black/40">

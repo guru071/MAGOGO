@@ -131,7 +131,7 @@ export default function LandingPage() {
             </Link>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             {loading ? (
               <div className="col-span-full py-12 text-center"><Loader2 className="h-8 w-8 animate-spin text-neon-blue mx-auto" /></div>
             ) : prompts.length === 0 ? (
