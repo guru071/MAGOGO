@@ -286,12 +286,7 @@ export function Navbar() {
                 <DropdownMenuItem asChild className="focus:bg-white/10 focus:text-white cursor-pointer">
                   <Link href="/account/wishlist"><Heart className="h-4 w-4 mr-2 text-neon-pink" /> Wishlist</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="focus:bg-white/10 focus:text-white cursor-pointer">
-                  <Link href="/wallet"><Wallet className="h-4 w-4 mr-2 text-neon-purple" /> Wallet</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className="focus:bg-white/10 focus:text-white cursor-pointer">
-                  <Link href="/qna"><MessageCircle className="h-4 w-4 mr-2 text-neon-blue" /> Q&A</Link>
-                </DropdownMenuItem>
+
                 <DropdownMenuItem asChild className="focus:bg-white/10 focus:text-white cursor-pointer">
                   <Link href="/account/settings"><Settings className="h-4 w-4 mr-2 text-white/70" /> Settings</Link>
                 </DropdownMenuItem>
@@ -347,7 +342,7 @@ export function Navbar() {
                 <Link href="/account" className="px-4 py-2.5 text-sm text-white/80 hover:bg-white/10 rounded-xl" onClick={() => setMobileMenuOpen(false)}>Profile</Link>
                 <Link href="/account/orders" className="px-4 py-2.5 text-sm text-white/80 hover:bg-white/10 rounded-xl" onClick={() => setMobileMenuOpen(false)}>Orders</Link>
                 <Link href="/account/wishlist" className="px-4 py-2.5 text-sm text-white/80 hover:bg-white/10 rounded-xl" onClick={() => setMobileMenuOpen(false)}>Wishlist</Link>
-                <Link href="/wallet" className="px-4 py-2.5 text-sm text-white/80 hover:bg-white/10 rounded-xl" onClick={() => setMobileMenuOpen(false)}>Wallet</Link>
+
                 {(user.isSeller || user.role === 'ADMIN') && (
                   <>
                     <Link href="/seller" className="px-4 py-2.5 text-sm text-neon-blue hover:bg-neon-blue/10 rounded-xl" onClick={() => setMobileMenuOpen(false)}>Seller Dashboard</Link>
