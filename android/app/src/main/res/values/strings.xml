@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MAGHGO</string>
+    <string name="title_activity_main">MAGHGO</string>
+    <string name="package_name">tech.goatech.maghgo</string>
+    <string name="custom_url_scheme">tech.goatech.maghgo</string>
+</resources>
