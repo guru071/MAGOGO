@@ -109,6 +109,7 @@ export default function CheckoutPage() {
           prefill: {
             name: user.name || '',
             email: user.email || '',
+            vpa: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.startsWith('rzp_test_') ? 'success@razorpay' : undefined
           },
           theme: { color: '#0066CC' },
           modal: {
