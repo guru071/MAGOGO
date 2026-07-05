@@ -145,9 +145,13 @@ export function Navbar() {
       <nav className="glass-panel-heavy rounded-full flex items-center justify-between px-4 sm:px-6 h-16 w-full max-w-6xl transition-all duration-300">
         <div className="flex items-center gap-2.5">
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-neon-blue to-neon-purple flex items-center justify-center overflow-hidden shadow-lg relative group-hover:shadow-[0_0_15px_rgba(0,210,255,0.5)] transition-all">
-              <span className="text-white font-bold text-lg mix-blend-overlay">M</span>
-            </div>
+            <Image 
+              src="/logo.jpeg" 
+              alt="MAGHGO Logo" 
+              width={36} 
+              height={36} 
+              className="h-9 w-9 rounded-full object-cover shadow-lg group-hover:shadow-[0_0_15px_rgba(0,210,255,0.5)] transition-all" 
+            />
             <span className="text-xl font-extrabold tracking-tight text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-neon-blue group-hover:to-neon-purple transition-all hidden sm:block">MAGHGO</span>
           </Link>
         </div>

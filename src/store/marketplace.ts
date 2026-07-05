@@ -50,11 +50,7 @@ export const COUNTRY_TO_CURRENCY: Record<string, string> = {
 
 export const PAYMENT_METHODS = [
   { value: 'WALLET', label: 'Wallet Balance', desc: 'Pay using your available balance' },
-  { value: 'STRIPE', label: 'Credit Card', desc: 'Visa, Mastercard, Amex' },
   { value: 'RAZORPAY', label: 'Razorpay', desc: 'UPI, Net Banking, Cards' },
-  { value: 'PAYPAL', label: 'PayPal', desc: 'Fast & secure online payments' },
-  { value: 'PLAY_STORE', label: 'Google Play', desc: 'Android in-app purchase via Play Store' },
-  { value: 'FIAT', label: 'Fiat Gateway', desc: 'Bank transfer / local payment' },
 ];
 
 export function formatPrice(usdAmount: number, currencyCode?: string): string {
