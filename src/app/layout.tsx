@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import { Toaster } from "sonner"
-import { useStore } from "@/store/marketplace"
+import { useStore, fetchLiveRates } from "@/store/marketplace"
 import { Navbar } from "@/components/marketplace/Navbar"
 import { Footer } from "@/components/marketplace/Footer"
 import { AuthModal } from "@/components/marketplace/AuthModal"
@@ -31,6 +31,7 @@ function AppShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     fetchMe()
+    fetchLiveRates()
   }, [])
 
   if (isAdmin) {

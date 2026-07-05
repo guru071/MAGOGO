@@ -24,16 +24,37 @@ export const AI_TOOL_CATEGORIES = [
 
 export const CURRENCIES = [
   { code: 'USD', symbol: '$', name: 'US Dollar', rate: 1, flag: '🇺🇸' },
-  { code: 'INR', symbol: '₹', name: 'Indian Rupee', rate: 83.5, flag: '🇮🇳' },
-  { code: 'EUR', symbol: '€', name: 'Euro', rate: 0.92, flag: '🇪🇺' },
-  { code: 'GBP', symbol: '£', name: 'British Pound', rate: 0.79, flag: '🇬🇧' },
-  { code: 'AUD', symbol: 'A$', name: 'Australian Dollar', rate: 1.53, flag: '🇦🇺' },
-  { code: 'CAD', symbol: 'C$', name: 'Canadian Dollar', rate: 1.36, flag: '🇨🇦' },
+  { code: 'INR', symbol: '₹', name: 'Indian Rupee', rate: 94.6, flag: '🇮🇳' },
+  { code: 'EUR', symbol: '€', name: 'Euro', rate: 0.89, flag: '🇪🇺' },
+  { code: 'GBP', symbol: '£', name: 'British Pound', rate: 0.75, flag: '🇬🇧' },
+  { code: 'AUD', symbol: 'A$', name: 'Australian Dollar', rate: 1.55, flag: '🇦🇺' },
+  { code: 'CAD', symbol: 'C$', name: 'Canadian Dollar', rate: 1.38, flag: '🇨🇦' },
   { code: 'AED', symbol: 'د.إ', name: 'UAE Dirham', rate: 3.67, flag: '🇦🇪' },
-  { code: 'JPY', symbol: '¥', name: 'Japanese Yen', rate: 149.5, flag: '🇯🇵' },
-  { code: 'BRL', symbol: 'R$', name: 'Brazilian Real', rate: 4.97, flag: '🇧🇷' },
-  { code: 'NGN', symbol: '₦', name: 'Nigerian Naira', rate: 1550, flag: '🇳🇬' },
+  { code: 'JPY', symbol: '¥', name: 'Japanese Yen', rate: 144.0, flag: '🇯🇵' },
+  { code: 'BRL', symbol: 'R$', name: 'Brazilian Real', rate: 5.65, flag: '🇧🇷' },
+  { code: 'NGN', symbol: '₦', name: 'Nigerian Naira', rate: 1620, flag: '🇳🇬' },
 ];
+
+// Fetch live exchange rates and update CURRENCIES array
+let ratesFetched = false;
+export async function fetchLiveRates() {
+  if (ratesFetched) return;
+  try {
+    const res = await fetch('/api/exchange-rates');
+    const json = await res.json();
+    if (json.success && json.data) {
+      for (const cur of CURRENCIES) {
+        if (json.data[cur.code] !== undefined) {
+          cur.rate = json.data[cur.code];
+        }
+      }
+      ratesFetched = true;
+      console.log('[store] Live exchange rates loaded');
+    }
+  } catch (e) {
+    console.error('[store] Failed to fetch live rates, using fallback:', e);
+  }
+}
 
 export const COUNTRY_TO_CURRENCY: Record<string, string> = {
   'INDIA': 'INR',
@@ -49,9 +70,12 @@ export const COUNTRY_TO_CURRENCY: Record<string, string> = {
 };
 
 export const PAYMENT_METHODS = [
-  { value: 'WALLET', label: 'Wallet Balance', desc: 'Pay using your available balance' },
   { value: 'RAZORPAY', label: 'Razorpay', desc: 'UPI, Net Banking, Cards' },
 ];
+
+export function getINRRate(): number {
+  return CURRENCIES.find(c => c.code === 'INR')?.rate || 94.6;
+}
 
 export function formatPrice(usdAmount: number, currencyCode?: string): string {
   if (!currencyCode) currencyCode = useStore.getState().selectedCurrency || 'USD';

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { enableRazorpayProtections, disableRazorpayProtections } from '@/lib/razorpay-client'
-import { useStore, formatPrice, CURRENCIES, PAYMENT_METHODS } from '@/store/marketplace'
+import { useStore, formatPrice, CURRENCIES, PAYMENT_METHODS, getINRRate } from '@/store/marketplace'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
@@ -76,7 +76,7 @@ export default function CheckoutPage() {
 
         const options = {
           key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-          amount: Math.round(rzJson.amount * 8350),
+          amount: Math.round(rzJson.amount * getINRRate() * 100),
           currency: 'INR',
           name: 'MAGHGO',
           description: 'Prompt Purchase',
