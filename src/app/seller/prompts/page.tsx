@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useStore, formatPrice } from '@/store/marketplace'
+import { useStore, formatPrice, CURRENCIES } from '@/store/marketplace'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -73,22 +73,28 @@ export default function SellerPromptsPage() {
 
   const handleEditPrice = async () => {
     if (!editingPrompt) return
-    const priceNum = parseFloat(editPrice)
-    if (isNaN(priceNum) || priceNum < 0) {
+    const localPriceNum = parseFloat(editPrice)
+    if (isNaN(localPriceNum) || localPriceNum < 0) {
       toast.error('Please enter a valid positive price')
       return
     }
+    
+    // Convert back to USD for saving
+    const curObj = CURRENCIES.find(c => c.code === selectedCurrency)
+    const usdPrice = curObj && curObj.rate > 0 ? localPriceNum / curObj.rate : localPriceNum
+    const finalUsdPrice = Math.round(usdPrice * 100) / 100
+
     setIsUpdating(true)
     try {
       const res = await fetch(`/api/seller/prompts/${editingPrompt.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ price: priceNum })
+        body: JSON.stringify({ price: finalUsdPrice })
       })
       const json = await res.json()
       if (json.success) {
         toast.success('Price updated successfully')
-        setPrompts(prompts.map(p => p.id === editingPrompt.id ? { ...p, price: priceNum, isFree: priceNum === 0 } : p))
+        setPrompts(prompts.map(p => p.id === editingPrompt.id ? { ...p, price: finalUsdPrice, isFree: finalUsdPrice === 0 } : p))
         setEditingPrompt(null)
       } else {
         toast.error(json.error || 'Failed to update price')
@@ -169,7 +175,12 @@ export default function SellerPromptsPage() {
                   </Link>
                 )}
                 
-                <Button variant="ghost" size="sm" className="text-white/70 hover:text-white hover:bg-white/10 ml-auto mr-2" onClick={() => { setEditingPrompt(prompt); setEditPrice(prompt.price?.toString() || '0'); }}>
+                <Button variant="ghost" size="sm" className="text-white/70 hover:text-white hover:bg-white/10 ml-auto mr-2" onClick={() => { 
+                  setEditingPrompt(prompt); 
+                  const curObj = CURRENCIES.find(c => c.code === selectedCurrency);
+                  const localPrice = curObj ? prompt.price * curObj.rate : prompt.price;
+                  setEditPrice(localPrice.toFixed(2)); 
+                }}>
                   <Edit className="w-4 h-4" />
                 </Button>
 
@@ -210,7 +221,7 @@ export default function SellerPromptsPage() {
             <DialogTitle>Edit Price</DialogTitle>
           </DialogHeader>
           <div className="py-4">
-            <label className="text-sm font-medium text-white/70 mb-2 block">New Price (USD)</label>
+            <label className="text-sm font-medium text-white/70 mb-2 block">New Price ({CURRENCIES.find(c => c.code === selectedCurrency)?.symbol || '$'} {selectedCurrency})</label>
             <Input
               type="number"
               min="0"
@@ -218,8 +229,11 @@ export default function SellerPromptsPage() {
               value={editPrice}
               onChange={(e) => setEditPrice(e.target.value)}
               className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-neon-blue focus:ring-neon-blue"
-              placeholder="e.g. 5.99"
+              placeholder={`e.g. ${(5.99 * (CURRENCIES.find(c => c.code === selectedCurrency)?.rate || 1)).toFixed(2)}`}
             />
+            {parseFloat(editPrice) > 0 && selectedCurrency !== 'USD' && (
+              <p className="text-xs text-white/40 mt-1 ml-1">≈ ${(parseFloat(editPrice) / (CURRENCIES.find(c => c.code === selectedCurrency)?.rate || 1)).toFixed(2)} USD</p>
+            )}
             <p className="text-xs text-white/50 mt-2">Set to 0 to make it FREE.</p>
           </div>
           <DialogFooter>
