@@ -6,7 +6,7 @@ import { createOrder, isConfigured } from '@/lib/razorpay';
 export async function POST(req: NextRequest) {
   try {
     const user = await getCurrentUser();
-    if (!user) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    if (!user || !user.id) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     
     if (!isConfigured()) {
       return NextResponse.json({ success: false, error: 'Razorpay is not configured on this server.' }, { status: 500 });
