@@ -9,6 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Loader2, Wallet as WalletIcon, ArrowUpRight, ArrowDownLeft, Plus, RefreshCw, History, TrendingUp, TrendingDown, PieChart, Download, Search, Filter, DollarSign, CreditCard, Calendar, FileText, CheckCircle, Clock, XCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import { AreaChart, Area, PieChart as RPieChart, Pie, Cell, ResponsiveContainer, Tooltip as RTooltip } from 'recharts'
+import Script from 'next/script'
+import { enableRazorpayProtections, disableRazorpayProtections } from '@/lib/razorpay-client'
 
 type TxType = 'SALE' | 'DEPOSIT' | 'WITHDRAWAL' | 'REFUND' | 'FEE'
 
@@ -181,18 +183,71 @@ export default function WalletPage() {
     const amt = parseFloat(depositAmount)
     if (!amt || amt < 5) return toast.error('Minimum deposit is $5')
     setSubmitting(true)
+    
     try {
-      const res = await fetch('/api/wallet/checkout', {
+      const res = await fetch('/api/razorpay/wallet-topup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: amt }),
       })
-      const d = await res.json()
-      if (d.success && d.url) {
-        window.location.href = d.url
-      } else toast.error(d.error || 'Failed to initiate checkout')
-    } catch { toast.error('Failed to initiate checkout') }
-    finally { setSubmitting(false) }
+      const data = await res.json()
+      if (!data.success) throw new Error(data.error)
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: Math.round(amt * 8350), // INR paise approximation matching backend
+        currency: 'INR',
+        name: 'Maghgo',
+        description: 'Wallet Deposit',
+        order_id: data.orderId,
+        handler: async function (response: any) {
+          disableRazorpayProtections();
+          const verifyRes = await fetch('/api/razorpay/wallet-verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              amountUsd: amt,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpaySignature: response.razorpay_signature,
+            })
+          })
+          const verifyData = await verifyRes.json()
+          if (verifyData.success) {
+            toast.success('Wallet topped up successfully!')
+            setDepositAmount('')
+            useStore.getState().fetchMe() // refresh user balance
+            fetchWallet() // refresh tx list
+          } else {
+            toast.error(verifyData.error || 'Verification failed')
+          }
+        },
+        prefill: {
+          name: user?.name,
+          email: user?.email,
+        },
+        theme: { color: '#00d2ff' },
+        modal: {
+          ondismiss: function() {
+            disableRazorpayProtections();
+            setSubmitting(false);
+          }
+        }
+      }
+
+      const rzp = new (window as any).Razorpay(options)
+      rzp.on('payment.failed', function (response: any) {
+        disableRazorpayProtections();
+        toast.error(response.error.description || 'Payment failed')
+        setSubmitting(false);
+      })
+      enableRazorpayProtections();
+      rzp.open()
+
+    } catch (e: any) {
+      toast.error(e.message || 'Failed to initiate deposit')
+      setSubmitting(false)
+    }
   }
 
   const exportCSV = () => {
@@ -229,6 +284,7 @@ export default function WalletPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 relative z-10">
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <h1 className="text-3xl font-extrabold text-white flex items-center gap-3 drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
           <WalletIcon className="h-8 w-8 text-neon-blue drop-shadow-[0_0_10px_rgba(0,210,255,0.5)]" /> Wallet
