@@ -162,10 +162,10 @@ export default function LandingPage() {
                         <Badge variant="outline" className="text-[10px] bg-white/5 border-white/10 text-white/70 backdrop-blur-md">{prompt.recommendedAI || 'General'}</Badge>
                         <span className="text-[10px] text-white/50 flex items-center gap-1"><Star className="h-3 w-3 text-neon-blue fill-neon-blue shadow-[0_0_5px_rgba(0,210,255,0.8)]" /> {prompt.rating.toFixed(1)}</span>
                       </div>
-                      <h3 className="font-bold text-white text-base line-clamp-2 mb-2 group-hover:text-neon-blue transition-colors">{prompt.title}</h3>
-                      <p className="text-xs text-white/50 line-clamp-2 flex-1">{prompt.description}</p>
+                      <h3 className="font-bold text-white text-base line-clamp-2 mb-2 group-hover:text-neon-blue transition-colors min-h-[48px]">{prompt.title}</h3>
+                      <p className="text-xs text-white/50 line-clamp-2 min-h-[32px]">{prompt.description}</p>
                       
-                      <div className="mt-5 flex items-center justify-between pt-4 border-t border-white/10">
+                      <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/10">
                         <div className="flex flex-col">
                           <span className="text-[10px] text-white/30 line-through">
                             {prompt.originalPrice && prompt.originalPrice > prompt.price ? formatPrice(prompt.originalPrice, selectedCurrency) : ''}
