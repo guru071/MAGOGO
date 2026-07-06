@@ -17,10 +17,10 @@ export default function SecurityPage() {
   if (!user) {
     return (
       <div className="max-w-md mx-auto px-4 py-20 text-center">
-        <Shield className="h-16 w-16 text-slate-200 mx-auto mb-4" />
-        <h2 className="text-xl font-bold text-slate-700">Sign in to manage security</h2>
-        <p className="text-slate-500 mt-2 mb-6">Update your password and account settings</p>
-        <Button className="bg-neon-blue text-black font-bold" onClick={() => setShowAuthModal(true)}>Sign In</Button>
+        <Shield className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+        <h2 className="text-xl font-bold text-foreground">Sign in to manage security</h2>
+        <p className="text-muted-foreground mt-2 mb-6">Update your password and account settings</p>
+        <Button className="bg-[#2874F0] text-white font-bold" onClick={() => setShowAuthModal(true)}>Sign In</Button>
       </div>
     )
   }
@@ -60,52 +60,52 @@ export default function SecurityPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
       <div className="flex items-center gap-3 mb-8">
-        <Shield className="h-8 w-8 text-neon-blue" />
+        <Shield className="h-8 w-8 text-[#2874F0]" />
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Security Settings</h1>
-          <p className="text-sm text-slate-500">Manage your account security and password</p>
+          <h1 className="text-2xl font-bold text-foreground">Security Settings</h1>
+          <p className="text-sm text-muted-foreground">Manage your account security and password</p>
         </div>
       </div>
 
-      <Card className="p-6 border-slate-200">
-        <h2 className="font-bold text-slate-800 mb-1 flex items-center gap-2">
-          <Lock className="h-4 w-4 text-neon-blue" /> Change Password
+      <Card className="p-6 border-border bg-card rounded-sm">
+        <h2 className="font-bold text-foreground mb-1 flex items-center gap-2">
+          <Lock className="h-4 w-4 text-[#2874F0]" /> Change Password
         </h2>
-        <p className="text-xs text-slate-400 mb-6">Use a strong password with at least 6 characters</p>
+        <p className="text-xs text-muted-foreground mb-6">Use a strong password with at least 6 characters</p>
 
         <div className="space-y-4">
           <div>
-            <label className="text-xs font-medium text-slate-600 mb-1 block">Current Password</label>
-            <Input type="password" placeholder="Enter current password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} />
+            <label className="text-xs font-medium text-foreground mb-1 block">Current Password</label>
+            <Input type="password" placeholder="Enter current password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} className="bg-card border-input" />
           </div>
           <div>
-            <label className="text-xs font-medium text-slate-600 mb-1 block">New Password</label>
-            <Input type="password" placeholder="Enter new password" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+            <label className="text-xs font-medium text-foreground mb-1 block">New Password</label>
+            <Input type="password" placeholder="Enter new password" value={newPassword} onChange={e => setNewPassword(e.target.value)} className="bg-card border-input" />
           </div>
           <div>
-            <label className="text-xs font-medium text-slate-600 mb-1 block">Confirm New Password</label>
-            <Input type="password" placeholder="Confirm new password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
+            <label className="text-xs font-medium text-foreground mb-1 block">Confirm New Password</label>
+            <Input type="password" placeholder="Confirm new password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className="bg-card border-input" />
           </div>
-          <Button onClick={handleChangePassword} disabled={loading} className="bg-neon-blue text-black font-bold">
+          <Button onClick={handleChangePassword} disabled={loading} className="bg-[#2874F0] text-white font-bold rounded-sm">
             {loading ? 'Updating...' : 'Update Password'}
           </Button>
         </div>
       </Card>
 
-      <Card className="p-6 border-slate-200 mt-6">
-        <h2 className="font-bold text-slate-800 mb-1 flex items-center gap-2">
-          <KeyRound className="h-4 w-4 text-neon-blue" /> Account Information
+      <Card className="p-6 border-border bg-card rounded-sm mt-6">
+        <h2 className="font-bold text-foreground mb-1 flex items-center gap-2">
+          <KeyRound className="h-4 w-4 text-[#2874F0]" /> Account Information
         </h2>
         <div className="mt-4 space-y-3 text-sm">
           <div className="flex items-center gap-2">
-            <User className="h-4 w-4 text-slate-400" />
-            <span className="text-slate-500">Email:</span>
-            <span className="text-slate-800 font-medium">{user.email}</span>
+            <User className="h-4 w-4 text-muted-foreground" />
+            <span className="text-muted-foreground">Email:</span>
+            <span className="text-foreground font-medium">{user.email}</span>
           </div>
           <div className="flex items-center gap-2">
-            <Shield className="h-4 w-4 text-slate-400" />
-            <span className="text-slate-500">Account Type:</span>
-            <span className="text-slate-800 font-medium">{user.role === 'ADMIN' ? 'Administrator' : user.isSeller ? 'Seller' : 'Buyer'}</span>
+            <Shield className="h-4 w-4 text-muted-foreground" />
+            <span className="text-muted-foreground">Account Type:</span>
+            <span className="text-foreground font-medium">{user.role === 'ADMIN' ? 'Administrator' : user.isSeller ? 'Seller' : 'Buyer'}</span>
           </div>
         </div>
       </Card>

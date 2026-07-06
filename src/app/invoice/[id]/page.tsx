@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ArrowLeft, Printer, CheckCircle2 } from 'lucide-react'
-import { formatUSD, getSymbol } from '@/store/marketplace'
+import { formatUSD } from '@/store/marketplace'
 
 export default function InvoicePage() {
   const { id } = useParams<{ id: string }>()
@@ -42,9 +42,9 @@ export default function InvoicePage() {
   if (error || !order) {
     return (
       <div className="max-w-4xl mx-auto p-8 text-center">
-        <h2 className="text-2xl font-bold text-neon-pink mb-4">Invoice Not Found</h2>
-        <p className="text-white/70 mb-6">{error}</p>
-        <Button onClick={() => router.push('/')}>Return Home</Button>
+        <h2 className="text-2xl font-bold text-[#FF9F00] mb-4">Invoice Not Found</h2>
+        <p className="text-muted-foreground mb-6">{error}</p>
+        <Button onClick={() => router.push('/')} className="bg-[#2874F0] text-white rounded-sm">Return Home</Button>
       </div>
     )
   }
@@ -54,39 +54,39 @@ export default function InvoicePage() {
   }
 
   return (
-    <div className="min-h-screen bg-black/40 py-8 px-4 sm:px-6 lg:px-8 print:bg-white print:p-0">
+    <div className="min-h-screen bg-[#F1F3F6] py-8 px-4 sm:px-6 lg:px-8 print:bg-white print:p-0">
       <div className="max-w-4xl mx-auto">
         
         {/* Controls - Hidden in print */}
         <div className="flex items-center justify-between mb-6 print:hidden">
-          <Button variant="ghost" onClick={() => router.back()} className="text-white/50 hover:text-white">
+          <Button variant="ghost" onClick={() => router.back()} className="text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-4 w-4 mr-2" /> Back
           </Button>
           <div className="flex gap-3">
-            <Button onClick={handlePrint} className="bg-neon-blue text-white">
+            <Button onClick={handlePrint} className="bg-[#2874F0] text-white rounded-sm">
               <Printer className="h-4 w-4 mr-2" /> Print Invoice
             </Button>
           </div>
         </div>
 
         {/* Printable Invoice Card */}
-        <Card className="p-8 sm:p-12 glass-panel neon-border border-white/10 rounded-3xl border-white/10 print:shadow-none print:border-0 print:p-0">
+        <Card className="p-8 sm:p-12 bg-card border-border rounded-sm print:shadow-none print:border-0 print:p-0">
           
           {/* Header */}
-          <div className="flex justify-between items-start border-b border-white/20 pb-8 mb-8">
+          <div className="flex justify-between items-start border-b border-border pb-8 mb-8">
             <div>
-              <h1 className="text-3xl font-black text-white tracking-tight">INVOICE</h1>
-              <p className="text-white/50 mt-2 font-mono">#{order.orderId}</p>
-              <div className="flex items-center gap-2 mt-4 text-emerald-400 font-medium">
+              <h1 className="text-3xl font-black text-foreground tracking-tight">INVOICE</h1>
+              <p className="text-muted-foreground mt-2 font-mono">#{order.orderId}</p>
+              <div className="flex items-center gap-2 mt-4 text-[#388E3C] font-medium">
                 <CheckCircle2 className="h-5 w-5" />
                 Payment Successful
               </div>
             </div>
             <div className="text-right">
-              <div className="text-2xl font-black text-neon-blue drop-shadow-[0_0_10px_rgba(0,210,255,0.5)] tracking-tighter">AI PROMPT HUB</div>
-              <p className="text-white/50 mt-1 text-sm">123 Marketplace Ave, Suite 100</p>
-              <p className="text-white/50 text-sm">San Francisco, CA 94107</p>
-              <p className="text-white/50 text-sm mt-4 font-medium">
+              <div className="text-2xl font-black text-[#2874F0] tracking-tighter">MAGHGO</div>
+              <p className="text-muted-foreground mt-1 text-sm">123 Marketplace Ave, Suite 100</p>
+              <p className="text-muted-foreground text-sm">San Francisco, CA 94107</p>
+              <p className="text-muted-foreground text-sm mt-4 font-medium">
                 Date: {new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
               </p>
             </div>
@@ -95,43 +95,43 @@ export default function InvoicePage() {
           {/* Billing Info */}
           <div className="grid grid-cols-2 gap-8 mb-12">
             <div>
-              <h3 className="text-xs font-bold text-white/40 uppercase tracking-wider mb-3">Billed To</h3>
-              <p className="text-white font-bold">{order.buyer?.name || 'Customer'}</p>
-              <p className="text-white/70">{order.buyer?.email}</p>
+              <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">Billed To</h3>
+              <p className="text-foreground font-bold">{order.buyer?.name || 'Customer'}</p>
+              <p className="text-muted-foreground">{order.buyer?.email}</p>
             </div>
             <div>
-              <h3 className="text-xs font-bold text-white/40 uppercase tracking-wider mb-3">Seller Details</h3>
-              <p className="text-white font-bold">{order.prompt?.seller?.name || 'Third-Party Seller'}</p>
-              <p className="text-white/70">{order.prompt?.seller?.email}</p>
+              <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">Seller Details</h3>
+              <p className="text-foreground font-bold">{order.prompt?.seller?.name || 'Third-Party Seller'}</p>
+              <p className="text-muted-foreground">{order.prompt?.seller?.email}</p>
             </div>
           </div>
 
           {/* Line Items */}
-          <div className="border border-white/20 rounded-xl overflow-hidden mb-8">
-            <table className="w-full text-left border-collapse bg-black/40">
+          <div className="border border-border rounded-sm overflow-hidden mb-8">
+            <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-black/40 border-b border-white/20">
-                  <th className="py-4 px-6 font-bold text-white/90">Description</th>
-                  <th className="py-4 px-6 font-bold text-white/90 w-32 text-right">Amount</th>
+                <tr className="bg-muted border-b border-border">
+                  <th className="py-4 px-6 font-bold text-foreground">Description</th>
+                  <th className="py-4 px-6 font-bold text-foreground w-32 text-right">Amount</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-border">
                 <tr>
                   <td className="py-5 px-6">
-                    <p className="font-bold text-white">{order.prompt?.title || 'AI Prompt'}</p>
-                    <p className="text-sm text-white/50 mt-1">Digital Goods - Instant Access</p>
+                    <p className="font-bold text-foreground">{order.prompt?.title || 'AI Prompt'}</p>
+                    <p className="text-sm text-muted-foreground mt-1">Digital Goods - Instant Access</p>
                   </td>
-                  <td className="py-5 px-6 text-right font-medium text-white">
+                  <td className="py-5 px-6 text-right font-medium text-foreground">
                     {formatUSD(order.amount + (order.discountAmt || 0))}
                   </td>
                 </tr>
                 {order.couponCode && (
                   <tr>
-                    <td className="py-4 px-6 text-white/70">
-                      Discount applied (Coupon: <span className="font-mono bg-white/5 px-1 py-0.5 rounded text-xs">{order.couponCode}</span>)
+                    <td className="py-4 px-6 text-muted-foreground">
+                      Discount applied (Coupon: <span className="font-mono bg-muted px-1 py-0.5 rounded text-xs">{order.couponCode}</span>)
                     </td>
-                    <td className="py-4 px-6 text-right text-neon-pink font-medium">
-                      -{formatUSD(order.amount * 0)} {/* Placeholder since discount isn't explicitly saved as a field natively, it's baked into amount. If you added discountAmt, use it. */}
+                    <td className="py-4 px-6 text-right text-[#FF9F00] font-medium">
+                      -{formatUSD(order.amount * 0)}
                     </td>
                   </tr>
                 )}
@@ -142,19 +142,19 @@ export default function InvoicePage() {
           {/* Totals */}
           <div className="flex justify-end">
             <div className="w-1/2 min-w-[250px] space-y-3 text-sm">
-              <div className="flex justify-between text-white/70">
+              <div className="flex justify-between text-muted-foreground">
                 <span>Subtotal</span>
                 <span className="font-medium">{formatUSD(order.amount)}</span>
               </div>
-              <div className="flex justify-between text-white/70">
+              <div className="flex justify-between text-muted-foreground">
                 <span>Platform Fee & Taxes</span>
                 <span className="font-medium">Included</span>
               </div>
-              <div className="flex justify-between border-t border-white/20 pt-3 text-lg font-black text-white">
+              <div className="flex justify-between border-t border-border pt-3 text-lg font-black text-foreground">
                 <span>Total Paid</span>
                 <span>{formatUSD(order.amount)} {order.currency}</span>
               </div>
-              <div className="flex justify-between text-white/50 text-xs pt-1">
+              <div className="flex justify-between text-muted-foreground text-xs pt-1">
                 <span>Payment Method</span>
                 <span className="uppercase">{order.paymentMethod}</span>
               </div>
@@ -162,8 +162,8 @@ export default function InvoicePage() {
           </div>
 
           {/* Footer */}
-          <div className="border-t border-white/20 mt-16 pt-8 text-center text-white/50 text-sm">
-            <p className="font-medium text-white/90">Thank you for your purchase!</p>
+          <div className="border-t border-border mt-16 pt-8 text-center text-muted-foreground text-sm">
+            <p className="font-medium text-foreground">Thank you for your purchase!</p>
             <p className="mt-1">If you have any questions about this invoice, please contact support@maghgo.com</p>
           </div>
           

@@ -60,33 +60,33 @@ export default function SupportPage() {
   })).filter(section => section.items.length > 0)
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-20 relative z-10 text-white">
+    <div className="max-w-4xl mx-auto px-4 py-20 relative z-10">
       <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-extrabold mb-4 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">
-          <HelpCircle className="inline h-10 w-10 text-neon-blue mr-3 animate-pulse" />
+        <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-foreground flex items-center justify-center gap-3">
+          <HelpCircle className="inline h-10 w-10 text-[#2874F0]" />
           Help Center
         </h1>
-        <p className="text-white/60 mb-8">Find answers to your questions or get in touch with our support team.</p>
+        <p className="text-muted-foreground mb-8">Find answers to your questions or get in touch with our support team.</p>
 
         <div className="relative max-w-lg mx-auto">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search for help..."
-            className="pl-12 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-neon-blue rounded-full h-14 text-base shadow-[0_0_20px_rgba(0,0,0,0.3)]"
+            className="pl-12 bg-card border-input text-foreground placeholder:text-muted-foreground focus:border-[#2874F0] rounded-sm h-14 text-base"
           />
         </div>
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-6">
         {filteredSections.map((section, si) => (
-          <div key={si} className="glass-panel rounded-3xl border border-white/10 overflow-hidden">
-            <div className="flex items-center gap-3 px-6 py-4 border-b border-white/10 bg-white/5">
-              <section.icon className="h-5 w-5 text-neon-blue" />
-              <h2 className="font-bold text-lg">{section.title}</h2>
+          <div key={si} className="bg-card border-border rounded-sm overflow-hidden">
+            <div className="flex items-center gap-3 px-6 py-4 border-b border-border bg-muted">
+              <section.icon className="h-5 w-5 text-[#2874F0]" />
+              <h2 className="font-bold text-foreground text-lg">{section.title}</h2>
             </div>
-            <div className="divide-y divide-white/5">
+            <div className="divide-y divide-border">
               {section.items.map((item, qi) => {
                 const key = `${si}-${qi}`
                 const isOpen = openMap[key]
@@ -94,17 +94,17 @@ export default function SupportPage() {
                   <div key={qi}>
                     <button
                       onClick={() => toggle(key)}
-                      className="w-full text-left px-6 py-4 flex items-center justify-between hover:bg-white/5 transition-colors"
+                      className="w-full text-left px-6 py-4 flex items-center justify-between hover:bg-muted transition-colors"
                     >
-                      <span className="font-medium text-sm text-white/90 pr-4">{item.q}</span>
+                      <span className="font-medium text-sm text-foreground pr-4">{item.q}</span>
                       {isOpen ? (
-                        <ChevronUp className="h-5 w-5 text-neon-blue shrink-0" />
+                        <ChevronUp className="h-5 w-5 text-[#2874F0] shrink-0" />
                       ) : (
-                        <ChevronDown className="h-5 w-5 text-white/40 shrink-0" />
+                        <ChevronDown className="h-5 w-5 text-muted-foreground shrink-0" />
                       )}
                     </button>
                     {isOpen && (
-                      <div className="px-6 pb-4 text-sm text-white/60 leading-relaxed animate-in slide-in-from-top-1 duration-200">
+                      <div className="px-6 pb-4 text-sm text-muted-foreground leading-relaxed animate-in slide-in-from-top-1 duration-200">
                         {item.a}
                       </div>
                     )}
@@ -118,21 +118,21 @@ export default function SupportPage() {
 
       {filteredSections.length === 0 && (
         <div className="text-center py-16">
-          <Search className="h-12 w-12 text-white/20 mx-auto mb-4" />
-          <p className="text-white/50 text-lg font-bold">No results found</p>
-          <p className="text-white/30 text-sm mt-2">Try different keywords or contact our support team.</p>
+          <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <p className="text-lg font-bold text-foreground">No results found</p>
+          <p className="text-sm text-muted-foreground mt-2">Try different keywords or contact our support team.</p>
         </div>
       )}
 
-      <div className="mt-16 glass-panel-heavy p-8 rounded-3xl border border-white/10 text-center shadow-[0_0_30px_rgba(0,0,0,0.5)]">
-        <MessageCircle className="h-10 w-10 text-neon-blue mx-auto mb-4" />
-        <h3 className="text-xl font-bold mb-2">Still need help?</h3>
-        <p className="text-white/50 text-sm mb-6">Our support team is available 24/7 via live chat or email.</p>
+      <div className="mt-16 bg-card border-border p-8 rounded-sm text-center shadow-sm">
+        <MessageCircle className="h-10 w-10 text-[#2874F0] mx-auto mb-4" />
+        <h3 className="text-xl font-bold text-foreground mb-2">Still need help?</h3>
+        <p className="text-muted-foreground text-sm mb-6">Our support team is available 24/7 via live chat or email.</p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link href="/contact" className="bg-neon-blue text-black px-8 py-3 rounded-full font-bold hover:bg-neon-blue/80 transition-colors shadow-[0_0_15px_rgba(0,210,255,0.4)]">
+          <Link href="/contact" className="bg-[#2874F0] text-white px-8 py-3 rounded-sm font-bold hover:bg-[#2874F0]/90 transition-colors">
             Contact Us
           </Link>
-          <Link href="/qna" className="bg-white/10 text-white px-8 py-3 rounded-full font-bold hover:bg-white/20 transition-colors border border-white/10">
+          <Link href="/qna" className="bg-card text-foreground px-8 py-3 rounded-sm font-bold hover:bg-muted transition-colors border border-border">
             Community Q&A
           </Link>
         </div>

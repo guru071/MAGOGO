@@ -106,36 +106,36 @@ export default function SellerPromptsPage() {
   }
 
   if (loading) {
-    return <div className="p-8 flex justify-center text-neon-blue">Loading...</div>
+    return <div className="p-8 flex justify-center text-[#2874F0]">Loading...</div>
   }
 
   if (!user?.isSeller) {
-    return <div className="p-8 text-center text-white">Please onboard as a seller first.</div>
+    return <div className="p-8 text-center text-foreground">Please onboard as a seller first.</div>
   }
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">My Prompts</h1>
-          <p className="text-white/60">Manage all your uploaded prompts and view their status.</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">My Prompts</h1>
+          <p className="text-muted-foreground">Manage all your uploaded prompts and view their status.</p>
         </div>
         <Link href="/seller/upload">
-          <Button className="bg-neon-pink hover:bg-neon-pink/80 text-black font-bold">
+          <Button className="bg-[#FF9F00] hover:bg-[#FF9F00]/90 text-white font-bold rounded-sm">
             <PlusCircle className="w-4 h-4 mr-2" /> Upload New
           </Button>
         </Link>
       </div>
 
       {prompts.length === 0 ? (
-        <Card className="glass-panel border-white/10 p-12 text-center flex flex-col items-center">
-          <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
-            <PlusCircle className="w-8 h-8 text-white/40" />
+        <Card className="bg-card border-border p-12 text-center flex flex-col items-center rounded-sm">
+          <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+            <PlusCircle className="w-8 h-8 text-muted-foreground" />
           </div>
-          <h3 className="text-xl font-medium text-white mb-2">No Prompts Yet</h3>
-          <p className="text-white/50 mb-6">You haven't uploaded any prompts for sale yet.</p>
+          <h3 className="text-xl font-medium text-foreground mb-2">No Prompts Yet</h3>
+          <p className="text-muted-foreground mb-6">You haven't uploaded any prompts for sale yet.</p>
           <Link href="/seller/upload">
-            <Button className="bg-neon-blue hover:bg-neon-blue/80 text-black font-bold">
+            <Button className="bg-[#2874F0] hover:bg-[#2874F0]/90 text-white font-bold rounded-sm">
               Start Selling
             </Button>
           </Link>
@@ -143,24 +143,24 @@ export default function SellerPromptsPage() {
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {prompts.map((prompt) => (
-            <Card key={prompt.id} className="glass-panel border-white/10 p-6 flex flex-col hover:border-neon-blue/30 transition-colors">
+            <Card key={prompt.id} className="bg-card border-border p-6 flex flex-col hover:border-[#2874F0]/30 transition-colors rounded-sm">
               <div className="flex justify-between items-start mb-4">
                 <Badge variant="outline" className={`
-                  ${prompt.status === 'APPROVED' ? 'border-emerald-500/50 text-emerald-400' : ''}
-                  ${prompt.status === 'PENDING' ? 'border-yellow-500/50 text-yellow-400' : ''}
-                  ${prompt.status === 'REJECTED' ? 'border-red-500/50 text-red-400' : ''}
+                  ${prompt.status === 'APPROVED' ? 'border-[#388E3C]/50 text-[#388E3C]' : ''}
+                  ${prompt.status === 'PENDING' ? 'border-[#FF9F00]/50 text-[#FF9F00]' : ''}
+                  ${prompt.status === 'REJECTED' ? 'border-[#E53935]/50 text-[#E53935]' : ''}
                 `}>
                   {prompt.status}
                 </Badge>
-                <span className="font-bold text-neon-blue text-lg">
+                <span className="font-bold text-[#2874F0] text-lg">
                   {prompt.isFree ? 'FREE' : formatPrice(prompt.price, selectedCurrency)}
                 </span>
               </div>
               
-              <h3 className="text-xl font-bold text-white mb-2 line-clamp-1">{prompt.title}</h3>
-              <p className="text-sm text-white/60 mb-6 line-clamp-2 flex-grow">{prompt.description}</p>
+              <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-1">{prompt.title}</h3>
+              <p className="text-sm text-muted-foreground mb-6 line-clamp-2 flex-grow">{prompt.description}</p>
               
-              <div className="flex justify-between items-center text-sm text-white/50 mb-4 pb-4 border-b border-white/5">
+              <div className="flex justify-between items-center text-sm text-muted-foreground mb-4 pb-4 border-b border-border">
                 <span>{prompt.viewCount} views</span>
                 <span>{prompt._count?.orders || 0} sales</span>
               </div>
@@ -168,13 +168,13 @@ export default function SellerPromptsPage() {
               <div className="flex justify-between items-center mt-auto">
                 {prompt.status === 'APPROVED' && (
                   <Link href={`/prompt/${prompt.id}`} target="_blank">
-                    <Button variant="ghost" size="sm" className="text-neon-blue hover:text-neon-blue hover:bg-neon-blue/10">
+                    <Button variant="ghost" size="sm" className="text-[#2874F0] hover:text-[#2874F0] hover:bg-[#2874F0]/10">
                       <ExternalLink className="w-4 h-4 mr-2" /> View Listing
                     </Button>
                   </Link>
                 )}
                 
-                <Button variant="ghost" size="sm" className="text-white/70 hover:text-white hover:bg-white/10 ml-auto mr-2" onClick={() => { 
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground hover:bg-muted ml-auto mr-2" onClick={() => { 
                   setEditingPrompt(prompt); 
                   const curObj = CURRENCIES.find(c => c.code === selectedCurrency);
                   const localPrice = curObj ? prompt.price * curObj.rate : prompt.price;
@@ -185,23 +185,23 @@ export default function SellerPromptsPage() {
 
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="ghost" size="sm" className="text-red-400 hover:text-red-300 hover:bg-red-500/20">
+                    <Button variant="ghost" size="sm" className="text-[#E53935] hover:text-[#E53935] hover:bg-[#E53935]/10">
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent className="glass-panel border-white/10 text-white">
+                  <AlertDialogContent className="bg-card border-border text-foreground">
                     <AlertDialogHeader>
-                      <AlertDialogTitle className="flex items-center text-red-400">
+                      <AlertDialogTitle className="flex items-center text-[#E53935]">
                         <AlertTriangle className="w-5 h-5 mr-2" />
                         Delete Prompt?
                       </AlertDialogTitle>
-                      <AlertDialogDescription className="text-white/70">
+                      <AlertDialogDescription className="text-muted-foreground">
                         Are you sure you want to delete <strong>{prompt.title}</strong>? It will be immediately removed from the marketplace. This action cannot be undone, though previous sales records will be preserved for your financial history.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel className="bg-white/5 border-white/10 hover:bg-white/10 hover:text-white text-white">Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => handleDelete(prompt.id)} className="bg-red-500 text-white hover:bg-red-600">
+                      <AlertDialogCancel className="bg-card border-border hover:bg-muted hover:text-foreground text-foreground">Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleDelete(prompt.id)} className="bg-[#E53935] text-white hover:bg-[#E53935]/90">
                         Delete Permanently
                       </AlertDialogAction>
                     </AlertDialogFooter>
@@ -215,29 +215,29 @@ export default function SellerPromptsPage() {
 
       {/* Edit Price Dialog */}
       <Dialog open={!!editingPrompt} onOpenChange={(open) => !open && setEditingPrompt(null)}>
-        <DialogContent className="glass-panel border-white/10 text-white bg-black/90 sm:max-w-md">
+        <DialogContent className="bg-card border-border text-foreground sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Edit Price</DialogTitle>
           </DialogHeader>
           <div className="py-4">
-            <label className="text-sm font-medium text-white/70 mb-2 block">New Price ({getSymbol(selectedCurrency)} {selectedCurrency})</label>
+            <label className="text-sm font-medium text-foreground mb-2 block">New Price ({getSymbol(selectedCurrency)} {selectedCurrency})</label>
             <Input
               type="number"
               min="0"
               step="0.01"
               value={editPrice}
               onChange={(e) => setEditPrice(e.target.value)}
-              className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-neon-blue focus:ring-neon-blue"
+              className="bg-card border-input text-foreground placeholder:text-muted-foreground focus:border-[#2874F0] focus:ring-[#2874F0]"
               placeholder={`e.g. ${(5.99 * getRate(selectedCurrency)).toFixed(2)}`}
             />
             {parseFloat(editPrice) > 0 && selectedCurrency !== 'USD' && (
-              <p className="text-xs text-white/40 mt-1 ml-1">≈ {getSymbol('USD')}{(parseFloat(editPrice) / getRate(selectedCurrency)).toFixed(2)} USD</p>
+              <p className="text-xs text-muted-foreground mt-1 ml-1">≈ {getSymbol('USD')}{(parseFloat(editPrice) / getRate(selectedCurrency)).toFixed(2)} USD</p>
             )}
-            <p className="text-xs text-white/50 mt-2">Set to 0 to make it FREE.</p>
+            <p className="text-xs text-muted-foreground mt-2">Set to 0 to make it FREE.</p>
           </div>
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setEditingPrompt(null)} className="text-white/70 hover:text-white">Cancel</Button>
-            <Button onClick={handleEditPrice} disabled={isUpdating} className="bg-neon-blue text-black font-bold hover:bg-neon-blue/80">
+            <Button variant="ghost" onClick={() => setEditingPrompt(null)} className="text-muted-foreground hover:text-foreground">Cancel</Button>
+            <Button onClick={handleEditPrice} disabled={isUpdating} className="bg-[#2874F0] text-white font-bold hover:bg-[#2874F0]/90 rounded-sm">
               {isUpdating ? 'Saving...' : 'Save Changes'}
             </Button>
           </DialogFooter>

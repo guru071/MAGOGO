@@ -41,12 +41,26 @@ export async function nativeGoogleLogin() {
   try {
     const { GoogleAuth } = await import('@codetrix-studio/capacitor-google-auth')
     const result = await GoogleAuth.signIn()
+    const idToken = result.authentication?.idToken || null
+    if (idToken) {
+      try {
+        const { createSupabaseBrowserClient } = await import('@/lib/supabase-client')
+        const supabase = createSupabaseBrowserClient()
+        const { error } = await supabase.auth.signInWithIdToken({
+          provider: 'google',
+          token: idToken,
+        })
+        if (error) console.error('[native] supabase idToken signin error', error)
+      } catch (e2) {
+        console.error('[native] supabase signin error', e2)
+      }
+    }
     return {
       id: result.id,
       email: result.email,
       name: result.name,
       photoUrl: result.imageUrl,
-      idToken: result.authentication?.idToken || null,
+      idToken,
     }
   } catch (e) {
     console.error('[native] google login error', e)

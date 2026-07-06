@@ -46,34 +46,34 @@ export default function SellerPayoutsPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 relative z-10">
-      <Link href="/seller" className="flex items-center gap-1.5 text-sm font-bold text-white/50 hover:text-neon-blue transition-all mb-6">
+      <Link href="/seller" className="flex items-center gap-1.5 text-sm font-bold text-muted-foreground hover:text-[#2874F0] transition-all mb-6">
         <ArrowLeft className="h-4 w-4" /> Back to Dashboard
       </Link>
 
-      <h1 className="text-2xl sm:text-3xl font-extrabold text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.2)] mb-6">Request Payout</h1>
+      <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground mb-6">Request Payout</h1>
 
-      <Card className="glass-panel border-white/10 rounded-3xl p-8 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+      <Card className="bg-card border-border rounded-sm p-8">
         <form onSubmit={handleRequest} className="space-y-5">
           <div>
-            <Label htmlFor="amount" className="text-white/70 ml-1 font-bold">Amount ({selectedCurrency})</Label>
-            <Input id="amount" type="number" min="1" step="0.01" value={amount} onChange={e => setAmount(e.target.value)} placeholder="50.00" required className="mt-1.5 bg-white/5 border-white/20 text-white placeholder:text-white/30 focus:border-neon-blue focus:ring-1 focus:ring-neon-blue rounded-xl h-11" />
+            <Label htmlFor="amount" className="text-foreground ml-1 font-bold">Amount ({selectedCurrency})</Label>
+            <Input id="amount" type="number" min="1" step="0.01" value={amount} onChange={e => setAmount(e.target.value)} placeholder="50.00" required className="mt-1.5 bg-card border-input text-foreground placeholder:text-muted-foreground focus:border-[#2874F0] focus:ring-1 focus:ring-[#2874F0] rounded-sm h-11" />
           </div>
           <div>
-            <Label className="text-white/70 ml-1 font-bold">Payout Method</Label>
+            <Label className="text-foreground ml-1 font-bold">Payout Method</Label>
             <div className="flex gap-3 mt-1.5">
-              <button type="button" onClick={() => setMethod('PAYPAL')} className={`flex-1 p-3 rounded-xl border-2 text-sm font-bold transition-colors ${method === 'PAYPAL' ? 'border-neon-blue bg-neon-blue/10 text-neon-blue' : 'border-white/20 text-white/60 hover:border-white/40 hover:text-white bg-black/40'}`}>
+              <button type="button" onClick={() => setMethod('PAYPAL')} className={`flex-1 p-3 rounded-sm border-2 text-sm font-bold transition-colors ${method === 'PAYPAL' ? 'border-[#2874F0] bg-[#2874F0]/10 text-[#2874F0]' : 'border-input text-muted-foreground hover:border-border hover:text-foreground bg-card'}`}>
                 PayPal
               </button>
-              <button type="button" onClick={() => setMethod('BANK')} className={`flex-1 p-3 rounded-xl border-2 text-sm font-bold transition-colors ${method === 'BANK' ? 'border-neon-blue bg-neon-blue/10 text-neon-blue' : 'border-white/20 text-white/60 hover:border-white/40 hover:text-white bg-black/40'}`}>
+              <button type="button" onClick={() => setMethod('BANK')} className={`flex-1 p-3 rounded-sm border-2 text-sm font-bold transition-colors ${method === 'BANK' ? 'border-[#2874F0] bg-[#2874F0]/10 text-[#2874F0]' : 'border-input text-muted-foreground hover:border-border hover:text-foreground bg-card'}`}>
                 Bank Transfer
               </button>
             </div>
           </div>
           <div>
-            <Label htmlFor="account" className="text-white/70 ml-1 font-bold">{method === 'PAYPAL' ? 'PayPal Email' : 'Bank Account Details'}</Label>
-            <Input id="account" value={account} onChange={e => setAccount(e.target.value)} placeholder={method === 'PAYPAL' ? 'seller@example.com' : 'Account number / IFSC / Routing'} required className="mt-1.5 bg-white/5 border-white/20 text-white placeholder:text-white/30 focus:border-neon-blue focus:ring-1 focus:ring-neon-blue rounded-xl h-11" />
+            <Label htmlFor="account" className="text-foreground ml-1 font-bold">{method === 'PAYPAL' ? 'PayPal Email' : 'Bank Account Details'}</Label>
+            <Input id="account" value={account} onChange={e => setAccount(e.target.value)} placeholder={method === 'PAYPAL' ? 'seller@example.com' : 'Account number / IFSC / Routing'} required className="mt-1.5 bg-card border-input text-foreground placeholder:text-muted-foreground focus:border-[#2874F0] focus:ring-1 focus:ring-[#2874F0] rounded-sm h-11" />
           </div>
-          <Button type="submit" disabled={loading} className="w-full bg-neon-blue hover:bg-neon-blue/80 text-black font-extrabold h-12 rounded-full shadow-[0_0_15px_rgba(0,210,255,0.4)] transition-all">
+          <Button type="submit" disabled={loading} className="w-full bg-[#2874F0] hover:bg-[#2874F0]/90 text-white font-extrabold h-12 rounded-sm transition-all">
             {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
             <Wallet className="h-4 w-4 mr-2" /> Request Payout
           </Button>

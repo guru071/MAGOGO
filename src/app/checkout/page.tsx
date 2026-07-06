@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { enableRazorpayProtections, disableRazorpayProtections } from '@/lib/razorpay-client'
-import { useStore, formatPrice, CURRENCIES, PAYMENT_METHODS, getINRRate } from '@/store/marketplace'
+import { useStore, formatPrice, CURRENCIES, PAYMENT_METHODS } from '@/store/marketplace'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
@@ -108,7 +108,7 @@ export default function CheckoutPage() {
             email: user.email || '',
             vpa: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.startsWith('rzp_test_') ? 'success@razorpay' : undefined
           },
-          theme: { color: '#0066CC' },
+          theme: { color: '#2874F0' },
           modal: {
             ondismiss: function() {
               disableRazorpayProtections();
@@ -142,11 +142,11 @@ export default function CheckoutPage() {
   if (cart.length === 0) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-20 text-center relative z-10">
-        <ShoppingBag className="h-16 w-16 text-white/20 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-white">Nothing to checkout</h2>
-        <p className="text-white/50 mt-2 mb-6">Add items to your cart first</p>
+        <ShoppingBag className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+        <h2 className="text-2xl font-bold text-foreground">Nothing to checkout</h2>
+        <p className="text-muted-foreground mt-2 mb-6">Add items to your cart first</p>
         <Link href="/browse">
-          <Button className="bg-neon-blue text-black hover:bg-neon-blue/80 shadow-[0_0_15px_rgba(0,210,255,0.4)]">
+          <Button className="bg-[#2874F0] text-white rounded-sm font-bold">
             Browse Prompts
           </Button>
         </Link>
@@ -157,48 +157,48 @@ export default function CheckoutPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 relative z-10">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="beforeInteractive" />
-      <h1 className="text-2xl sm:text-3xl font-extrabold text-white mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">Checkout</h1>
+      <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground mb-6">Checkout</h1>
 
       <div className="grid lg:grid-cols-5 gap-6">
         <div className="lg:col-span-3 space-y-6">
-          <Card className="p-6 glass-panel border-white/10 bg-black/40">
-            <h3 className="font-bold text-white mb-4 flex items-center gap-2">
-              <CreditCard className="h-5 w-5 text-neon-blue drop-shadow-[0_0_5px_rgba(0,210,255,0.5)]" /> Payment Method
+          <Card className="p-6 bg-card border-border rounded-sm">
+            <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
+              <CreditCard className="h-5 w-5 text-[#2874F0]" /> Payment Method
             </h3>
             <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-3">
               {PAYMENT_METHODS.map(m => (
-                <div key={m.value} className={`flex items-center space-x-3 border rounded-lg p-3 transition-colors ${paymentMethod === m.value ? 'border-neon-blue bg-white/5' : 'border-white/10 hover:border-white/30'}`}>
-                  <RadioGroupItem value={m.value} id={m.value} className={paymentMethod === m.value ? 'border-neon-blue text-neon-blue' : 'border-white/50'} />
+                <div key={m.value} className={`flex items-center space-x-3 border rounded-sm p-3 transition-colors ${paymentMethod === m.value ? 'border-[#2874F0] bg-[#2874F0]/5' : 'border-border '}`}>
+                  <RadioGroupItem value={m.value} id={m.value} className={paymentMethod === m.value ? 'border-[#2874F0] text-[#2874F0]' : 'border-input'} />
                   <Label htmlFor={m.value} className="flex-1 cursor-pointer">
-                    <span className="text-sm font-medium text-white">{m.label}</span>
-                    <p className="text-xs text-white/50">{m.desc}</p>
+                    <span className="text-sm font-medium text-foreground">{m.label}</span>
+                    <p className="text-xs text-muted-foreground">{m.desc}</p>
                   </Label>
                 </div>
               ))}
             </RadioGroup>
 
             {paymentMethod === 'PLAY_STORE' && (
-              <div className="mt-4 space-y-3 border-t pt-4">
-                <div className="flex items-center gap-2 text-sm font-medium text-slate-700">
-                  <Smartphone className="h-4 w-4 text-green-600" /> Play Store Purchase Details
+              <div className="mt-4 space-y-3 border-t pt-4 border-border">
+                <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                  <Smartphone className="h-4 w-4 text-[#388E3C]" /> Play Store Purchase Details
                 </div>
                 <Input placeholder="Package Name (e.g. com.example.app)" value={playStorePackage} onChange={e => setPlayStorePackage(e.target.value)} />
                 <Input placeholder="Product ID (e.g. prompt_01)" value={playStoreProductId} onChange={e => setPlayStoreProductId(e.target.value)} />
                 <Input placeholder="Purchase Token from Play Billing" value={playStorePurchaseToken} onChange={e => setPlayStorePurchaseToken(e.target.value)} />
-                <p className="text-xs text-slate-400">Enter the purchase token received from the Google Play Billing library after a successful in-app purchase.</p>
+                <p className="text-xs text-muted-foreground">Enter the purchase token received from the Google Play Billing library after a successful in-app purchase.</p>
               </div>
             )}
           </Card>
 
-          <Card className="p-6 glass-panel border-white/10 bg-black/40">
-            <h3 className="font-bold text-white mb-3">Currency</h3>
+          <Card className="p-6 bg-card border-border rounded-sm">
+            <h3 className="font-bold text-foreground mb-3">Currency</h3>
             <Select value={selectedCurrency} onValueChange={setSelectedCurrency}>
-              <SelectTrigger className="w-full bg-white/5 border-white/20 text-white">
+              <SelectTrigger className="w-full bg-card border-input text-foreground">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="glass-panel border-white/10 bg-black/90 text-white">
+              <SelectContent className="bg-card border-border text-foreground">
                 {CURRENCIES.map(c => (
-                  <SelectItem key={c.code} value={c.code} className="focus:bg-white/10 focus:text-white">{c.flag} {c.code} - {c.name}</SelectItem>
+                  <SelectItem key={c.code} value={c.code} className="focus:bg-muted focus:text-foreground">{c.flag} {c.code} - {c.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -206,39 +206,39 @@ export default function CheckoutPage() {
         </div>
 
         <div className="lg:col-span-2">
-          <Card className="p-6 sticky top-28 glass-panel border-white/10 bg-black/40">
-            <h3 className="font-bold text-white mb-4">Order Summary</h3>
+          <Card className="p-6 sticky top-28 bg-card border-border rounded-sm">
+            <h3 className="font-bold text-foreground mb-4">Order Summary</h3>
             <div className="space-y-3">
               {cart.map(p => (
                 <div key={p.id} className="flex items-center justify-between text-sm">
-                  <span className="text-white/60 truncate max-w-[180px]">{p.title}</span>
-                  <span className="font-medium text-white">{formatPrice(p.price, selectedCurrency)}</span>
+                  <span className="text-muted-foreground truncate max-w-[180px]">{p.title}</span>
+                  <span className="font-medium text-foreground">{formatPrice(p.price, selectedCurrency)}</span>
                 </div>
               ))}
             </div>
-            <Separator className="my-4 bg-white/10" />
+            <Separator className="my-4 bg-border" />
             <div className="space-y-2 text-sm">
-              <div className="flex justify-between text-white/60">
+              <div className="flex justify-between text-muted-foreground">
                 <span>Subtotal</span><span>{formatPrice(total, selectedCurrency)}</span>
               </div>
             </div>
-            <Separator className="my-4 bg-white/10" />
-            <div className="flex justify-between font-bold text-white text-lg">
-              <span>Total</span><span className="text-neon-blue drop-shadow-[0_0_8px_rgba(0,210,255,0.4)]">{formatPrice(grandTotal, selectedCurrency)}</span>
+            <Separator className="my-4 bg-border" />
+            <div className="flex justify-between font-bold text-foreground text-lg">
+              <span>Total</span><span className="text-[#2874F0]">{formatPrice(grandTotal, selectedCurrency)}</span>
             </div>
 
             <Button onClick={handleCheckout} disabled={loading || cart.length === 0}
-              className="w-full mt-6 bg-neon-blue hover:bg-neon-blue/80 text-black font-extrabold h-12 shadow-[0_0_15px_rgba(0,210,255,0.4)] transition-all">
+              className="w-full mt-6 bg-[#FB641B] hover:bg-[#FB641B]/90 text-white font-extrabold h-12 rounded-sm transition-all">
               {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               {loading ? 'Processing...' : `Pay ${formatPrice(grandTotal, selectedCurrency)}`}
             </Button>
 
-            <div className="flex flex-col items-center justify-center gap-2 mt-4 text-[10px] text-white/40 font-medium">
+            <div className="flex flex-col items-center justify-center gap-2 mt-4 text-[10px] text-muted-foreground font-medium">
               <div className="flex gap-4">
-                <span className="flex items-center gap-1"><ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />256-bit Secure</span>
-                <span className="flex items-center gap-1"><Lock className="h-3.5 w-3.5 text-neon-blue" />Verified by Razorpay</span>
+                <span className="flex items-center gap-1"><ShieldCheck className="h-3.5 w-3.5 text-[#388E3C]" />256-bit Secure</span>
+                <span className="flex items-center gap-1"><Lock className="h-3.5 w-3.5 text-[#2874F0]" />Verified by Razorpay</span>
               </div>
-              <span className="flex items-center gap-1"><ShieldCheck className="h-3.5 w-3.5 text-amber-400" />PCI-DSS Certified</span>
+              <span className="flex items-center gap-1"><ShieldCheck className="h-3.5 w-3.5 text-[#FF9F00]" />PCI-DSS Certified</span>
             </div>
           </Card>
         </div>

@@ -6,14 +6,13 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import Link from 'next/link'
-import Image from 'next/image'
 import { useStore, formatPrice } from '@/store/marketplace'
 import FlashDealsBanner from '@/components/marketplace/FlashDealsBanner'
 import {
   Sparkles, ArrowRight, Star, Shield, Zap, Users, TrendingUp,
   MessageSquare, Palette, Code, Megaphone, Pen, Briefcase, Camera,
   Film, Music, GraduationCap, Brain, Gem, Box, Video,
-  ChevronRight, Loader2, ShoppingCart, Heart, Flame
+  Loader2, ShoppingCart, Flame
 } from 'lucide-react'
 
 const CATEGORY_STYLES: Record<string, { icon: any; color: string }> = {
@@ -51,68 +50,60 @@ const getCoverImage = (prompt: any) => {
   try {
     const images = typeof prompt.sampleImages === 'string' ? JSON.parse(prompt.sampleImages) : prompt.sampleImages;
     return images && images.length > 0 ? images[0] : null;
-  } catch (e) {
-    return null;
-  }
+  } catch { return null; }
 };
 
 export default function LandingPage() {
   const [categories, setCategories] = useState<any[]>([])
   const [stats, setStats] = useState({ categories: 0, prompts: 0, sellers: 0 })
   const [loading, setLoading] = useState(true)
-  
   const { prompts, fetchPrompts, selectedCurrency } = useStore();
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/categories').then(r => r.json()).then(d => {
-        if (d.success && Array.isArray(d.data)) setCategories(d.data)
-      }).catch(e => console.error('[fetch]', e)),
-      fetch('/api/stats').then(r => r.json()).then(d => {
-        if (d.success && d.data) setStats({ categories: d.data.totalCategories || 0, prompts: d.data.totalPrompts || 0, sellers: d.data.totalSellers || 0 })
-      }).catch(e => console.error('[fetch]', e)),
+      fetch('/api/categories').then(r => r.json()).then(d => { if (d.success && Array.isArray(d.data)) setCategories(d.data) }).catch(() => {}),
+      fetch('/api/stats').then(r => r.json()).then(d => { if (d.success && d.data) setStats({ categories: d.data.totalCategories || 0, prompts: d.data.totalPrompts || 0, sellers: d.data.totalSellers || 0 }) }).catch(() => {}),
       fetchPrompts()
     ]).finally(() => setLoading(false))
   }, [])
 
   return (
-    <div className="min-h-screen flex flex-col bg-transparent">
+    <div className="min-h-screen flex flex-col bg-[#F1F3F6]">
       {/* HERO */}
-      <section className="relative overflow-hidden pt-4 pb-24 sm:pt-12 sm:pb-32 text-center">
+      <section className="relative overflow-hidden pt-8 pb-16 text-center bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" }}>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel border border-neon-blue/30 text-neon-blue text-xs font-semibold mb-8 shadow-[0_0_15px_rgba(0,210,255,0.2)]">
-              <Star className="h-3.5 w-3.5 fill-neon-blue animate-pulse" /> The Ultimate AI Prompt Ecosystem
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#2874F0]/30 text-[#2874F0] text-xs font-semibold mb-8 bg-[#2874F0]/5">
+              <Star className="h-3.5 w-3.5 fill-[#2874F0]" /> The Ultimate AI Prompt Ecosystem
             </div>
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white max-w-5xl mx-auto leading-[1.15]">
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-[#212121] max-w-5xl mx-auto leading-[1.15]">
               Premium AI Prompts for{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-blue via-neon-purple to-neon-pink animate-gradient-x">Every Tool</span>
+              <span className="text-[#2874F0]">Every Tool</span>
             </h1>
-            <p className="mt-8 text-lg sm:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
-              Discover, buy and sell expertly crafted prompts. Experience the world's most advanced digital marketplace built on the dark universe aesthetic.
+            <p className="mt-8 text-lg sm:text-xl text-[#878787] max-w-2xl mx-auto leading-relaxed">
+              Discover, buy and sell expertly crafted prompts. The most advanced digital marketplace for AI prompts.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/browse">
-                <Button size="lg" className="bg-gradient-to-r from-neon-blue to-neon-purple text-white font-bold h-14 px-8 text-base rounded-full shadow-[0_0_20px_rgba(0,210,255,0.4)] hover:shadow-[0_0_30px_rgba(0,210,255,0.6)] hover:scale-105 transition-all">
+                <Button size="lg" className="bg-[#2874F0] hover:bg-[#1a5dc7] text-white font-bold h-14 px-8 text-base rounded-sm transition-all">
                   Explore Ecosystem <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               </Link>
               <Link href="/seller">
-                <Button variant="outline" size="lg" className="glass-panel text-foreground hover:bg-accent font-medium h-14 px-8 rounded-full border-border transition-all hover:scale-105">
+                <Button variant="outline" size="lg" className="border-[#2874F0] text-[#2874F0] hover:bg-[#2874F0]/5 font-medium h-14 px-8 rounded-sm transition-all">
                   Become a Seller
                 </Button>
               </Link>
             </div>
-            <div className="mt-20 flex flex-wrap items-center justify-center gap-10 sm:gap-20 text-center glass-panel-heavy p-8 rounded-[3rem] max-w-4xl mx-auto border-white/10 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-neon-blue/10 to-neon-pink/10 opacity-50 blur-xl"></div>
+            <div className="mt-16 flex flex-wrap items-center justify-center gap-10 sm:gap-20 text-center bg-white border border-[#F0F0F0] p-8 rounded-sm max-w-4xl mx-auto shadow-sm">
               {[
                 { value: loading ? '-' : `${stats.categories}+`, label: 'Categories' },
                 { value: loading ? '-' : `${stats.prompts}+`, label: 'Verified Prompts' },
                 { value: loading ? '-' : `${stats.sellers}+`, label: 'Active Sellers' },
               ].map((s) => (
-                <div key={s.label} className="relative z-10">
-                  <p className="text-3xl sm:text-4xl font-extrabold text-foreground">{s.value}</p>
-                  <p className="text-sm text-neon-blue mt-1 uppercase tracking-widest font-semibold">{s.label}</p>
+                <div key={s.label}>
+                  <p className="text-3xl sm:text-4xl font-extrabold text-[#212121]">{s.value}</p>
+                  <p className="text-sm text-[#878787] mt-1 uppercase tracking-widest font-semibold">{s.label}</p>
                 </div>
               ))}
             </div>
@@ -121,61 +112,55 @@ export default function LandingPage() {
       </section>
 
       {/* TRENDING PROMPTS */}
-      <section className="py-16 sm:py-24 relative z-10">
+      <section className="py-8 sm:py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between mb-10">
-            <h2 className="text-3xl font-extrabold text-white flex items-center gap-3">
-              <Flame className="h-8 w-8 text-neon-pink animate-pulse" /> Trending Now
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-[#212121] flex items-center gap-2">
+              <Flame className="h-6 w-6 text-[#FF9F00]" /> Trending Now
             </h2>
-            <Link href="/browse?sort=popular" className="text-sm font-semibold text-neon-blue hover:text-white transition-colors">
+            <Link href="/browse?sort=popular" className="text-sm font-semibold text-[#2874F0] hover:text-[#1a5dc7]">
               View all &rarr;
             </Link>
           </div>
-          
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {loading ? (
-              <div className="col-span-full py-12 text-center"><Loader2 className="h-8 w-8 animate-spin text-neon-blue mx-auto" /></div>
+              <div className="col-span-full py-12 text-center"><Loader2 className="h-8 w-8 animate-spin text-[#2874F0] mx-auto" /></div>
             ) : prompts.length === 0 ? (
-              <div className="col-span-full py-16 text-center glass-panel rounded-3xl">
-                <Sparkles className="h-12 w-12 text-white/20 mx-auto mb-4" />
-                <p className="text-white/60 font-medium mb-2">No prompts listed yet</p>
-                <Link href="/seller">
-                  <Button className="bg-neon-pink text-white rounded-full">Start Selling</Button>
-                </Link>
+              <div className="col-span-full py-16 text-center bg-white border border-[#F0F0F0] rounded-sm">
+                <Sparkles className="h-12 w-12 text-[#C4C4C4] mx-auto mb-4" />
+                <p className="text-[#878787] font-medium mb-2">No prompts listed yet</p>
+                <Link href="/seller"><Button className="bg-[#FF9F00] text-white rounded-sm">Start Selling</Button></Link>
               </div>
             ) : prompts.slice(0, 4).map(prompt => (
               <Link key={prompt.id} href={`/prompt/${prompt.id}`}>
-                <motion.div whileHover={{ y: -10 }} transition={{ type: "spring", stiffness: 300 }}>
-                  <Card className="neon-border glass-panel overflow-hidden h-full flex flex-col border-white/10 rounded-3xl group bg-black/40">
-                    <div className="relative h-36 flex items-center justify-center overflow-hidden bg-black/40">
+                <motion.div whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 300 }}>
+                  <Card className="bg-white border border-[#F0F0F0] overflow-hidden h-full flex flex-col group hover:shadow-md transition-shadow rounded-sm">
+                    <div className="relative h-36 flex items-center justify-center overflow-hidden bg-[#F1F3F6]">
                       {getCoverImage(prompt) ? (
-                        <img src={getCoverImage(prompt)} alt={prompt.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80 group-hover:opacity-100" />
+                        <img src={getCoverImage(prompt)} alt={prompt.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       ) : (
-                        <Sparkles className="h-16 w-16 text-white/10 group-hover:scale-110 transition-transform duration-700 group-hover:text-neon-blue/50" />
+                        <Sparkles className="h-16 w-16 text-[#C4C4C4]" />
                       )}
                       <div className="absolute top-3 right-3 flex flex-col gap-2">
-                        {prompt.isFree && <Badge className="bg-neon-blue text-black font-bold border-0 shadow-[0_0_10px_rgba(0,210,255,0.8)] backdrop-blur-md">FREE</Badge>}
-                        {prompt.discount > 0 && <Badge className="bg-neon-pink text-white font-bold border-0 shadow-[0_0_10px_rgba(255,0,128,0.8)] backdrop-blur-md">-{prompt.discount}%</Badge>}
+                        {prompt.isFree && <Badge className="bg-[#388E3C] text-white font-bold border-0 rounded-sm text-xs">FREE</Badge>}
+                        {prompt.discount > 0 && <Badge className="bg-[#FF9F00] text-white font-bold border-0 rounded-sm text-xs">-{prompt.discount}%</Badge>}
                       </div>
                     </div>
-                    <div className="p-4 flex flex-col flex-1 relative z-10">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Badge variant="outline" className="text-[10px] bg-card border-border text-muted-foreground">{prompt.recommendedAI || 'General'}</Badge>
-                        <span className="text-[10px] text-muted-foreground flex items-center gap-1"><Star className="h-3 w-3 text-neon-blue fill-neon-blue" /> {prompt.rating.toFixed(1)}</span>
+                    <div className="p-4 flex flex-col flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge variant="outline" className="text-[10px] bg-[#F1F3F6] text-[#878787] border-0">{prompt.recommendedAI || 'General'}</Badge>
+                        <span className="text-[10px] text-[#878787] flex items-center gap-1"><Star className="h-3 w-3 text-[#FF9F00] fill-[#FF9F00]" /> {prompt.rating.toFixed(1)}</span>
                       </div>
-                      <h3 className="font-bold text-white text-base line-clamp-1 mb-1 group-hover:text-neon-blue transition-colors h-[24px]">{prompt.title}</h3>
-                      <p className="text-xs text-muted-foreground line-clamp-1 h-[16px]">{prompt.description}</p>
-                      
-                      <div className="mt-auto flex items-center justify-between pt-4 border-t border-border">
+                      <h3 className="font-bold text-[#212121] text-sm line-clamp-1 mb-1 group-hover:text-[#2874F0] transition-colors">{prompt.title}</h3>
+                      <p className="text-xs text-[#878787] line-clamp-1">{prompt.description}</p>
+                      <div className="mt-auto flex items-center justify-between pt-3 border-t border-[#F0F0F0]">
                         <div className="flex flex-col">
-                          <span className="text-[10px] text-muted-foreground line-through">
-                            {prompt.originalPrice && prompt.originalPrice > prompt.price ? formatPrice(prompt.originalPrice, selectedCurrency) : ''}
-                          </span>
-                          <span className="font-extrabold text-foreground text-xl">
-                            {prompt.isFree ? 'FREE' : formatPrice(prompt.price, selectedCurrency)}
-                          </span>
+                          {prompt.originalPrice && prompt.originalPrice > prompt.price ? (
+                            <span className="text-[10px] text-[#878787] line-through">{formatPrice(prompt.originalPrice, selectedCurrency)}</span>
+                          ) : null}
+                          <span className="font-bold text-[#212121] text-base">{prompt.isFree ? 'FREE' : formatPrice(prompt.price, selectedCurrency)}</span>
                         </div>
-                        <Button size="icon" className="bg-muted text-muted-foreground hover:bg-neon-blue hover:text-white rounded-full h-10 w-10 shrink-0 transition-all">
+                        <Button size="icon" className="bg-[#FF9F00] hover:bg-[#FB641B] text-white rounded-sm h-8 w-8">
                           <ShoppingCart className="h-4 w-4" />
                         </Button>
                       </div>
@@ -191,65 +176,69 @@ export default function LandingPage() {
       <FlashDealsBanner />
 
       {/* CATEGORIES */}
-      <section id="categories" className="py-16 sm:py-24 relative z-10">
+      <section className="py-8 sm:py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} className="text-center mb-12">
-            <motion.h2 variants={fadeUp} custom={0} className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">Browse by Category</motion.h2>
-          </motion.div>
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}
-            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
+          <h2 className="text-2xl font-bold text-[#212121] text-center mb-8">Browse by Category</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
             {loading ? (
-              <div className="col-span-full py-12 text-center"><Loader2 className="h-8 w-8 animate-spin text-neon-purple mx-auto" /></div>
+              <div className="col-span-full py-12 text-center"><Loader2 className="h-8 w-8 animate-spin text-[#2874F0] mx-auto" /></div>
             ) : categories.length === 0 ? (
-              <div className="col-span-full py-12 text-center text-muted-foreground">No categories available</div>
+              <div className="col-span-full py-12 text-center text-[#878787]">No categories available</div>
             ) : categories.map((cat: any, i: number) => {
-              const style = CATEGORY_STYLES[cat.slug] || { icon: Sparkles, color: 'text-white' };
+              const style = CATEGORY_STYLES[cat.slug] || { icon: Sparkles, color: 'bg-gray-100 text-gray-700' };
               const Icon = style.icon;
               return (
                 <motion.div key={cat.id} variants={fadeUp} custom={i + 2}>
                   <Link href={`/browse?category=${cat.slug}`}
-                    className="neon-border group w-full flex flex-col items-center justify-center p-6 rounded-3xl glass-panel hover:bg-white/10 transition-all duration-300 text-center relative overflow-hidden bg-black/40">
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div className={`h-14 w-14 rounded-full mb-4 flex items-center justify-center bg-white/5 border border-white/10 group-hover:scale-110 transition-transform ${style.color}`}>
-                      <Icon className="h-7 w-7 drop-shadow-md group-hover:drop-shadow-[0_0_10px_currentColor]" />
+                    className="group w-full flex flex-col items-center justify-center p-6 bg-white border border-[#F0F0F0] hover:shadow-md transition-all duration-300 text-center rounded-sm">
+                    <div className={`h-14 w-14 rounded-full mb-4 flex items-center justify-center ${style.color} group-hover:scale-110 transition-transform`}>
+                      <Icon className="h-7 w-7" />
                     </div>
-                    <p className="font-semibold text-sm text-foreground group-hover:text-neon-blue transition-all">{cat.name}</p>
-                    <p className="text-[10px] text-muted-foreground mt-1 uppercase font-semibold tracking-widest">{cat.promptCount || 0} items</p>
+                    <p className="font-semibold text-sm text-[#212121] group-hover:text-[#2874F0] transition-all">{cat.name}</p>
+                    <p className="text-[10px] text-[#878787] mt-1 uppercase font-semibold tracking-widest">{cat.promptCount || 0} items</p>
                   </Link>
                 </motion.div>
               );
             })}
-          </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* FEATURES */}
+      <section className="py-12 bg-[#F1F3F6]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <h2 className="text-2xl font-bold text-[#212121] text-center mb-8">Why MAGHGO?</h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {FEATURES.map((f, i) => (
+              <div key={i} className="bg-white border border-[#F0F0F0] p-6 rounded-sm hover:shadow-md transition-shadow">
+                <f.icon className="h-8 w-8 text-[#2874F0] mb-3" />
+                <h3 className="font-bold text-[#212121] mb-1">{f.title}</h3>
+                <p className="text-sm text-[#878787] leading-relaxed">{f.desc}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="py-24 sm:py-32 relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.7 }}
-            className="relative overflow-hidden rounded-[3rem] glass-panel-heavy p-12 sm:p-24 text-center shadow-[0_0_50px_rgba(0,0,0,0.8)] border-white/10">
-            <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-[conic-gradient(var(--tw-gradient-stops))] from-neon-blue/40 via-neon-purple/40 to-neon-pink/40 blur-3xl opacity-30 animate-[spin_10s_linear_infinite]" />
-            </div>
-            <div className="relative z-10">
-              <h2 className="text-4xl sm:text-6xl font-extrabold text-foreground tracking-tight mb-6">Unleash AI Potential</h2>
-              <p className="text-muted-foreground text-lg sm:text-xl max-w-2xl mx-auto mb-10 font-light">
-                Join the MAGHGO ecosystem today. Transform your workflow with world-class digital AI prompts, or start monetizing your prompt engineering skills.
-              </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                <Link href="/browse">
-                  <Button size="lg" className="bg-white text-black hover:bg-white/90 font-bold h-14 px-10 text-lg rounded-full shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:scale-105 transition-all w-full sm:w-auto">
-                    Start Exploring <ArrowRight className="h-5 w-5 ml-2" />
-                  </Button>
-                </Link>
-                <Link href="/seller">
-                  <Button size="lg" variant="outline" className="h-14 px-10 text-lg border-border text-foreground hover:bg-accent/10 glass-panel font-medium rounded-full w-full sm:w-auto hover:scale-105 transition-all">
-                    Seller Central
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </motion.div>
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold text-[#212121] mb-4">Unleash AI Potential</h2>
+          <p className="text-[#878787] text-lg max-w-2xl mx-auto mb-8">
+            Join the MAGHGO ecosystem today. Transform your workflow with world-class digital AI prompts.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link href="/browse">
+              <Button size="lg" className="bg-[#2874F0] hover:bg-[#1a5dc7] text-white font-bold h-12 px-8 rounded-sm">
+                Start Exploring <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </Link>
+            <Link href="/seller">
+              <Button size="lg" variant="outline" className="h-12 px-8 border-[#2874F0] text-[#2874F0] hover:bg-[#2874F0]/5 rounded-sm">
+                Seller Central
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
     </div>

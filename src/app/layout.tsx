@@ -64,7 +64,7 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased selection:bg-neon-pink/30 selection:text-white bg-background text-foreground`}>
-        <ThemeProvider attribute="class" defaultTheme="dark" disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
           {/* Animated Universe Background (Conditional) */}
           <ThemeRenderer />
           
