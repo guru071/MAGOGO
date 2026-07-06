@@ -30,6 +30,7 @@ function AppShell({ children }: { children: React.ReactNode }) {
   const isAdmin = pathname?.startsWith('/admin')
 
   useEffect(() => {
+    useStore.getState().rehydrate()
     fetchMe()
     fetchLiveRates()
   }, [fetchMe])

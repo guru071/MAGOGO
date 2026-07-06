@@ -134,6 +134,7 @@ interface Store {
   themeStyle: 'normal' | 'universe';
   setThemeStyle: (style: 'normal' | 'universe') => void;
   fetchAdminStats: () => Promise<void>;
+  rehydrate: () => void;
 }
 
 const api = async (url: string, opts?: RequestInit) => {
@@ -153,9 +154,9 @@ export const useStore = create<Store>((set, get) => ({
   totalPrompts: 0, totalPages: 1, currentPage: 1, loading: false,
   featuredPrompts: [], trendingPrompts: [], freePromptsList: [],
   cart: [], sortBy: 'newest', priceRange: [0, 200], isFreeOnly: false, selectedAI: null,
-  selectedCurrency: typeof window !== 'undefined' ? (localStorage.getItem('pb_currency') || 'USD') : 'USD',
+  selectedCurrency: 'USD',
   showFilterPanel: false,
-  themeStyle: typeof window !== 'undefined' ? ((localStorage.getItem('pb_theme_style') as 'normal' | 'universe') || 'normal') : 'normal',
+  themeStyle: 'normal',
 
   signInWithGoogle: async () => {
     try {
@@ -173,6 +174,14 @@ export const useStore = create<Store>((set, get) => ({
   setThemeStyle: (style) => {
     set({ themeStyle: style });
     if (typeof window !== 'undefined') localStorage.setItem('pb_theme_style', style);
+  },
+
+  rehydrate: () => {
+    if (typeof window === 'undefined') return;
+    const currency = localStorage.getItem('pb_currency');
+    if (currency) set({ selectedCurrency: currency });
+    const theme = localStorage.getItem('pb_theme_style');
+    if (theme === 'universe' || theme === 'normal') set({ themeStyle: theme });
   },
 
   login: async (email, password) => {

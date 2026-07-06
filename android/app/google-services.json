@@ -1,26 +1,21 @@
 {
   "project_info": {
-    "project_number": "YOUR_PROJECT_NUMBER",
-    "project_id": "maghgo-app",
-    "storage_bucket": "maghgo-app.appspot.com"
+    "project_number": "906085930060",
+    "project_id": "tn-voting-web",
+    "storage_bucket": "tn-voting-web.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:YOUR_PROJECT_NUMBER:android:YOUR_HASH",
+        "mobilesdk_app_id": "1:906085930060:android:e20e6bca13d4a9bbcd10e9",
         "android_client_info": {
-          "package_name": "com.maghgo.app"
+          "package_name": "com.goatech.maghgo"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "YOUR_WEB_CLIENT_ID",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "YOUR_API_KEY"
+          "current_key": "AIzaSyCtnhpI1FGb87KAZaPDvls8QC7nrNUfcug"
         }
       ],
       "services": {

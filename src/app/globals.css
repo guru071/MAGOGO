@@ -46,6 +46,11 @@
   --color-brand-green: #388E3C;
   --color-brand-red: #FF6161;
   --color-brand-buy: #FB641B;
+  --color-neon-blue: #00d2ff;
+  --color-neon-purple: #3a7bd5;
+  --color-neon-pink: #ff0080;
+  --color-glass: rgba(255, 255, 255, 0.05);
+  --color-glass-border: rgba(255, 255, 255, 0.1);
 }
 
 :root {
