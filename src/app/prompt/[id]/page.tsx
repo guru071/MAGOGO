@@ -11,7 +11,7 @@ import {
   Heart, ShoppingCart, Star, Download, Sparkles,
   MessageSquare, Loader2, Check, Flag,
   Users, ShieldCheck, Zap,
-  ChevronRight, Code, Lock, Store
+  ChevronRight, Code, Lock, Store, ArrowRight
 } from 'lucide-react'
 import ReportModal from '@/components/marketplace/ReportModal'
 import CommentSection from '@/components/marketplace/CommentSection'
@@ -34,6 +34,7 @@ export default function PromptDetailPage() {
   const [questionText, setQuestionText] = useState('')
   const [submittingReview, setSubmittingReview] = useState(false)
   const [reviews, setReviews] = useState<any[]>([])
+  const [relatedPrompts, setRelatedPrompts] = useState<any[]>([])
 
   useEffect(() => {
     if (id) {
@@ -43,6 +44,16 @@ export default function PromptDetailPage() {
       }).catch(console.error)
     }
   }, [id, fetchPromptDetail])
+
+  useEffect(() => {
+    if (!selectedPrompt?.category?.id) return
+    fetch(`/api/prompts?category=${selectedPrompt.category.id}&limit=5&sort=popular`)
+      .then(r => r.json()).then(d => {
+        if (d.success && d.data) {
+          setRelatedPrompts(d.data.prompts.filter((p: any) => p.id !== selectedPrompt.id).slice(0, 4))
+        }
+      }).catch(() => {})
+  }, [selectedPrompt?.id, selectedPrompt?.category?.id])
 
   if (loading || !selectedPrompt) {
     return (
@@ -452,6 +463,41 @@ export default function PromptDetailPage() {
           </div>
         </div>
       </div>
+      {/* Related Prompts */}
+      {relatedPrompts.length > 0 && (
+        <div className="max-w-7xl mx-auto px-4 pb-6">
+          <div className="bg-white border border-[#F0F0F0] rounded-sm p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-[#212121]">Related Prompts</h2>
+              <Link href={`/browse?category=${prompt.category?.slug}`} className="text-sm font-medium text-primary hover:text-primary/80 flex items-center gap-1">
+                View all <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {relatedPrompts.map((rp: any) => (
+                <Link key={rp.id} href={`/prompt/${rp.id}`} className="group">
+                  <div className="border border-[#F0F0F0] rounded-sm overflow-hidden hover:shadow-md transition-shadow">
+                    <div className="h-28 bg-[#F1F3F6] flex items-center justify-center overflow-hidden">
+                      {(() => {
+                        let imgs: string[] = [];
+                        try { imgs = typeof rp.sampleImages === 'string' ? JSON.parse(rp.sampleImages) : (rp.sampleImages || []); } catch {}
+                        return imgs.length > 0 ? (
+                          <img src={imgs[0]} alt={rp.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        ) : <Sparkles className="h-10 w-10 text-[#C4C4C4]" />;
+                      })()}
+                    </div>
+                    <div className="p-3">
+                      <h3 className="text-sm font-medium text-[#212121] line-clamp-1 group-hover:text-primary transition-colors">{rp.title}</h3>
+                      <p className="text-xs text-[#212121] font-semibold mt-1">{rp.isFree ? 'FREE' : formatPrice(rp.price, selectedCurrency)}</p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <ReportModal promptId={prompt.id} open={reportOpen} onClose={() => setReportOpen(false)} />
     </div>
   )

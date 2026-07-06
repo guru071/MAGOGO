@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -12,7 +12,7 @@ import {
   Sparkles, ArrowRight, Star, Shield, Zap, Users, TrendingUp,
   MessageSquare, Palette, Code, Megaphone, Pen, Briefcase, Camera,
   Film, Music, GraduationCap, Brain, Gem, Box, Video,
-  Loader2, ShoppingCart, Flame
+  Loader2, ShoppingCart, Flame, Eye
 } from 'lucide-react'
 
 const CATEGORY_STYLES: Record<string, { icon: any; color: string }> = {
@@ -56,6 +56,8 @@ const getCoverImage = (prompt: any) => {
 export default function LandingPage() {
   const [categories, setCategories] = useState<any[]>([])
   const [stats, setStats] = useState({ categories: 0, prompts: 0, sellers: 0 })
+  const [mostViewed, setMostViewed] = useState<any[]>([])
+  const [recommended, setRecommended] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const { prompts, fetchPrompts, selectedCurrency } = useStore();
 
@@ -63,9 +65,13 @@ export default function LandingPage() {
     Promise.all([
       fetch('/api/categories').then(r => r.json()).then(d => { if (d.success && Array.isArray(d.data)) setCategories(d.data) }).catch(() => {}),
       fetch('/api/stats').then(r => r.json()).then(d => { if (d.success && d.data) setStats({ categories: d.data.totalCategories || 0, prompts: d.data.totalPrompts || 0, sellers: d.data.totalSellers || 0 }) }).catch(() => {}),
-      fetchPrompts()
+      fetchPrompts(),
+      fetch('/api/prompts?sort=views&limit=4').then(r => r.json()).then(d => { if (d.success && d.data) setMostViewed(d.data.prompts) }).catch(() => {}),
+      fetch('/api/prompts?sort=popular&limit=4').then(r => r.json()).then(d => { if (d.success && d.data) setRecommended(d.data.prompts) }).catch(() => {}),
     ]).finally(() => setLoading(false))
   }, [])
+
+  const trendingPrompts = useMemo(() => prompts.slice(0, 4), [prompts])
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -131,7 +137,7 @@ export default function LandingPage() {
                 <p className="text-muted-foreground font-medium mb-2">No prompts listed yet</p>
                 <Link href="/seller"><Button className="bg-accent text-accent-foreground rounded-sm cursor-pointer">Start Selling</Button></Link>
               </div>
-            ) : prompts.slice(0, 4).map(prompt => (
+            ) : trendingPrompts.map(prompt => (
               <Link key={prompt.id} href={`/prompt/${prompt.id}`}>
                 <motion.div whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 300 }}>
                   <Card className="bg-card border border-border overflow-hidden h-full flex flex-col group hover:shadow-md transition-shadow rounded-sm">
@@ -172,6 +178,118 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* MOST VIEWED */}
+      {mostViewed.length > 0 && (
+        <section className="py-8 sm:py-12 bg-muted/30">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                <Eye className="h-6 w-6 text-primary" /> Most Viewed
+              </h2>
+              <Link href="/browse?sort=views" className="text-sm font-semibold text-primary hover:text-primary/80">
+                View all &rarr;
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              {mostViewed.map(prompt => (
+                <Link key={prompt.id} href={`/prompt/${prompt.id}`}>
+                  <motion.div whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 300 }}>
+                    <Card className="bg-card border border-border overflow-hidden h-full flex flex-col group hover:shadow-md transition-shadow rounded-sm">
+                      <div className="relative h-36 flex items-center justify-center overflow-hidden bg-muted">
+                        {getCoverImage(prompt) ? (
+                          <img src={getCoverImage(prompt)} alt={prompt.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        ) : (
+                          <Sparkles className="h-16 w-16 text-muted-foreground/50" />
+                        )}
+                        <div className="absolute top-3 right-3 flex flex-col gap-2">
+                          {prompt.isFree && <Badge className="bg-brand-green text-white font-bold border-0 rounded-sm text-xs">FREE</Badge>}
+                          {prompt.discount > 0 && <Badge className="bg-accent text-accent-foreground font-bold border-0 rounded-sm text-xs">-{prompt.discount}%</Badge>}
+                        </div>
+                      </div>
+                      <div className="p-4 flex flex-col flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="outline" className="text-[10px] bg-muted text-muted-foreground border-0">{formatAI(prompt.recommendedAI)}</Badge>
+                          <span className="text-[10px] text-muted-foreground flex items-center gap-1"><Star className="h-3 w-3 text-accent fill-accent" /> {prompt.rating.toFixed(1)}</span>
+                        </div>
+                        <h3 className="font-bold text-foreground text-sm line-clamp-1 mb-1 group-hover:text-primary transition-colors">{prompt.title}</h3>
+                        <p className="text-xs text-muted-foreground line-clamp-1">{prompt.description}</p>
+                        <div className="mt-auto flex items-center justify-between pt-3 border-t border-border">
+                          <div className="flex flex-col">
+                            {prompt.originalPrice && prompt.originalPrice > prompt.price ? (
+                              <span className="text-[10px] text-muted-foreground line-through">{formatPrice(prompt.originalPrice, selectedCurrency)}</span>
+                            ) : null}
+                            <span className="font-bold text-foreground text-base">{prompt.isFree ? 'FREE' : formatPrice(prompt.price, selectedCurrency)}</span>
+                          </div>
+                          <Button size="icon" className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-sm h-8 w-8 cursor-pointer">
+                            <ShoppingCart className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  </motion.div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* YOU MAY ALSO LIKE */}
+      {recommended.length > 0 && (
+        <section className="py-8 sm:py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                <TrendingUp className="h-6 w-6 text-accent" /> You May Also Like
+              </h2>
+              <Link href="/browse?sort=popular" className="text-sm font-semibold text-primary hover:text-primary/80">
+                View all &rarr;
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              {recommended.map(prompt => (
+                <Link key={prompt.id} href={`/prompt/${prompt.id}`}>
+                  <motion.div whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 300 }}>
+                    <Card className="bg-card border border-border overflow-hidden h-full flex flex-col group hover:shadow-md transition-shadow rounded-sm">
+                      <div className="relative h-36 flex items-center justify-center overflow-hidden bg-muted">
+                        {getCoverImage(prompt) ? (
+                          <img src={getCoverImage(prompt)} alt={prompt.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        ) : (
+                          <Sparkles className="h-16 w-16 text-muted-foreground/50" />
+                        )}
+                        <div className="absolute top-3 right-3 flex flex-col gap-2">
+                          {prompt.isFree && <Badge className="bg-brand-green text-white font-bold border-0 rounded-sm text-xs">FREE</Badge>}
+                          {prompt.discount > 0 && <Badge className="bg-accent text-accent-foreground font-bold border-0 rounded-sm text-xs">-{prompt.discount}%</Badge>}
+                        </div>
+                      </div>
+                      <div className="p-4 flex flex-col flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="outline" className="text-[10px] bg-muted text-muted-foreground border-0">{formatAI(prompt.recommendedAI)}</Badge>
+                          <span className="text-[10px] text-muted-foreground flex items-center gap-1"><Star className="h-3 w-3 text-accent fill-accent" /> {prompt.rating.toFixed(1)}</span>
+                        </div>
+                        <h3 className="font-bold text-foreground text-sm line-clamp-1 mb-1 group-hover:text-primary transition-colors">{prompt.title}</h3>
+                        <p className="text-xs text-muted-foreground line-clamp-1">{prompt.description}</p>
+                        <div className="mt-auto flex items-center justify-between pt-3 border-t border-border">
+                          <div className="flex flex-col">
+                            {prompt.originalPrice && prompt.originalPrice > prompt.price ? (
+                              <span className="text-[10px] text-muted-foreground line-through">{formatPrice(prompt.originalPrice, selectedCurrency)}</span>
+                            ) : null}
+                            <span className="font-bold text-foreground text-base">{prompt.isFree ? 'FREE' : formatPrice(prompt.price, selectedCurrency)}</span>
+                          </div>
+                          <Button size="icon" className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-sm h-8 w-8 cursor-pointer">
+                            <ShoppingCart className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  </motion.div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <FlashDealsBanner />
 

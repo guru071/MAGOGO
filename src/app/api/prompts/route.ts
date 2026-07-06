@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
     if (tags) where.tags = { contains: tags };
     if (aiFilter) where.recommendedAI = { contains: aiFilter };
 
-    const orderBy: any = sort === 'popular' ? { likeCount: 'desc' } : sort === 'price_low' ? { price: 'asc' } : sort === 'price_high' ? { price: 'desc' } : sort === 'rating' ? { rating: 'desc' } : { createdAt: 'desc' };
+    const orderBy: any = sort === 'popular' ? { likeCount: 'desc' } : sort === 'views' ? { viewCount: 'desc' } : sort === 'price_low' ? { price: 'asc' } : sort === 'price_high' ? { price: 'desc' } : sort === 'rating' ? { rating: 'desc' } : { createdAt: 'desc' };
 
     const [prompts, total] = await Promise.all([
       db.prompt.findMany({ where, orderBy, skip: (page - 1) * limit, take: limit, include: { seller: { select: { id: true, name: true, avatar: true, isVerified: true } }, category: { select: { id: true, name: true, slug: true } } } }),
