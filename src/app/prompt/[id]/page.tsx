@@ -63,9 +63,9 @@ export default function PromptDetailPage() {
   const prompt = selectedPrompt
   const isWishlisted = wishlistedPromptIds.has(prompt.id)
   const isInCart = cart.some(c => c.id === prompt.id)
-  const isOwner = prompt.accessReason === 'OWNER'
-  const isAdmin = prompt.accessReason === 'ADMIN'
-  const hasPurchased = prompt.accessReason === 'PURCHASED'
+  const isOwner = (prompt as any).accessReason === 'OWNER'
+  const isAdmin = (prompt as any).accessReason === 'ADMIN'
+  const hasPurchased = (prompt as any).accessReason === 'PURCHASED'
   const hasAccess = prompt.hasAccess
 
   const handleWishlist = async () => {
@@ -402,8 +402,8 @@ export default function PromptDetailPage() {
                 ) : hasPurchased ? (
                   <div className="p-3 bg-[#E8F5E9] rounded-sm text-center">
                     <p className="text-sm font-medium text-[#388E3C] mb-2">You own this prompt</p>
-                    {(prompt).purchasedOrderId && (
-                      <Link href={`/invoice/${(prompt).purchasedOrderId}`}>
+                    {((prompt as any).purchasedOrderId) && (
+                      <Link href={`/invoice/${(prompt as any).purchasedOrderId}`}>
                         <button className="w-full bg-[#388E3C] text-white font-medium py-2 rounded-sm text-sm hover:bg-[#2E7D32] cursor-pointer">View Invoice</button>
                       </Link>
                     )}

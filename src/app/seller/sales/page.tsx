@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useStore, formatPrice } from '@/store/marketplace'
+import { useStore, formatPrice, getSymbol } from '@/store/marketplace'
 import { Card } from '@/components/ui/card'
 import { format } from 'date-fns'
 import { ShoppingCart, ExternalLink, TrendingUp as TrendingUpIcon } from 'lucide-react'
@@ -105,7 +105,7 @@ export default function SellerSalesHistoryPage() {
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
                     <XAxis dataKey="date" stroke="rgba(255,255,255,0.3)" fontSize={12} tickLine={false} axisLine={false} />
-                    <YAxis stroke="rgba(255,255,255,0.3)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value}`} />
+                    <YAxis stroke="rgba(255,255,255,0.3)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${getSymbol(selectedCurrency)}${value}`} />
                     <Tooltip 
                       contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
                       itemStyle={{ color: '#10b981', fontWeight: 'bold' }}

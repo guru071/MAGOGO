@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ArrowLeft, Printer, CheckCircle2 } from 'lucide-react'
+import { formatUSD, getSymbol } from '@/store/marketplace'
 
 export default function InvoicePage() {
   const { id } = useParams<{ id: string }>()
@@ -121,7 +122,7 @@ export default function InvoicePage() {
                     <p className="text-sm text-white/50 mt-1">Digital Goods - Instant Access</p>
                   </td>
                   <td className="py-5 px-6 text-right font-medium text-white">
-                    ${(order.amount + (order.discountAmt || 0)).toFixed(2)}
+                    {formatUSD(order.amount + (order.discountAmt || 0))}
                   </td>
                 </tr>
                 {order.couponCode && (
@@ -130,7 +131,7 @@ export default function InvoicePage() {
                       Discount applied (Coupon: <span className="font-mono bg-white/5 px-1 py-0.5 rounded text-xs">{order.couponCode}</span>)
                     </td>
                     <td className="py-4 px-6 text-right text-neon-pink font-medium">
-                      -${(order.amount * 0).toFixed(2)} {/* Placeholder since discount isn't explicitly saved as a field natively, it's baked into amount. If you added discountAmt, use it. */}
+                      -{formatUSD(order.amount * 0)} {/* Placeholder since discount isn't explicitly saved as a field natively, it's baked into amount. If you added discountAmt, use it. */}
                     </td>
                   </tr>
                 )}
@@ -143,7 +144,7 @@ export default function InvoicePage() {
             <div className="w-1/2 min-w-[250px] space-y-3 text-sm">
               <div className="flex justify-between text-white/70">
                 <span>Subtotal</span>
-                <span className="font-medium">${order.amount.toFixed(2)}</span>
+                <span className="font-medium">{formatUSD(order.amount)}</span>
               </div>
               <div className="flex justify-between text-white/70">
                 <span>Platform Fee & Taxes</span>
@@ -151,7 +152,7 @@ export default function InvoicePage() {
               </div>
               <div className="flex justify-between border-t border-white/20 pt-3 text-lg font-black text-white">
                 <span>Total Paid</span>
-                <span>${order.amount.toFixed(2)} {order.currency}</span>
+                <span>{formatUSD(order.amount)} {order.currency}</span>
               </div>
               <div className="flex justify-between text-white/50 text-xs pt-1">
                 <span>Payment Method</span>

@@ -2,6 +2,7 @@ import { db } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth-helpers';
 import { sanitizePromptsForUser } from '@/lib/prompt-security';
+import { formatUSD } from '@/lib/currencies';
 
 function levenshtein(a: string, b: string): number {
   const m = a.length, n = b.length;
@@ -118,11 +119,11 @@ export async function GET(req: NextRequest) {
     const globalMin = allPriceData._min.price ?? 0;
     const globalMax = allPriceData._max.price ?? 100;
     const priceRanges = [
-      { label: `$${globalMin.toFixed(0)} - $5`, min: globalMin, max: 5 },
-      { label: '$5 - $15', min: 5, max: 15 },
-      { label: '$15 - $30', min: 15, max: 30 },
-      { label: '$30 - $50', min: 30, max: 50 },
-      { label: `$${Math.max(50, Math.round(globalMax))}+`, min: 50, max: globalMax + 1 },
+      { label: `${formatUSD(globalMin)} - ${formatUSD(5)}`, min: globalMin, max: 5 },
+      { label: `${formatUSD(5)} - ${formatUSD(15)}`, min: 5, max: 15 },
+      { label: `${formatUSD(15)} - ${formatUSD(30)}`, min: 15, max: 30 },
+      { label: `${formatUSD(30)} - ${formatUSD(50)}`, min: 30, max: 50 },
+      { label: `${formatUSD(Math.max(50, Math.round(globalMax)))}+`, min: 50, max: globalMax + 1 },
     ];
 
     const categoriesList = await db.category.findMany({

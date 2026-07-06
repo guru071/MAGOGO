@@ -14,6 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { motion } from 'framer-motion';
 import { Search, ChevronLeft, ChevronRight, Ban, Unlock, Eye, ShieldAlert, Clock, KeyRound } from 'lucide-react';
 import { toast } from 'sonner';
+import { formatUSD } from '@/store/marketplace';
 
 const api = async (url: string, opts?: RequestInit) => {
   const res = await fetch(url, { headers: { 'Content-Type': 'application/json', ...opts?.headers }, ...opts });
@@ -204,8 +205,8 @@ export default function AdminUsers({ token, onViewActivity }: { token: string; o
                         {u.loginAttempts}
                       </span>
                     </TableCell>
-                    <TableCell className="text-right text-sm text-green-600 font-medium">${(u.totalEarnings || 0).toFixed(2)}</TableCell>
-                    <TableCell className="text-right text-sm text-rose-600 hidden sm:table-cell">${(u.totalSpent || 0).toFixed(2)}</TableCell>
+                    <TableCell className="text-right text-sm text-green-600 font-medium">{formatUSD(u.totalEarnings || 0)}</TableCell>
+                    <TableCell className="text-right text-sm text-rose-600 hidden sm:table-cell">{formatUSD(u.totalSpent || 0)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
                         {onViewActivity && (

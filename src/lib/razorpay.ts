@@ -1,23 +1,27 @@
 import crypto from 'crypto';
 import Razorpay from 'razorpay';
+import { getINRRate, updateRates } from '@/lib/currencies';
 
 const RAZORPAY_KEY_ID = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '';
 const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || '';
 
-/** USD to INR paise conversion rate (live, with fallback) */
-let _usdToInrPaise = 9460;
+/** Convert current INR rate to paise (rate * 100) */
+function usdToInrPaise(): number {
+  return Math.round(getINRRate() * 100);
+}
 
+/** Refresh live rates from the exchange rate API */
 export async function refreshRate(): Promise<number> {
   try {
     const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD', { next: { revalidate: 3600 } });
     if (res.ok) {
       const data = await res.json();
-      if (data.rates?.INR) {
-        _usdToInrPaise = Math.round(data.rates.INR * 100);
+      if (data.rates) {
+        updateRates(data.rates);
       }
     }
   } catch {}
-  return _usdToInrPaise;
+  return usdToInrPaise();
 }
 
 function getInstance(): Razorpay | null {
@@ -31,12 +35,12 @@ export function isConfigured(): boolean {
 
 /** Convert USD amount to INR paise (uses live rate) */
 export function usdToPaise(usd: number): number {
-  return Math.round(usd * _usdToInrPaise);
+  return Math.round(usd * getINRRate() * 100);
 }
 
 /** Convert INR paise to USD */
 export function paiseToUsd(paise: number): number {
-  return paise / _usdToInrPaise;
+  return paise / (getINRRate() * 100);
 }
 
 /** Create a Razorpay order */

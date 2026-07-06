@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { db } from '@/lib/db'
+import { getSymbol } from '@/lib/currencies'
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
@@ -17,7 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       }
     }
 
-    const price = prompt.isFree ? 'Free' : `$${prompt.price}`;
+    const price = prompt.isFree ? 'Free' : `${getSymbol('USD')}${prompt.price}`;
     
     return {
       title: `${prompt.title} by ${prompt.seller.name} | MAGHGO`,

@@ -1,22 +1,12 @@
 import { NextResponse } from 'next/server';
+import { getFallbackRates, updateRates } from '@/lib/currencies';
 
 // Cache exchange rates for 1 hour
 let cachedRates: Record<string, number> | null = null;
 let cacheTimestamp = 0;
 const CACHE_DURATION = 60 * 60 * 1000; // 1 hour
 
-const FALLBACK_RATES: Record<string, number> = {
-  USD: 1,
-  INR: 94.6,
-  EUR: 0.89,
-  GBP: 0.75,
-  AUD: 1.55,
-  CAD: 1.38,
-  AED: 3.67,
-  JPY: 144.0,
-  BRL: 5.65,
-  NGN: 1620,
-};
+const FALLBACK_RATES = getFallbackRates();
 
 export async function GET() {
   try {
@@ -43,6 +33,9 @@ export async function GET() {
     for (const code of Object.keys(FALLBACK_RATES)) {
       rates[code] = data.rates?.[code] ?? FALLBACK_RATES[code];
     }
+
+    // Update the centralized CURRENCIES array with live rates
+    updateRates(rates);
 
     // Cache the rates
     cachedRates = rates;

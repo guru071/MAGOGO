@@ -2,6 +2,7 @@ import { db } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth-helpers';
 import { NextRequest, NextResponse } from 'next/server';
 import { getFeeConfig, calculateFees } from '@/lib/fees';
+import { formatUSD } from '@/lib/currencies';
 
 export async function GET(req: NextRequest) {
   try {
@@ -140,7 +141,7 @@ export async function POST(req: NextRequest) {
         data: { 
           userId: prompt.sellerId, 
           title: 'New Sale!', 
-          message: `Your prompt "${prompt.title}" was purchased for $${amount.toFixed(2)} (net: $${feeBreakdown.netAmount.toFixed(2)} after fees)`, 
+          message: `Your prompt "${prompt.title}" was purchased for ${formatUSD(amount)} (net: ${formatUSD(feeBreakdown.netAmount)} after fees)`, 
           type: 'ORDER' 
         } 
       });

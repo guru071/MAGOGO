@@ -13,6 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { Ticket, Plus, Loader2, Trash2 } from 'lucide-react';
+import { formatUSD } from '@/store/marketplace';
 
 const api = async (url: string, opts?: RequestInit) => {
   const res = await fetch(url, { headers: { 'Content-Type': 'application/json', ...opts?.headers }, ...opts });
@@ -108,7 +109,7 @@ export default function AdminCoupons({ token }: { token: string }) {
                   <TableCell className="font-mono font-semibold">{c.code}</TableCell>
                   <TableCell><Badge variant="secondary">{c.discount}%</Badge></TableCell>
                   <TableCell>{c.usedCount ?? 0}/{c.maxUses || '∞'}</TableCell>
-                  <TableCell>${c.minAmount || 0}</TableCell>
+                  <TableCell>{formatUSD(c.minAmount || 0)}</TableCell>
                   <TableCell className="text-xs">{c.expiresAt ? new Date(c.expiresAt).toLocaleDateString() : 'Never'}</TableCell>
                   <TableCell><Switch checked={c.isActive} onCheckedChange={() => toggleActive(c)} /></TableCell>
                   <TableCell className="text-xs text-muted-foreground">{new Date(c.createdAt).toLocaleDateString()}</TableCell>

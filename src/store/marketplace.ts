@@ -1,6 +1,11 @@
 import { create } from 'zustand';
 import { createSupabaseBrowserClient } from '@/lib/supabase-client';
 
+// ── Centralized currency exports (single source of truth) ──
+import { CURRENCIES, formatAmount, updateRates } from '@/lib/currencies';
+export { CURRENCIES, getCurrency, getSymbol, getRate, formatAmount, formatUSD, getINRRate, getFallbackRates, updateRates } from '@/lib/currencies';
+export type { Currency } from '@/lib/currencies';
+
 export const ALL_AI_TOOLS = [
   'ChatGPT','GPT-4','GPT-4o','GPT-4 Turbo','Claude 3.5 Sonnet','Claude 3 Opus','Claude 3 Haiku',
   'Gemini Pro','Gemini Ultra','Llama 3.1','Llama 3','Mistral','Mixtral','Command R+','Phi-3',
@@ -22,18 +27,7 @@ export const AI_TOOL_CATEGORIES = [
   { label: 'Specialized', tools: ['Jasper AI','Copy.ai','Synthesia','Character.AI','Poe','You.com','Phind'] },
 ];
 
-export const CURRENCIES = [
-  { code: 'USD', symbol: '$', name: 'US Dollar', rate: 1, flag: '🇺🇸' },
-  { code: 'INR', symbol: '₹', name: 'Indian Rupee', rate: 94.6, flag: '🇮🇳' },
-  { code: 'EUR', symbol: '€', name: 'Euro', rate: 0.89, flag: '🇪🇺' },
-  { code: 'GBP', symbol: '£', name: 'British Pound', rate: 0.75, flag: '🇬🇧' },
-  { code: 'AUD', symbol: 'A$', name: 'Australian Dollar', rate: 1.55, flag: '🇦🇺' },
-  { code: 'CAD', symbol: 'C$', name: 'Canadian Dollar', rate: 1.38, flag: '🇨🇦' },
-  { code: 'AED', symbol: 'د.إ', name: 'UAE Dirham', rate: 3.67, flag: '🇦🇪' },
-  { code: 'JPY', symbol: '¥', name: 'Japanese Yen', rate: 144.0, flag: '🇯🇵' },
-  { code: 'BRL', symbol: 'R$', name: 'Brazilian Real', rate: 5.65, flag: '🇧🇷' },
-  { code: 'NGN', symbol: '₦', name: 'Nigerian Naira', rate: 1620, flag: '🇳🇬' },
-];
+// CURRENCIES array is now imported from '@/lib/currencies' above
 
 // Fetch live exchange rates and update CURRENCIES array
 let ratesFetched = false;
@@ -43,11 +37,7 @@ export async function fetchLiveRates() {
     const res = await fetch('/api/exchange-rates');
     const json = await res.json();
     if (json.success && json.data) {
-      for (const cur of CURRENCIES) {
-        if (json.data[cur.code] !== undefined) {
-          cur.rate = json.data[cur.code];
-        }
-      }
+      updateRates(json.data);
       ratesFetched = true;
       console.log('[store] Live exchange rates loaded');
     }
@@ -73,17 +63,12 @@ export const PAYMENT_METHODS = [
   { value: 'RAZORPAY', label: 'Razorpay', desc: 'Credit Card, UPI, NetBanking' },
 ];
 
-export function getINRRate(): number {
-  return CURRENCIES.find(c => c.code === 'INR')?.rate || 94.6;
-}
+// getINRRate and formatUSD are now imported from '@/lib/currencies'
 
+/** Client-side formatPrice — uses the store's selectedCurrency by default. */
 export function formatPrice(usdAmount: number, currencyCode?: string): string {
   if (!currencyCode) currencyCode = useStore.getState().selectedCurrency || 'USD';
-  const cur = CURRENCIES.find(c => c.code === currencyCode) || CURRENCIES[0];
-  const converted = usdAmount * cur.rate;
-  const noDecimal = ['JPY','KRW','VND','IDR','NGN'].includes(cur.code);
-  if (noDecimal) return `${cur.symbol}${Math.round(converted).toLocaleString()}`;
-  return `${cur.symbol}${converted.toFixed(2)}`;
+  return formatAmount(usdAmount, currencyCode);
 }
 
 export interface User { id: string; email: string; name: string; avatar?: string; role: string; isSeller: boolean; bio?: string; totalEarnings: number; currentBalance: number; totalSpent: number; isVerified: boolean; bankName?: string; bankAccount?: string; bankIfsc?: string; upiId?: string; paypalEmail?: string; paymentMethod?: string; }

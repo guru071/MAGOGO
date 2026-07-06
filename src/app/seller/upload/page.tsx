@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { enableRazorpayProtections, disableRazorpayProtections } from '@/lib/razorpay-client'
-import { useStore, formatPrice, CURRENCIES } from '@/store/marketplace'
+import { useStore, formatPrice, CURRENCIES, getSymbol, getRate } from '@/store/marketplace'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -146,7 +146,7 @@ export default function UploadPromptPage() {
     
     // Minimum price validation (0.06 USD ~ 5 INR)
     if (!form.isFree && parseFloat(form.price) < 0.06) {
-      toast.error('Minimum selling price is $0.06 (approx ₹5)')
+      toast.error('Minimum selling price is $0.06 USD')
       setLoading(false)
       return
     }
@@ -273,10 +273,10 @@ export default function UploadPromptPage() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="price" className="text-white/70 ml-1 font-bold">Price ({CURRENCIES.find(c => c.code === selectedCurrency)?.symbol || '$'} {selectedCurrency})</Label>
+              <Label htmlFor="price" className="text-white/70 ml-1 font-bold">Price ({getSymbol(selectedCurrency)} {selectedCurrency})</Label>
               <Input id="price" type="number" min="0" step="0.01" value={form.price} onChange={e => handleChange('price', e.target.value)} disabled={form.isFree} className="mt-1.5 bg-white/5 border-white/20 text-white placeholder:text-white/30 focus:border-neon-blue focus:ring-1 focus:ring-neon-blue rounded-xl h-11 disabled:bg-white/5" />
               {!form.isFree && parseFloat(form.price) > 0 && selectedCurrency !== 'USD' && (
-                <p className="text-xs text-white/40 mt-1 ml-1">≈ ${(parseFloat(form.price) / (CURRENCIES.find(c => c.code === selectedCurrency)?.rate || 1)).toFixed(2)} USD</p>
+                <p className="text-xs text-white/40 mt-1 ml-1">≈ {getSymbol('USD')}{(parseFloat(form.price) / getRate(selectedCurrency)).toFixed(2)} USD</p>
               )}
             </div>
             <div className="flex items-end pb-3">

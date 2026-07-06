@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { db } from '@/lib/db';
+import { getSymbol } from '@/lib/currencies';
 
 export const runtime = 'edge';
 export const alt = 'MAGHGO AI Prompt';
@@ -17,7 +18,7 @@ export default async function Image({ params }: { params: { id: string } }) {
       return new Response('Not Found', { status: 404 });
     }
 
-    const price = prompt.isFree ? 'FREE' : `$${prompt.price}`;
+    const price = prompt.isFree ? 'FREE' : `${getSymbol('USD')}${prompt.price}`;
 
     return new ImageResponse(
       (
