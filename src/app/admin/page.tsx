@@ -95,46 +95,46 @@ export default function AdminPage() {
   }
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center relative z-10"><Loader2 className="h-8 w-8 animate-spin text-neon-blue" /></div>
+    return <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-blue-600" /></div>
   }
 
   if (!session || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 relative z-10">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-sm relative z-10">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-sm">
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center mb-5">
-              <div className="h-20 w-20 rounded-2xl bg-black/40 border border-white/20 shadow-[0_0_20px_rgba(0,210,255,0.3)] flex items-center justify-center overflow-hidden p-2 relative backdrop-blur-xl">
+              <div className="h-20 w-20 rounded-2xl bg-white border border-gray-200 shadow-md flex items-center justify-center overflow-hidden p-2 relative">
                 <Image src="/logo.jpeg" alt="MAGHGO" fill className="object-contain" priority sizes="80px" />
               </div>
             </div>
-            <h1 className="text-3xl font-extrabold text-white tracking-tight drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">MAGHGO</h1>
-            <p className="text-white/60 mt-1 text-sm font-medium">Admin Control Panel</p>
+            <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">MAGHGO</h1>
+            <p className="text-gray-500 mt-1 text-sm font-medium">Admin Control Panel</p>
           </div>
-          <Card className="glass-panel p-6 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+          <Card className="bg-white border border-gray-200 shadow-lg p-6">
             <div className="flex items-center gap-2 mb-6">
-              <Lock className="h-4 w-4 text-neon-blue drop-shadow-[0_0_5px_rgba(0,210,255,0.8)]" />
-              <h2 className="font-semibold text-white">Admin Sign In</h2>
+              <Lock className="h-4 w-4 text-blue-600" />
+              <h2 className="font-semibold text-gray-900">Admin Sign In</h2>
             </div>
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
-                <Label htmlFor="admin-email" className="text-white/70 font-bold ml-1">Email</Label>
+                <Label htmlFor="admin-email" className="text-gray-700 font-medium ml-1">Email</Label>
                 <Input id="admin-email" type="email" value={email} onChange={e => setEmail(e.target.value)} required
-                  className="mt-1.5 bg-white/5 border-white/20 text-white placeholder:text-white/30 focus:border-neon-blue focus:ring-1 focus:ring-neon-blue rounded-xl h-11" />
+                  className="mt-1.5 border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-xl h-11" />
               </div>
               <div>
-                <Label htmlFor="admin-password" className="text-white/70 font-bold ml-1">Password</Label>
+                <Label htmlFor="admin-password" className="text-gray-700 font-medium ml-1">Password</Label>
                 <Input id="admin-password" type="password" value={password} onChange={e => setPassword(e.target.value)} required
-                  className="mt-1.5 bg-white/5 border-white/20 text-white placeholder:text-white/30 focus:border-neon-blue focus:ring-1 focus:ring-neon-blue rounded-xl h-11" />
+                  className="mt-1.5 border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-xl h-11" />
               </div>
-              <Button type="submit" disabled={signingIn} className="w-full bg-neon-blue hover:bg-neon-blue/80 text-black font-extrabold h-11 rounded-full shadow-[0_0_15px_rgba(0,210,255,0.4)] transition-all">
+              <Button type="submit" disabled={signingIn} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold h-11 rounded-xl transition-all">
                 {signingIn && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 Sign In
               </Button>
             </form>
           </Card>
           <Link href="/">
-            <div className="flex items-center justify-center mt-6 gap-1.5 text-xs text-white/50 hover:text-white hover:drop-shadow-[0_0_5px_rgba(255,255,255,0.8)] transition-all">
+            <div className="flex items-center justify-center mt-6 gap-1.5 text-xs text-gray-400 hover:text-gray-600 transition-all">
               <ArrowLeft className="h-3.5 w-3.5" /> Back to Home
             </div>
           </Link>

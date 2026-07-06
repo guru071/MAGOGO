@@ -119,7 +119,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ 
       success: true, 
       orderId: rzOrder.id,
-      amount: totalAmount
+      amount: rzOrder.amount
     });
     
   } catch (e: any) {  

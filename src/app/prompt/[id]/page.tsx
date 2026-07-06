@@ -46,7 +46,7 @@ export default function PromptDetailPage() {
 
   if (loading || !selectedPrompt) {
     return (
-      <div className="max-w-6xl mx-auto px-4 py-8 bg-[#F1F3F6] min-h-screen">
+      <div className="max-w-6xl mx-auto px-4 py-8 bg-background min-h-screen">
         <Skeleton className="h-6 w-48 mb-4" />
         <div className="flex gap-8">
           <div className="flex-1">
@@ -377,15 +377,15 @@ export default function PromptDetailPage() {
                     </div>
                   )}
                   <div className="text-2xl font-bold text-[#212121]">{formatPrice(prompt.price, selectedCurrency)}</div>
-                  <p className="text-xs text-[#878787] mt-1">Inclusive of all taxes</p>
+                  <p className="text-xs text-muted-foreground mt-1">Inclusive of all taxes</p>
                 </div>
               )}
 
               {/* Seller info */}
-              <div className="flex items-center gap-2 mb-4 pb-4 border-b border-[#F0F0F0]">
-                <Store className="h-4 w-4 text-[#878787]" />
-                <span className="text-xs text-[#878787]">Sold by</span>
-                <Link href={`/store/${prompt.seller?.id}`} className="text-xs font-medium text-[#2874F0] hover:text-[#1a5dc7]">
+              <div className="flex items-center gap-2 mb-4 pb-4 border-b border-border">
+                <Store className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                <span className="text-xs text-muted-foreground">Sold by</span>
+                <Link href={`/store/${prompt.seller?.id}`} className="text-xs font-medium text-primary hover:text-primary/80">
                   {prompt.seller?.name || 'Seller'}
                 </Link>
               </div>
@@ -393,60 +393,60 @@ export default function PromptDetailPage() {
               {/* Action buttons */}
               <div className="space-y-3">
                 {isOwner || isAdmin ? (
-                  <div className="p-3 bg-[#E3F2FD] rounded-sm text-center">
-                    <p className="text-sm font-medium text-[#2874F0] mb-2">You are {isOwner ? 'the seller' : 'an admin'}</p>
+                  <div className="p-3 bg-primary/5 rounded-sm text-center">
+                    <p className="text-sm font-medium text-primary mb-2">You are {isOwner ? 'the seller' : 'an admin'}</p>
                     <Link href={isOwner ? '/seller/prompts' : '/admin'}>
-                      <button className="w-full bg-[#2874F0] text-white font-medium py-2 rounded-sm text-sm hover:bg-[#1a5dc7] cursor-pointer">Manage</button>
+                      <button className="w-full bg-primary text-primary-foreground font-medium py-2 rounded-sm text-sm hover:bg-primary/90 cursor-pointer">Manage</button>
                     </Link>
                   </div>
                 ) : hasPurchased ? (
-                  <div className="p-3 bg-[#E8F5E9] rounded-sm text-center">
-                    <p className="text-sm font-medium text-[#388E3C] mb-2">You own this prompt</p>
+                  <div className="p-3 bg-brand-green/10 rounded-sm text-center">
+                    <p className="text-sm font-medium text-brand-green mb-2">You own this prompt</p>
                     {((prompt as any).purchasedOrderId) && (
                       <Link href={`/invoice/${(prompt as any).purchasedOrderId}`}>
-                        <button className="w-full bg-[#388E3C] text-white font-medium py-2 rounded-sm text-sm hover:bg-[#2E7D32] cursor-pointer">View Invoice</button>
+                        <button className="w-full bg-brand-green text-white font-medium py-2 rounded-sm text-sm hover:bg-brand-green/90 cursor-pointer">View Invoice</button>
                       </Link>
                     )}
                   </div>
                 ) : (
                   <>
                     {isInCart ? (
-                      <div className="w-full text-center text-sm font-medium text-[#388E3C] bg-[#F1F3F6] py-3 rounded-sm cursor-not-allowed">
-                        <Check className="h-4 w-4 inline mr-1" /> Added to Cart
+                      <div className="w-full text-center text-sm font-medium text-brand-green bg-muted py-3 rounded-sm">
+                        <Check className="h-4 w-4 inline mr-1" aria-hidden="true" /> Added to Cart
                       </div>
                     ) : (
                       <button onClick={handleAddToCart} disabled={submitting}
-                        className="w-full bg-[#FF9F00] text-white font-medium py-3 rounded-sm text-sm hover:bg-[#FB641B] transition-colors cursor-pointer disabled:opacity-50">
-                        {submitting ? <Loader2 className="h-4 w-4 animate-spin inline" /> : <><ShoppingCart className="h-4 w-4 inline mr-1.5" /> Add to Cart</>}
+                        className="w-full bg-accent text-accent-foreground font-medium py-3 rounded-sm text-sm hover:bg-accent/90 transition-colors cursor-pointer disabled:opacity-50">
+                        {submitting ? <Loader2 className="h-4 w-4 animate-spin inline" aria-hidden="true" /> : <><ShoppingCart className="h-4 w-4 inline mr-1.5" aria-hidden="true" /> Add to Cart</>}
                       </button>
                     )}
                     <button onClick={handleBuyNow} disabled={submitting}
-                      className="w-full bg-[#FB641B] text-white font-medium py-3 rounded-sm text-sm hover:bg-[#E55A14] transition-colors cursor-pointer disabled:opacity-50">
-                      <Zap className="h-4 w-4 inline mr-1.5" /> Buy Now
+                      className="w-full bg-brand-buy text-white font-medium py-3 rounded-sm text-sm hover:bg-brand-buy/90 transition-colors cursor-pointer disabled:opacity-50">
+                      <Zap className="h-4 w-4 inline mr-1.5" aria-hidden="true" /> Buy Now
                     </button>
                   </>
                 )}
               </div>
 
               {/* Actions */}
-              <div className="flex items-center justify-center gap-6 mt-6 pt-4 border-t border-[#F0F0F0]">
+              <div className="flex items-center justify-center gap-6 mt-6 pt-4 border-t border-border">
                 <button onClick={handleWishlist}
-                  className={`flex items-center gap-1.5 text-sm transition-colors cursor-pointer ${isWishlisted ? 'text-[#FF6161]' : 'text-[#878787] hover:text-[#212121]'}`}
+                  className={`flex items-center gap-1.5 text-sm transition-colors cursor-pointer ${isWishlisted ? 'text-brand-red' : 'text-muted-foreground hover:text-foreground'}`}
                   aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}>
-                  <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-[#FF6161]' : ''}`} /> Save
+                  <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-brand-red' : ''}`} aria-hidden="true" /> Save
                 </button>
                 <button onClick={() => setReportOpen(true)}
-                  className="flex items-center gap-1.5 text-sm text-[#878787] hover:text-[#FF6161] transition-colors cursor-pointer"
+                  className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-brand-red transition-colors cursor-pointer"
                   aria-label="Report this product">
-                  <Flag className="h-4 w-4" /> Report
+                  <Flag className="h-4 w-4" aria-hidden="true" /> Report
                 </button>
               </div>
 
               {/* Features */}
-              <div className="mt-4 space-y-2 text-xs text-[#878787]">
-                <div className="flex items-center gap-2"><Lock className="h-3 w-3" /> Secure transaction</div>
-                <div className="flex items-center gap-2"><ShieldCheck className="h-3 w-3" /> Eligible for refund</div>
-                <div className="flex items-center gap-2"><Download className="h-3 w-3" /> Instant digital access</div>
+              <div className="mt-4 space-y-2 text-xs text-muted-foreground">
+                <div className="flex items-center gap-2"><Lock className="h-3 w-3" aria-hidden="true" /> Secure transaction</div>
+                <div className="flex items-center gap-2"><ShieldCheck className="h-3 w-3" aria-hidden="true" /> Eligible for refund</div>
+                <div className="flex items-center gap-2"><Download className="h-3 w-3" aria-hidden="true" /> Instant digital access</div>
               </div>
             </div>
           </div>

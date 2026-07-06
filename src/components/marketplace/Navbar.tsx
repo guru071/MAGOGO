@@ -144,46 +144,48 @@ export function Navbar() {
   const wishlistCount = useStore.getState().wishlistedPromptIds.size
 
   return (
-    <header className="sticky top-0 z-50 bg-[#2874F0] shadow-md">
+    <header className="sticky top-0 z-50 bg-primary shadow-md">
       <div className="max-w-7xl mx-auto px-4 h-14 flex items-center gap-4">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-1.5 shrink-0">
+        <Link href="/" className="flex items-center gap-1.5 shrink-0" aria-label="Home">
           <div className="relative h-8 w-8">
             <Image src="/logo.jpeg" alt="MAGHGO" fill className="object-contain rounded-full" sizes="32px" />
           </div>
-          <span className="text-xl font-bold text-white tracking-tight hidden sm:block" style={{ fontStyle: 'italic' }}>MAGHGO</span>
+          <span className="text-xl font-bold text-primary-foreground tracking-tight hidden sm:block" style={{ fontStyle: 'italic' }}>MAGHGO</span>
         </Link>
 
         {/* Search bar */}
-        <form onSubmit={handleSearch} className="flex-1 max-w-xl" ref={searchRef}>
+        <form onSubmit={handleSearch} className="flex-1 max-w-xl" ref={searchRef} role="search">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#2874F0]" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary" aria-hidden="true" />
             <input
               ref={inputRef}
-              type="text"
+              type="search"
               value={searchValue}
               onChange={(e) => handleSearchChange(e.target.value)}
               onFocus={() => { if (hasSuggestions && searchValue.trim().length >= 2) setShowSuggestions(true) }}
               placeholder="Search for prompts, categories and more"
-              className="w-full h-9 pl-9 pr-3 rounded-sm border-none text-sm text-[#212121] bg-white placeholder:text-[#878787] focus:outline-none focus:ring-2 focus:ring-white/30"
+              className="w-full h-9 pl-9 pr-3 rounded-sm border-none text-sm text-foreground bg-white placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-white/30"
               aria-label="Search prompts"
+              autoComplete="off"
             />
             {showSuggestions && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#F0F0F0] rounded-sm shadow-lg z-50 max-h-80 overflow-y-auto">
-                {suggestLoading && <div className="p-3 text-xs text-[#878787] text-center">Loading...</div>}
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded-sm shadow-lg z-50 max-h-80 overflow-y-auto" role="listbox">
+                {suggestLoading && <div className="p-3 text-xs text-muted-foreground text-center">Loading...</div>}
                 {!suggestLoading && suggestions.map((group, gi) => (
                   <div key={gi}>
-                    <div className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[#878787] bg-[#F1F3F6]">{group.label}</div>
+                    <div className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground bg-muted">{group.label}</div>
                     {group.items.map((item, ii) => (
                       <button
                         key={`${gi}-${ii}`}
                         type="button"
                         onClick={() => selectSuggestion(item.text)}
-                        className="w-full text-left px-4 py-2 text-sm text-[#212121] hover:bg-[#F1F3F6] flex items-center gap-2 transition-colors cursor-pointer"
+                        className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted flex items-center gap-2 transition-colors cursor-pointer"
+                        role="option"
                       >
-                        {item.type === 'category' ? <Folder className="h-3 w-3 text-[#2874F0]" /> :
-                         item.type === 'tag' ? <Tag className="h-3 w-3 text-[#FF9F00]" /> :
-                         <TrendingUp className="h-3 w-3 text-[#2874F0]" />}
+                        {item.type === 'category' ? <Folder className="h-3 w-3 text-primary" aria-hidden="true" /> :
+                         item.type === 'tag' ? <Tag className="h-3 w-3 text-accent" aria-hidden="true" /> :
+                         <TrendingUp className="h-3 w-3 text-primary" aria-hidden="true" />}
                         <span>{item.text}</span>
                       </button>
                     ))}
@@ -191,12 +193,12 @@ export function Navbar() {
                 ))}
                 {!suggestLoading && recentSearches.length > 0 && searchValue.trim().length < 2 && (
                   <div>
-                    <div className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[#878787] bg-[#F1F3F6] flex items-center justify-between">
+                    <div className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground bg-muted flex items-center justify-between">
                       <span>Recent Searches</span>
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); setRecentSearches([]); localStorage.removeItem(RECENT_SEARCHES_KEY); }}
-                        className="text-[10px] text-[#2874F0] hover:text-[#FF9F00] cursor-pointer"
+                        className="text-[10px] text-primary hover:text-accent cursor-pointer"
                       >
                         Clear
                       </button>
@@ -206,9 +208,10 @@ export function Navbar() {
                         key={i}
                         type="button"
                         onClick={() => selectSuggestion(s)}
-                        className="w-full text-left px-4 py-2 text-sm text-[#212121] hover:bg-[#F1F3F6] flex items-center gap-2 transition-colors cursor-pointer"
+                        className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted flex items-center gap-2 transition-colors cursor-pointer"
+                        role="option"
                       >
-                        <Clock className="h-3 w-3 text-[#878787]" />
+                        <Clock className="h-3 w-3 text-muted-foreground" aria-hidden="true" />
                         <span>{s}</span>
                       </button>
                     ))}
@@ -221,58 +224,58 @@ export function Navbar() {
 
         {/* Right section */}
         <div className="hidden md:flex items-center gap-1">
-          <Link href="/browse" className="flipkart-nav-link px-2">
+          <Link href="/browse" className="text-primary-foreground font-medium text-sm px-2 hover:opacity-80 transition-opacity">
             Browse
           </Link>
 
-          <Link href="/cart" className="relative p-2 text-white hover:opacity-80 transition-opacity">
-            <ShoppingCart className="h-5 w-5" />
+          <Link href="/cart" className="relative p-2 text-primary-foreground hover:opacity-80 transition-opacity" aria-label={`Cart (${cartCount} items)`}>
+            <ShoppingCart className="h-5 w-5" aria-hidden="true" />
             {cartCount > 0 && (
-              <span className="flipkart-badge-count absolute -top-0.5 -right-0.5">{cartCount > 9 ? '9+' : cartCount}</span>
+              <span className="absolute -top-0.5 -right-0.5 bg-brand-red text-white text-[10px] font-bold min-w-[1rem] h-4 rounded-full flex items-center justify-center px-[2px]">{cartCount > 9 ? '9+' : cartCount}</span>
             )}
           </Link>
 
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-1.5 text-white hover:opacity-80 transition-opacity px-2 cursor-pointer">
+                <button className="flex items-center gap-1.5 text-primary-foreground hover:opacity-80 transition-opacity px-2 cursor-pointer" aria-label={`Account menu for ${user.name || 'user'}`}>
                   <div className="h-7 w-7 rounded-full bg-white/20 flex items-center justify-center">
-                    <span className="text-xs font-bold text-white">{user.name?.charAt(0).toUpperCase() || 'U'}</span>
+                    <span className="text-xs font-bold text-primary-foreground">{user.name?.charAt(0).toUpperCase() || 'U'}</span>
                   </div>
                   <span className="text-sm font-medium max-w-[80px] truncate hidden lg:block">{user.name}</span>
-                  <ChevronDown className="h-3.5 w-3.5" />
+                  <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-52 bg-white border border-[#F0F0F0] rounded-sm shadow-lg text-[#212121]">
-                <DropdownMenuItem asChild className="focus:bg-[#F1F3F6] cursor-pointer">
-                  <Link href="/account"><User className="h-4 w-4 mr-2 text-[#2874F0]" /> Profile</Link>
+              <DropdownMenuContent align="end" className="w-52 bg-popover border border-border rounded-sm shadow-lg text-popover-foreground">
+                <DropdownMenuItem asChild className="focus:bg-muted cursor-pointer">
+                  <Link href="/account"><User className="h-4 w-4 mr-2 text-primary" aria-hidden="true" /> Profile</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="focus:bg-[#F1F3F6] cursor-pointer">
-                  <Link href="/account/orders"><Package className="h-4 w-4 mr-2 text-[#2874F0]" /> Orders</Link>
+                <DropdownMenuItem asChild className="focus:bg-muted cursor-pointer">
+                  <Link href="/account/orders"><Package className="h-4 w-4 mr-2 text-primary" aria-hidden="true" /> Orders</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="focus:bg-[#F1F3F6] cursor-pointer">
-                  <Link href="/account/wishlist"><Heart className="h-4 w-4 mr-2 text-[#FF9F00]" /> Wishlist</Link>
+                <DropdownMenuItem asChild className="focus:bg-muted cursor-pointer">
+                  <Link href="/account/wishlist"><Heart className="h-4 w-4 mr-2 text-accent" aria-hidden="true" /> Wishlist</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="focus:bg-[#F1F3F6] cursor-pointer">
-                  <Link href="/account/settings"><Settings className="h-4 w-4 mr-2 text-[#878787]" /> Settings</Link>
+                <DropdownMenuItem asChild className="focus:bg-muted cursor-pointer">
+                  <Link href="/account/settings"><Settings className="h-4 w-4 mr-2 text-muted-foreground" aria-hidden="true" /> Settings</Link>
                 </DropdownMenuItem>
                 {(user.isSeller || user.role === 'ADMIN') && (
                   <>
-                    <DropdownMenuSeparator className="bg-[#F0F0F0]" />
-                    <DropdownMenuItem asChild className="focus:bg-[#F1F3F6] cursor-pointer">
-                      <Link href="/seller"><Briefcase className="h-4 w-4 mr-2 text-[#2874F0]" /> Seller Dashboard</Link>
+                    <DropdownMenuSeparator className="bg-border" />
+                    <DropdownMenuItem asChild className="focus:bg-muted cursor-pointer">
+                      <Link href="/seller"><Briefcase className="h-4 w-4 mr-2 text-primary" aria-hidden="true" /> Seller Dashboard</Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild className="focus:bg-[#F1F3F6] cursor-pointer">
-                      <Link href="/seller/prompts"><List className="h-4 w-4 mr-2" /> My Prompts</Link>
+                    <DropdownMenuItem asChild className="focus:bg-muted cursor-pointer">
+                      <Link href="/seller/prompts"><List className="h-4 w-4 mr-2" aria-hidden="true" /> My Prompts</Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild className="focus:bg-[#F1F3F6] cursor-pointer">
-                      <Link href="/seller/upload"><PlusCircle className="h-4 w-4 mr-2 text-[#FF9F00]" /> Sell New Prompt</Link>
+                    <DropdownMenuItem asChild className="focus:bg-muted cursor-pointer">
+                      <Link href="/seller/upload"><PlusCircle className="h-4 w-4 mr-2 text-accent" aria-hidden="true" /> Sell New Prompt</Link>
                     </DropdownMenuItem>
                   </>
                 )}
-                <DropdownMenuSeparator className="bg-[#F0F0F0]" />
-                <DropdownMenuItem onClick={handleLogout} className="focus:bg-red-50 text-red-500 cursor-pointer">
-                  <LogOut className="h-4 w-4 mr-2" /> Sign Out
+                <DropdownMenuSeparator className="bg-border" />
+                <DropdownMenuItem onClick={handleLogout} className="focus:bg-red-50 text-destructive cursor-pointer">
+                  <LogOut className="h-4 w-4 mr-2" aria-hidden="true" /> Sign Out
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -280,13 +283,13 @@ export function Navbar() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => { setAuthMode('login'); setShowAuthModal(true); }}
-                className="bg-white text-[#2874F0] font-semibold text-sm px-4 py-1.5 rounded-sm hover:bg-white/90 transition-colors cursor-pointer"
+                className="bg-white text-primary font-semibold text-sm px-4 py-1.5 rounded-sm hover:bg-white/90 transition-colors cursor-pointer"
               >
                 Login
               </button>
               <button
                 onClick={() => { setAuthMode('register'); setShowAuthModal(true); }}
-                className="text-white font-semibold text-sm px-4 py-1.5 rounded-sm border border-white hover:bg-white/10 transition-colors cursor-pointer"
+                className="text-primary-foreground font-semibold text-sm px-4 py-1.5 rounded-sm border border-primary-foreground/50 hover:bg-white/10 transition-colors cursor-pointer"
               >
                 Sign Up
               </button>
@@ -297,40 +300,41 @@ export function Navbar() {
         {/* Mobile menu button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden text-white p-1 cursor-pointer"
-          aria-label="Toggle menu"
+          className="md:hidden text-primary-foreground p-1 cursor-pointer"
+          aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={mobileMenuOpen}
         >
-          {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          {mobileMenuOpen ? <X className="h-6 w-6" aria-hidden="true" /> : <Menu className="h-6 w-6" aria-hidden="true" />}
         </button>
       </div>
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white border-t border-[#F0F0F0] shadow-lg">
+        <div className="md:hidden bg-popover border-t border-border shadow-lg" role="navigation" aria-label="Mobile navigation">
           <div className="px-4 py-3 space-y-1">
-            <Link href="/browse" className="block px-3 py-2 text-sm text-[#212121] hover:bg-[#F1F3F6] rounded-sm" onClick={() => setMobileMenuOpen(false)}>Browse</Link>
-            <Link href="/cart" className="block px-3 py-2 text-sm text-[#212121] hover:bg-[#F1F3F6] rounded-sm flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
-              Cart {cartCount > 0 && <span className="flipkart-badge-count inline-flex">{cartCount}</span>}
+            <Link href="/browse" className="block px-3 py-2 text-sm text-foreground hover:bg-muted rounded-sm" onClick={() => setMobileMenuOpen(false)}>Browse</Link>
+            <Link href="/cart" className="block px-3 py-2 text-sm text-foreground hover:bg-muted rounded-sm flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
+              Cart {cartCount > 0 && <span className="bg-brand-red text-white text-[10px] font-bold min-w-[1rem] h-4 rounded-full flex items-center justify-center px-[2px]">{cartCount}</span>}
             </Link>
-            <Link href="/account/wishlist" className="block px-3 py-2 text-sm text-[#212121] hover:bg-[#F1F3F6] rounded-sm" onClick={() => setMobileMenuOpen(false)}>Wishlist</Link>
+            <Link href="/account/wishlist" className="block px-3 py-2 text-sm text-foreground hover:bg-muted rounded-sm" onClick={() => setMobileMenuOpen(false)}>Wishlist</Link>
             {user ? (
               <>
-                <Link href="/account" className="block px-3 py-2 text-sm text-[#212121] hover:bg-[#F1F3F6] rounded-sm" onClick={() => setMobileMenuOpen(false)}>Profile</Link>
-                <Link href="/account/orders" className="block px-3 py-2 text-sm text-[#212121] hover:bg-[#F1F3F6] rounded-sm" onClick={() => setMobileMenuOpen(false)}>Orders</Link>
+                <Link href="/account" className="block px-3 py-2 text-sm text-foreground hover:bg-muted rounded-sm" onClick={() => setMobileMenuOpen(false)}>Profile</Link>
+                <Link href="/account/orders" className="block px-3 py-2 text-sm text-foreground hover:bg-muted rounded-sm" onClick={() => setMobileMenuOpen(false)}>Orders</Link>
                 {(user.isSeller || user.role === 'ADMIN') && (
                   <>
-                    <Link href="/seller" className="block px-3 py-2 text-sm text-[#2874F0] hover:bg-[#F1F3F6] rounded-sm" onClick={() => setMobileMenuOpen(false)}>Seller Dashboard</Link>
-                    <Link href="/seller/upload" className="block px-3 py-2 text-sm text-[#FF9F00] hover:bg-[#F1F3F6] rounded-sm" onClick={() => setMobileMenuOpen(false)}>Sell New Prompt</Link>
+                    <Link href="/seller" className="block px-3 py-2 text-sm text-primary hover:bg-muted rounded-sm" onClick={() => setMobileMenuOpen(false)}>Seller Dashboard</Link>
+                    <Link href="/seller/upload" className="block px-3 py-2 text-sm text-accent hover:bg-muted rounded-sm" onClick={() => setMobileMenuOpen(false)}>Sell New Prompt</Link>
                   </>
                 )}
-                <button onClick={() => { handleLogout(); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-50 rounded-sm cursor-pointer">Sign Out</button>
+                <button onClick={() => { handleLogout(); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-2 text-sm text-destructive hover:bg-red-50 rounded-sm cursor-pointer">Sign Out</button>
               </>
             ) : (
               <div className="flex gap-2 px-3 pt-2">
                 <button onClick={() => { setAuthMode('login'); setShowAuthModal(true); setMobileMenuOpen(false); }}
-                  className="flex-1 bg-[#2874F0] text-white font-semibold text-sm py-2 rounded-sm cursor-pointer">Login</button>
+                  className="flex-1 bg-primary text-primary-foreground font-semibold text-sm py-2 rounded-sm cursor-pointer">Login</button>
                 <button onClick={() => { setAuthMode('register'); setShowAuthModal(true); setMobileMenuOpen(false); }}
-                  className="flex-1 border border-[#2874F0] text-[#2874F0] font-semibold text-sm py-2 rounded-sm cursor-pointer">Sign Up</button>
+                  className="flex-1 border border-primary text-primary font-semibold text-sm py-2 rounded-sm cursor-pointer">Sign Up</button>
               </div>
             )}
           </div>

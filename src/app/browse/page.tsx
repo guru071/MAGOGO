@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { useStore, formatPrice } from '@/store/marketplace'
+import { useStore, formatPrice, formatAI } from '@/store/marketplace'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -419,7 +419,7 @@ export default function BrowsePage() {
                           </button>
                         </div>
                         <div className="p-3 flex flex-col flex-1">
-                          <p className="text-[10px] font-medium text-[#878787] uppercase tracking-wide mb-1">{prompt.recommendedAI || 'General'}</p>
+                          <p className="text-[10px] font-medium text-[#878787] uppercase tracking-wide mb-1">{formatAI(prompt.recommendedAI)}</p>
                           <h3 className="text-sm font-medium text-[#212121] line-clamp-1 mb-1 group-hover:text-[#2874F0] transition-colors">{prompt.title}</h3>
                           <p className="text-xs text-[#878787] line-clamp-1 mb-2 flex-1">{prompt.description}</p>
                           <div className="flex items-center gap-2 mb-2">

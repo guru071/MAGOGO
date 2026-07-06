@@ -20,8 +20,8 @@ export function BottomNav() {
   if (pathname?.startsWith('/admin')) return null;
 
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-[#F0F0F0] shadow-[0_-2px_8px_rgba(0,0,0,0.06)] pb-safe">
-      <div className="flex items-center justify-around px-2 py-3">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border shadow-[0_-2px_8px_rgba(0,0,0,0.06)] pb-safe" aria-label="Bottom navigation">
+      <div className="flex items-center justify-around px-2 py-2">
         {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== '/' && pathname?.startsWith(item.href))
           const Icon = item.icon
@@ -29,21 +29,23 @@ export function BottomNav() {
             <Link 
               key={item.name} 
               href={item.href}
-              className={`relative flex flex-col items-center justify-center w-full gap-1 transition-colors ${isActive ? 'text-[#2874F0]' : 'text-[#878787]'}`}
+              className={`relative flex flex-col items-center justify-center w-full gap-0.5 transition-colors ${isActive ? 'text-primary' : 'text-muted-foreground'}`}
+              aria-label={item.name}
+              aria-current={isActive ? 'page' : undefined}
             >
               <div className="relative">
-                <Icon className="h-5 w-5" />
+                <Icon className="h-5 w-5" aria-hidden="true" />
                 {item.badge && (
-                  <span className="absolute -top-1.5 -right-2 bg-[#FF6161] text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center">
+                  <span className="absolute -top-1.5 -right-2 bg-brand-red text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center" aria-label={`${item.badge} items`}>
                     {item.badge > 9 ? '9+' : item.badge}
                   </span>
                 )}
               </div>
-              <span className="text-[10px] font-medium">{item.name}</span>
+              <span className={`text-[10px] font-medium ${isActive ? 'font-bold' : ''}`}>{item.name}</span>
             </Link>
           )
         })}
       </div>
-    </div>
+    </nav>
   )
 }

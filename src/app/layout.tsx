@@ -9,7 +9,6 @@ import { Navbar } from "@/components/marketplace/Navbar"
 import { Footer } from "@/components/marketplace/Footer"
 import { AuthModal } from "@/components/marketplace/AuthModal"
 import ChatButton from "@/components/marketplace/ChatButton"
-import { ThemeRenderer } from "@/components/marketplace/ThemeRenderer"
 import { BottomNav } from "@/components/marketplace/BottomNav"
 import { AppInitializer } from "@/components/marketplace/AppInitializer"
 import { usePathname } from "next/navigation"
@@ -66,7 +65,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased selection:bg-neon-pink/30 selection:text-white bg-background text-foreground`}>
         <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
           {/* Animated Universe Background (Conditional) */}
-          <ThemeRenderer />
+
           
           <AppInitializer />
           <main className="min-h-screen relative z-10 flex flex-col">

@@ -42,9 +42,9 @@ export default function InvoicePage() {
   if (error || !order) {
     return (
       <div className="max-w-4xl mx-auto p-8 text-center">
-        <h2 className="text-2xl font-bold text-[#FF9F00] mb-4">Invoice Not Found</h2>
+        <h2 className="text-2xl font-bold text-accent mb-4">Invoice Not Found</h2>
         <p className="text-muted-foreground mb-6">{error}</p>
-        <Button onClick={() => router.push('/')} className="bg-[#2874F0] text-white rounded-sm">Return Home</Button>
+        <Button onClick={() => router.push('/')} className="bg-primary text-primary-foreground rounded-sm cursor-pointer">Return Home</Button>
       </div>
     )
   }
@@ -54,7 +54,7 @@ export default function InvoicePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F1F3F6] py-8 px-4 sm:px-6 lg:px-8 print:bg-white print:p-0">
+    <div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8 print:bg-white print:p-0">
       <div className="max-w-4xl mx-auto">
         
         {/* Controls - Hidden in print */}
@@ -63,7 +63,7 @@ export default function InvoicePage() {
             <ArrowLeft className="h-4 w-4 mr-2" /> Back
           </Button>
           <div className="flex gap-3">
-            <Button onClick={handlePrint} className="bg-[#2874F0] text-white rounded-sm">
+            <Button onClick={handlePrint} className="bg-primary text-primary-foreground rounded-sm cursor-pointer">
               <Printer className="h-4 w-4 mr-2" /> Print Invoice
             </Button>
           </div>
@@ -77,13 +77,13 @@ export default function InvoicePage() {
             <div>
               <h1 className="text-3xl font-black text-foreground tracking-tight">INVOICE</h1>
               <p className="text-muted-foreground mt-2 font-mono">#{order.orderId}</p>
-              <div className="flex items-center gap-2 mt-4 text-[#388E3C] font-medium">
+              <div className="flex items-center gap-2 mt-4 text-brand-green font-medium">
                 <CheckCircle2 className="h-5 w-5" />
                 Payment Successful
               </div>
             </div>
             <div className="text-right">
-              <div className="text-2xl font-black text-[#2874F0] tracking-tighter">MAGHGO</div>
+              <div className="text-2xl font-black text-primary tracking-tighter">MAGHGO</div>
               <p className="text-muted-foreground mt-1 text-sm">123 Marketplace Ave, Suite 100</p>
               <p className="text-muted-foreground text-sm">San Francisco, CA 94107</p>
               <p className="text-muted-foreground text-sm mt-4 font-medium">
@@ -122,16 +122,16 @@ export default function InvoicePage() {
                     <p className="text-sm text-muted-foreground mt-1">Digital Goods - Instant Access</p>
                   </td>
                   <td className="py-5 px-6 text-right font-medium text-foreground">
-                    {formatUSD(order.amount + (order.discountAmt || 0))}
+                    {formatUSD(order.amount)}
                   </td>
                 </tr>
                 {order.couponCode && (
                   <tr>
                     <td className="py-4 px-6 text-muted-foreground">
-                      Discount applied (Coupon: <span className="font-mono bg-muted px-1 py-0.5 rounded text-xs">{order.couponCode}</span>)
+                      Coupon applied: <span className="font-mono bg-muted px-1 py-0.5 rounded text-xs">{order.couponCode}</span>
                     </td>
-                    <td className="py-4 px-6 text-right text-[#FF9F00] font-medium">
-                      -{formatUSD(order.amount * 0)}
+                    <td className="py-4 px-6 text-right text-brand-green font-medium text-xs">
+                      Discount included
                     </td>
                   </tr>
                 )}

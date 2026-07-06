@@ -20,8 +20,8 @@ import Script from 'next/script'
 
 export default function CheckoutPage() {
   const router = useRouter()
-  const { cart, user, selectedCurrency, setSelectedCurrency, createOrder, setShowAuthModal, fetchMe } = useStore()
-  const [paymentMethod, setPaymentMethod] = useState('WALLET')
+  const { cart, user, selectedCurrency, setSelectedCurrency, setShowAuthModal, fetchMe } = useStore()
+  const [paymentMethod, setPaymentMethod] = useState('RAZORPAY')
   const [loading, setLoading] = useState(false)
   const [code, setCode] = useState('')
   const [playStorePackage, setPlayStorePackage] = useState('')
@@ -39,6 +39,21 @@ export default function CheckoutPage() {
     if (!user) { setShowAuthModal(true); return }
     setLoading(true)
     try {
+      const allFree = cart.every(p => p.isFree);
+      if (allFree) {
+        const res = await fetch('/api/orders/free', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ promptIds: cart.map(p => p.id) })
+        });
+        const json = await res.json();
+        if (!json.success) { toast.error(json.error || 'Failed to process free prompts'); setLoading(false); return }
+        toast.success('Free prompt(s) added to your library!')
+        useStore.getState().clearCart()
+        setLoading(false)
+        router.push('/account/orders')
+        return
+      }
       if (paymentMethod === 'PLAY_STORE') {
         if (!playStorePackage || !playStoreProductId || !playStorePurchaseToken) {
           toast.error('Please fill in all Play Store purchase details')
@@ -58,8 +73,8 @@ export default function CheckoutPage() {
         if (!json.success) { toast.error(json.error || 'Play Store verification failed'); setLoading(false); return }
         toast.success('Play Store purchase verified! Prompt unlocked.')
         useStore.getState().clearCart()
-        router.push('/account/orders')
         setLoading(false)
+        router.push('/account/orders')
         return
       }
       if (paymentMethod === 'RAZORPAY') {
@@ -76,7 +91,7 @@ export default function CheckoutPage() {
 
         const options = {
           key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-          amount: Math.round(rzJson.amount * 100),
+          amount: rzJson.amount,
           currency: 'INR',
           name: 'MAGHGO',
           description: 'Prompt Purchase',
@@ -108,7 +123,7 @@ export default function CheckoutPage() {
             email: user.email || '',
             vpa: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.startsWith('rzp_test_') ? 'success@razorpay' : undefined
           },
-          theme: { color: '#2874F0' },
+          theme: { color: '#2874F0' }, // brand primary, can't use CSS var here
           modal: {
             ondismiss: function() {
               disableRazorpayProtections();
@@ -127,12 +142,7 @@ export default function CheckoutPage() {
         return;
       }
 
-      // Default wallet/other methods
-      for (const prompt of cart) {
-        await createOrder(prompt.id, paymentMethod, code || undefined, selectedCurrency)
-      }
-      toast.success('Order placed successfully!')
-      router.push('/account/orders')
+      toast.error('Select a payment method')
     } catch (err: any) {
       toast.error(err.message || 'Checkout failed')
       setLoading(false)
@@ -141,12 +151,12 @@ export default function CheckoutPage() {
 
   if (cart.length === 0) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-20 text-center relative z-10">
-        <ShoppingBag className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+      <div className="max-w-4xl mx-auto px-4 py-20 text-center">
+        <ShoppingBag className="h-16 w-16 text-muted-foreground mx-auto mb-4" aria-hidden="true" />
         <h2 className="text-2xl font-bold text-foreground">Nothing to checkout</h2>
         <p className="text-muted-foreground mt-2 mb-6">Add items to your cart first</p>
         <Link href="/browse">
-          <Button className="bg-[#2874F0] text-white rounded-sm font-bold">
+          <Button className="bg-primary text-primary-foreground rounded-sm font-bold cursor-pointer">
             Browse Prompts
           </Button>
         </Link>
@@ -155,20 +165,20 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 relative z-10">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="beforeInteractive" />
       <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground mb-6">Checkout</h1>
 
       <div className="grid lg:grid-cols-5 gap-6">
         <div className="lg:col-span-3 space-y-6">
           <Card className="p-6 bg-card border-border rounded-sm">
-            <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
-              <CreditCard className="h-5 w-5 text-[#2874F0]" /> Payment Method
-            </h3>
+            <h2 className="font-bold text-foreground mb-4 flex items-center gap-2">
+              <CreditCard className="h-5 w-5 text-primary" aria-hidden="true" /> Payment Method
+            </h2>
             <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-3">
               {PAYMENT_METHODS.map(m => (
-                <div key={m.value} className={`flex items-center space-x-3 border rounded-sm p-3 transition-colors ${paymentMethod === m.value ? 'border-[#2874F0] bg-[#2874F0]/5' : 'border-border '}`}>
-                  <RadioGroupItem value={m.value} id={m.value} className={paymentMethod === m.value ? 'border-[#2874F0] text-[#2874F0]' : 'border-input'} />
+                <div key={m.value} className={`flex items-center space-x-3 border rounded-sm p-3 transition-colors ${paymentMethod === m.value ? 'border-primary bg-primary/5' : 'border-border'}`}>
+                  <RadioGroupItem value={m.value} id={m.value} className={paymentMethod === m.value ? 'border-primary text-primary' : 'border-input'} />
                   <Label htmlFor={m.value} className="flex-1 cursor-pointer">
                     <span className="text-sm font-medium text-foreground">{m.label}</span>
                     <p className="text-xs text-muted-foreground">{m.desc}</p>
@@ -180,20 +190,20 @@ export default function CheckoutPage() {
             {paymentMethod === 'PLAY_STORE' && (
               <div className="mt-4 space-y-3 border-t pt-4 border-border">
                 <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                  <Smartphone className="h-4 w-4 text-[#388E3C]" /> Play Store Purchase Details
+                  <Smartphone className="h-4 w-4 text-brand-green" aria-hidden="true" /> Play Store Purchase Details
                 </div>
-                <Input placeholder="Package Name (e.g. com.example.app)" value={playStorePackage} onChange={e => setPlayStorePackage(e.target.value)} />
-                <Input placeholder="Product ID (e.g. prompt_01)" value={playStoreProductId} onChange={e => setPlayStoreProductId(e.target.value)} />
-                <Input placeholder="Purchase Token from Play Billing" value={playStorePurchaseToken} onChange={e => setPlayStorePurchaseToken(e.target.value)} />
-                <p className="text-xs text-muted-foreground">Enter the purchase token received from the Google Play Billing library after a successful in-app purchase.</p>
+                <Input placeholder="Package Name (e.g. com.example.app)" value={playStorePackage} onChange={e => setPlayStorePackage(e.target.value)} aria-label="Package Name" />
+                <Input placeholder="Product ID (e.g. prompt_01)" value={playStoreProductId} onChange={e => setPlayStoreProductId(e.target.value)} aria-label="Product ID" />
+                <Input placeholder="Purchase Token from Play Billing" value={playStorePurchaseToken} onChange={e => setPlayStorePurchaseToken(e.target.value)} aria-label="Purchase Token" />
+                <p className="text-xs text-muted-foreground" role="note">Enter the purchase token received from the Google Play Billing library after a successful in-app purchase.</p>
               </div>
             )}
           </Card>
 
           <Card className="p-6 bg-card border-border rounded-sm">
-            <h3 className="font-bold text-foreground mb-3">Currency</h3>
+            <h2 className="font-bold text-foreground mb-3">Currency</h2>
             <Select value={selectedCurrency} onValueChange={setSelectedCurrency}>
-              <SelectTrigger className="w-full bg-card border-input text-foreground">
+              <SelectTrigger className="w-full bg-card border-input text-foreground" aria-label="Select currency">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-card border-border text-foreground">
@@ -203,11 +213,22 @@ export default function CheckoutPage() {
               </SelectContent>
             </Select>
           </Card>
+
+          <Card className="p-6 bg-card border-border rounded-sm">
+            <h2 className="font-bold text-foreground mb-3">Coupon Code</h2>
+            <Input
+              placeholder="Enter coupon code"
+              value={code}
+              onChange={e => setCode(e.target.value.toUpperCase())}
+              aria-label="Coupon code"
+              className="bg-card border-input text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary rounded-sm h-11"
+            />
+          </Card>
         </div>
 
         <div className="lg:col-span-2">
           <Card className="p-6 sticky top-28 bg-card border-border rounded-sm">
-            <h3 className="font-bold text-foreground mb-4">Order Summary</h3>
+            <h2 className="font-bold text-foreground mb-4">Order Summary</h2>
             <div className="space-y-3">
               {cart.map(p => (
                 <div key={p.id} className="flex items-center justify-between text-sm">
@@ -224,21 +245,21 @@ export default function CheckoutPage() {
             </div>
             <Separator className="my-4 bg-border" />
             <div className="flex justify-between font-bold text-foreground text-lg">
-              <span>Total</span><span className="text-[#2874F0]">{formatPrice(grandTotal, selectedCurrency)}</span>
+              <span>Total</span><span className="text-primary">{formatPrice(grandTotal, selectedCurrency)}</span>
             </div>
 
             <Button onClick={handleCheckout} disabled={loading || cart.length === 0}
-              className="w-full mt-6 bg-[#FB641B] hover:bg-[#FB641B]/90 text-white font-extrabold h-12 rounded-sm transition-all">
-              {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              className="w-full mt-6 bg-accent hover:bg-accent/90 text-accent-foreground font-extrabold h-12 rounded-sm transition-all cursor-pointer">
+              {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />}
               {loading ? 'Processing...' : `Pay ${formatPrice(grandTotal, selectedCurrency)}`}
             </Button>
 
             <div className="flex flex-col items-center justify-center gap-2 mt-4 text-[10px] text-muted-foreground font-medium">
               <div className="flex gap-4">
-                <span className="flex items-center gap-1"><ShieldCheck className="h-3.5 w-3.5 text-[#388E3C]" />256-bit Secure</span>
-                <span className="flex items-center gap-1"><Lock className="h-3.5 w-3.5 text-[#2874F0]" />Verified by Razorpay</span>
+                <span className="flex items-center gap-1"><ShieldCheck className="h-3.5 w-3.5 text-brand-green" aria-hidden="true" />256-bit Secure</span>
+                <span className="flex items-center gap-1"><Lock className="h-3.5 w-3.5 text-primary" aria-hidden="true" />Verified by Razorpay</span>
               </div>
-              <span className="flex items-center gap-1"><ShieldCheck className="h-3.5 w-3.5 text-[#FF9F00]" />PCI-DSS Certified</span>
+              <span className="flex items-center gap-1"><ShieldCheck className="h-3.5 w-3.5 text-accent" aria-hidden="true" />PCI-DSS Certified</span>
             </div>
           </Card>
         </div>

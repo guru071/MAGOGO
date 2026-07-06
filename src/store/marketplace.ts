@@ -4,6 +4,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase-client';
 // ── Centralized currency exports (single source of truth) ──
 import { CURRENCIES, formatAmount, updateRates } from '@/lib/currencies';
 export { CURRENCIES, getCurrency, getSymbol, getRate, formatAmount, formatUSD, getINRRate, getFallbackRates, updateRates } from '@/lib/currencies';
+export { formatAI } from '@/lib/format';
 export type { Currency } from '@/lib/currencies';
 
 export const ALL_AI_TOOLS = [
@@ -129,7 +130,6 @@ interface Store {
   fetchWishlist: () => Promise<void>;
   toggleWishlist: (promptId: string) => Promise<boolean>;
   fetchOrders: (type?: string) => Promise<void>;
-  createOrder: (promptId: string, paymentMethod: string, couponCode?: string, currency?: string) => Promise<boolean>;
   signInWithGoogle: () => Promise<void>;
   themeStyle: 'normal' | 'universe';
   setThemeStyle: (style: 'normal' | 'universe') => void;
@@ -376,14 +376,6 @@ export const useStore = create<Store>((set, get) => ({
   fetchOrders: async (type = 'bought') => {
     if (!get().user) return;
     try { const data = await api(`/api/orders?type=${type}`); set({ orders: data }); } catch (e) { console.error('[store] fetchOrders:', e); }
-  },
-  createOrder: async (promptId, paymentMethod, couponCode, currency) => {
-    if (!get().user) { set({ showAuthModal: true }); return false; }
-    try {
-      await api('/api/orders', { method: 'POST', body: JSON.stringify({ promptId, paymentMethod, couponCode, currency: currency || get().selectedCurrency }) });
-      get().removeFromCart(promptId);
-      return true;
-    } catch (e) { console.error('[store] createOrder:', e); return false; }
   },
   fetchAdminStats: async () => {
     if (!get().user) return;

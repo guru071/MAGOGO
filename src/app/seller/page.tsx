@@ -59,7 +59,7 @@ const DOW_COLORS = ['#2874F0', '#FF9F00', '#388E3C', '#FB641B', '#7B1FA2', '#06B
 function ChangeBadge({ value, label }: { value: number; label: string }) {
   const isPositive = value >= 0;
   return (
-    <Badge className={`${isPositive ? 'bg-[#388E3C]/10 text-[#388E3C] border border-[#388E3C]/20' : 'bg-[#E53935]/10 text-[#E53935] border border-[#E53935]/20'} text-[10px] ml-1`}>
+    <Badge className={`${isPositive ? 'bg-brand-green/10 text-brand-green border border-brand-green/20' : 'bg-destructive/10 text-destructive border border-destructive/20'} text-[10px] ml-1`}>
       {isPositive ? <ArrowUpRight className="h-3 w-3 mr-0.5" /> : <ArrowDownRight className="h-3 w-3 mr-0.5" />}
       {Math.abs(value).toFixed(1)}% {label}
     </Badge>
@@ -88,10 +88,10 @@ export default function SellerDashboardPage() {
 
   if (!user) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-20 text-center mt-12 relative z-10">
+      <div className="max-w-4xl mx-auto px-4 py-20 text-center mt-12">
         <div className="bg-card border-border rounded-sm p-8">
           <h2 className="text-2xl font-bold text-foreground">Sign in to access seller dashboard</h2>
-          <Button className="mt-6 bg-[#2874F0] hover:bg-[#2874F0]/90 text-white font-bold h-12 px-8 rounded-sm transition-all" onClick={() => useStore.getState().setShowAuthModal(true)}>Sign In</Button>
+          <Button className="mt-6 bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-12 px-8 rounded-sm transition-all cursor-pointer" onClick={() => useStore.getState().setShowAuthModal(true)}>Sign In</Button>
         </div>
       </div>
     )
@@ -133,7 +133,7 @@ export default function SellerDashboardPage() {
       label: 'Net Revenue',
       value: formatPrice(a?.totalRevenue || totalEarnings, selectedCurrency),
       icon: DollarSign,
-      color: 'text-[#388E3C]',
+      color: 'text-brand-green',
       sub: a ? `${formatPrice(a.totalRevenue || 0, selectedCurrency)}` : undefined,
       badge: periodComparison.revenueChange !== undefined ? <ChangeBadge value={periodComparison.revenueChange} label="vs prev period" /> : null,
     },
@@ -141,7 +141,7 @@ export default function SellerDashboardPage() {
       label: 'Units Sold',
       value: String(a?.totalSales || totalSales),
       icon: ShoppingBag,
-      color: 'text-[#FF9F00]',
+      color: 'text-accent',
       sub: undefined,
       badge: periodComparison.salesChange !== undefined ? <ChangeBadge value={periodComparison.salesChange} label="vs prev period" /> : null,
     },
@@ -149,7 +149,7 @@ export default function SellerDashboardPage() {
       label: 'Impressions',
       value: String(a?.totalViews || totalViews),
       icon: Eye,
-      color: 'text-[#FF9F00]',
+      color: 'text-accent',
       sub: `${convRate}% conv.`,
       badge: null,
     },
@@ -157,7 +157,7 @@ export default function SellerDashboardPage() {
       label: 'Avg. Rating',
       value: a?.avgRating ? `${a.avgRating}/5` : 'N/A',
       icon: Star,
-      color: 'text-[#FF9F00]',
+      color: 'text-accent',
       sub: `${a?.promptsCount || activeListings} listings`,
       badge: a?.repeatBuyerRate !== undefined ? (
         <Badge className="bg-purple-500/10 text-purple-400 border border-purple-500/20 text-[10px] ml-1">
@@ -168,8 +168,8 @@ export default function SellerDashboardPage() {
     },
   ]
 
-  if (loading) {
-    return <div className="max-w-6xl mx-auto px-4 py-20 text-center relative z-10"><Loader2 className="h-8 w-8 animate-spin text-[#2874F0] mx-auto" /></div>
+    if (loading) {
+    return <div className="max-w-6xl mx-auto px-4 py-20 text-center"><Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" /></div>
   }
 
   return (
@@ -178,7 +178,7 @@ export default function SellerDashboardPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <span className="font-extrabold tracking-tight text-foreground">MAGHGO</span>
-            <Badge variant="secondary" className="bg-[#FF9F00]/10 text-[#FF9F00] hover:bg-[#FF9F00]/20 border-0 text-[10px] uppercase font-bold tracking-wider rounded-sm">Seller Central</Badge>
+            <Badge variant="secondary" className="bg-accent/10 text-accent hover:bg-accent/20 border-0 text-[10px] uppercase font-bold tracking-wider rounded-sm">Seller Central</Badge>
           </div>
           <div className="flex items-center gap-4 text-sm font-medium">
             <span className="text-muted-foreground hidden sm:inline">Store: {user.name}</span>
@@ -189,7 +189,7 @@ export default function SellerDashboardPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 grid lg:grid-cols-12 gap-8">
         {/* Sidebar */}
         <div className="lg:col-span-3 space-y-2">
-          <Button variant="ghost" className="w-full justify-start bg-card border border-[#2874F0]/30 text-[#2874F0] font-bold rounded-sm">
+          <Button variant="ghost" className="w-full justify-start bg-card border border-primary/30 text-primary font-bold rounded-sm">
             <BarChart3 className="h-4 w-4 mr-3" /> Dashboard
           </Button>
           <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:bg-muted hover:text-foreground rounded-sm" asChild>
@@ -198,11 +198,6 @@ export default function SellerDashboardPage() {
           <Link href="/seller/payouts">
             <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:bg-muted hover:text-foreground rounded-sm">
               <Wallet className="h-4 w-4 mr-3" /> Payouts
-            </Button>
-          </Link>
-          <Link href="/seller/wallet">
-            <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:bg-muted hover:text-foreground rounded-sm">
-              <Wallet className="h-4 w-4 mr-3" /> Wallet
             </Button>
           </Link>
         </div>
@@ -215,7 +210,7 @@ export default function SellerDashboardPage() {
               <p className="text-muted-foreground text-sm mt-1">Business intelligence for your store.</p>
             </div>
             <Link href="/seller/upload">
-              <Button className="bg-[#FF9F00] hover:bg-[#FF9F00]/90 text-white font-bold h-11 px-6 rounded-sm">
+              <Button className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold h-11 px-6 rounded-sm cursor-pointer">
                 <Plus className="h-5 w-5 mr-2" /> New Product
               </Button>
             </Link>
@@ -272,11 +267,11 @@ export default function SellerDashboardPage() {
                         <stop offset="95%" stopColor="#2874F0" stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
-                    <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#878787' }} interval={Math.max(1, Math.floor(chartData.length / 8))} />
-                    <YAxis tick={{ fontSize: 10, fill: '#878787' }} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} interval={Math.max(1, Math.floor(chartData.length / 8))} />
+                    <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} />
                     <RTooltip
-                      contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #F0F0F0', backgroundColor: '#fff', color: '#212121' }}
+                      contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--foreground))' }}
                       formatter={(value: number, name: string) => {
                         if (name === 'revenue') return [formatPrice(value, selectedCurrency), 'Revenue'];
                         if (name === 'predicted') return [formatPrice(value, selectedCurrency), 'Forecast'];
@@ -286,10 +281,10 @@ export default function SellerDashboardPage() {
                       }}
                     />
                     <Legend iconType="rect" fontSize={11} />
-                    <Bar dataKey="revenue" fill="#388E3C" name="revenue" radius={[3, 3, 0, 0]} maxBarSize={20} />
-                    <Line dataKey="predicted" stroke="#2874F0" strokeWidth={2} strokeDasharray="6 3" name="predicted" dot={false} connectNulls />
-                    <Area type="monotone" dataKey="upperBound" fill="#2874F0" fillOpacity={0.06} stroke="none" name="upperBound" connectNulls />
-                    <Area type="monotone" dataKey="lowerBound" fill="#2874F0" fillOpacity={0.06} stroke="none" name="lowerBound" connectNulls />
+                    <Bar dataKey="revenue" fill="var(--color-brand-green)" name="revenue" radius={[3, 3, 0, 0]} maxBarSize={20} />
+                    <Line dataKey="predicted" stroke="var(--color-brand-blue)" strokeWidth={2} strokeDasharray="6 3" name="predicted" dot={false} connectNulls />
+                    <Area type="monotone" dataKey="upperBound" fill="var(--color-brand-blue)" fillOpacity={0.06} stroke="none" name="upperBound" connectNulls />
+                    <Area type="monotone" dataKey="lowerBound" fill="var(--color-brand-blue)" fillOpacity={0.06} stroke="none" name="lowerBound" connectNulls />
                   </ComposedChart>
                 </ResponsiveContainer>
               )}
@@ -298,11 +293,11 @@ export default function SellerDashboardPage() {
 
           {/* Anomaly Alerts */}
           {anomalies.length > 0 && (
-            <Card className="bg-card border-[#FF9F00]/30 rounded-sm overflow-hidden">
-              <div className="p-4 border-b border-[#FF9F00]/20 bg-[#FF9F00]/5 flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-[#FF9F00]" />
+            <Card className="bg-card border-accent/30 rounded-sm overflow-hidden">
+              <div className="p-4 border-b border-accent/20 bg-accent/5 flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-accent" />
                 <h2 className="font-bold text-foreground text-sm">Anomaly Alerts — Unusual Sales Activity Detected</h2>
-                <Badge className="bg-[#FF9F00]/10 text-[#FF9F00] border border-[#FF9F00]/20 ml-auto">{anomalies.length} anomaly(ies)</Badge>
+                <Badge className="bg-accent/10 text-accent border border-accent/20 ml-auto">{anomalies.length} anomaly(ies)</Badge>
               </div>
               <div className="p-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
                 {anomalies.map((an: Anomaly, i: number) => (
@@ -310,8 +305,8 @@ export default function SellerDashboardPage() {
                     <p className="text-xs text-muted-foreground">{an.date}</p>
                     <p className="font-bold text-foreground text-lg">{formatPrice(an.revenue, selectedCurrency)}</p>
                     <div className="flex items-center gap-1 mt-1">
-                      <Zap className="h-3 w-3 text-[#FF9F00]" />
-                      <span className="text-[10px] text-[#FF9F00] font-medium">Z-score: {an.zScore}</span>
+                      <Zap className="h-3 w-3 text-accent" />
+                      <span className="text-[10px] text-accent font-medium">Z-score: {an.zScore}</span>
                     </div>
                   </div>
                 ))}
@@ -356,7 +351,7 @@ export default function SellerDashboardPage() {
 
             <Card className="bg-card border-border rounded-sm overflow-hidden">
               <div className="p-5 border-b border-border bg-muted">
-                <h2 className="font-bold text-foreground flex items-center gap-2"><Activity className="h-5 w-5 text-[#388E3C]" /> Sales Velocity</h2>
+                <h2 className="font-bold text-foreground flex items-center gap-2"><Activity className="h-5 w-5 text-brand-green" /> Sales Velocity</h2>
               </div>
               <div className="p-5">
                 {salesVelocity.avgDaysToFirstSale !== null && salesVelocity.avgDaysToFirstSale !== undefined ? (
@@ -389,23 +384,23 @@ export default function SellerDashboardPage() {
           <div className="grid lg:grid-cols-2 gap-4">
             <Card className="bg-card border-border rounded-sm overflow-hidden">
               <div className="p-6 border-b border-border bg-muted">
-                <h2 className="font-bold text-foreground flex items-center gap-2"><Sparkles className="h-5 w-5 text-[#2874F0]"/> Top Performing Prompts</h2>
+                <h2 className="font-bold text-foreground flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary"/> Top Performing Prompts</h2>
               </div>
               <div className="p-6">
                 {topPrompts.length === 0 ? (
                   <div className="text-center py-8">
                     <ShoppingBag className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
                     <p className="text-muted-foreground text-sm">No prompts yet</p>
-                    <Link href="/seller/upload"><Button className="mt-4 bg-[#2874F0] text-white text-sm h-9 font-bold rounded-sm">Create Listing</Button></Link>
+                    <Link href="/seller/upload"><Button className="mt-4 bg-primary text-primary-foreground text-sm h-9 font-bold rounded-sm cursor-pointer">Create Listing</Button></Link>
                   </div>
                 ) : (
                   <div className="space-y-3">
                     {topPrompts.slice(0, 5).map((p, i: number) => (
-                      <div key={p.id} className="flex items-center justify-between p-3 rounded-sm bg-card border-border hover:border-[#2874F0]/20 hover:bg-muted transition-all">
+                      <div key={p.id} className="flex items-center justify-between p-3 rounded-sm bg-card border-border hover:border-primary/20 hover:bg-muted transition-all">
                         <div className="flex items-center gap-3 min-w-0 flex-1">
                           <span className="text-xs font-mono text-muted-foreground w-5">{i + 1}</span>
                           <div className="h-10 w-10 rounded-sm bg-muted border-border flex items-center justify-center shrink-0">
-                            <Sparkles className="h-5 w-5 text-[#2874F0]/50" />
+                            <Sparkles className="h-5 w-5 text-primary/50" />
                           </div>
                           <div className="min-w-0">
                             <p className="font-bold text-sm text-foreground truncate">{p.title}</p>
@@ -415,11 +410,11 @@ export default function SellerDashboardPage() {
                               <span><Eye className="h-3 w-3 inline mr-0.5"/>{(p as any).views || (p as any).viewCount || 0}</span>
                               <span>·</span>
                               <span><ShoppingBag className="h-3 w-3 inline mr-0.5"/>{(p as any).downloads || (p as any).downloadCount || 0}</span>
-                              {p.rating > 0 && <><span>·</span><span><Star className="h-3 w-3 inline mr-0.5 text-[#FF9F00]"/>{p.rating}</span></>}
+                              {p.rating > 0 && <><span>·</span><span><Star className="h-3 w-3 inline mr-0.5 text-accent"/>{p.rating}</span></>}
                             </div>
                           </div>
                         </div>
-                        <Badge variant="outline" className={`text-[10px] uppercase shrink-0 ${p.status === 'APPROVED' ? 'text-[#388E3C] border-[#388E3C]/20 bg-[#388E3C]/10' : 'text-[#FF9F00] border-[#FF9F00]/20 bg-[#FF9F00]/10'}`}>
+                        <Badge variant="outline" className={`text-[10px] uppercase shrink-0 ${p.status === 'APPROVED' ? 'text-brand-green border-brand-green/20 bg-brand-green/10' : 'text-accent border-accent/20 bg-accent/10'}`}>
                           {p.status}
                         </Badge>
                       </div>
@@ -431,7 +426,7 @@ export default function SellerDashboardPage() {
 
             <Card className="bg-card border-border rounded-sm overflow-hidden">
               <div className="p-6 border-b border-border bg-muted">
-                <h2 className="font-bold text-foreground flex items-center gap-2"><Wallet className="h-5 w-5 text-[#388E3C]" /> Revenue Breakdown</h2>
+                <h2 className="font-bold text-foreground flex items-center gap-2"><Wallet className="h-5 w-5 text-brand-green" /> Revenue Breakdown</h2>
               </div>
               <div className="p-6">
                 {paymentMethods.length === 0 ? (
@@ -443,7 +438,7 @@ export default function SellerDashboardPage() {
                         <Pie data={paymentMethods} dataKey="revenue" nameKey="method" cx="50%" cy="50%" outerRadius={50} innerRadius={30}>
                           {paymentMethods.map((_: PaymentMethod, i: number) => <Cell key={i} fill={DOW_COLORS[i % DOW_COLORS.length]} />)}
                         </Pie>
-                        <RTooltip contentStyle={{ borderRadius: 8, border: '1px solid #F0F0F0', backgroundColor: '#fff', color: '#212121' }} />
+                        <RTooltip contentStyle={{ borderRadius: 8, border: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--foreground))' }} />
                       </PieChart>
                     </ResponsiveContainer>
                     {paymentMethods.map((pm: PaymentMethod) => (
@@ -451,7 +446,7 @@ export default function SellerDashboardPage() {
                         <span className="font-bold text-foreground">{pm.method}</span>
                         <div className="flex items-center gap-3">
                           <span className="text-xs text-muted-foreground">{pm.count} sales</span>
-                          <span className="font-bold text-[#388E3C]">{formatPrice(pm.revenue, selectedCurrency)}</span>
+                          <span className="font-bold text-brand-green">{formatPrice(pm.revenue, selectedCurrency)}</span>
                         </div>
                       </div>
                     ))}
@@ -466,7 +461,7 @@ export default function SellerDashboardPage() {
             <Card className="bg-card border-border rounded-sm overflow-hidden">
               <div className="p-6 border-b border-border bg-muted flex items-center justify-between">
                 <h2 className="font-bold text-foreground flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5 text-[#2874F0]" /> Product Performance Heatmap
+                  <BarChart3 className="h-5 w-5 text-primary" /> Product Performance Heatmap
                 </h2>
                 <Badge className="bg-muted text-muted-foreground border-border">{productHeatmap.length} products</Badge>
               </div>
@@ -493,11 +488,11 @@ export default function SellerDashboardPage() {
                           <td className="p-3 text-right text-muted-foreground">{promptData ? formatPrice(promptData.price, selectedCurrency) : '-'}</td>
                           <td className="p-3 text-right text-muted-foreground">{promptData?.viewCount || 0}</td>
                           <td className="p-3 text-right text-muted-foreground">{promptData?.downloadCount || 0}</td>
-                          <td className="p-3 text-right font-bold text-[#388E3C]">{formatPrice(ph.totalRevenue, selectedCurrency)}</td>
+                          <td className="p-3 text-right font-bold text-brand-green">{formatPrice(ph.totalRevenue, selectedCurrency)}</td>
                           <td className="p-3 text-right">
                             {promptData && promptData.rating > 0 ? (
                               <span className="flex items-center justify-end gap-1">
-                                <Star className="h-3 w-3 text-[#FF9F00]" />
+                                <Star className="h-3 w-3 text-accent" />
                                 <span className="text-foreground">{promptData.rating}</span>
                               </span>
                             ) : <span className="text-muted-foreground">-</span>}
@@ -534,7 +529,7 @@ export default function SellerDashboardPage() {
           {pricingInsights.length > 0 && (
             <Card className="bg-card border-border rounded-sm overflow-hidden">
               <div className="p-6 border-b border-border bg-muted flex items-center gap-2">
-                <Target className="h-5 w-5 text-[#FF9F00]" />
+                <Target className="h-5 w-5 text-accent" />
                 <h2 className="font-bold text-foreground">Pricing Optimization Insights</h2>
               </div>
               <div className="overflow-x-auto">
@@ -557,7 +552,7 @@ export default function SellerDashboardPage() {
                         <td className="p-3 text-right text-muted-foreground">{pi.categoryAvg > 0 ? formatPrice(pi.categoryAvg, selectedCurrency) : 'N/A'}</td>
                         <td className="p-3 text-right">
                           {pi.suggestedPrice !== pi.currentPrice ? (
-                            <span className="font-bold text-[#2874F0]">{formatPrice(pi.suggestedPrice, selectedCurrency)}</span>
+                            <span className="font-bold text-primary">{formatPrice(pi.suggestedPrice, selectedCurrency)}</span>
                           ) : (
                             <span className="text-muted-foreground">{formatPrice(pi.suggestedPrice, selectedCurrency)}</span>
                           )}
@@ -565,7 +560,7 @@ export default function SellerDashboardPage() {
                         <td className="p-3 text-right text-muted-foreground">{pi.downloads}</td>
                         <td className="p-3 text-right">
                           {pi.potentialRevenueUplift > 0 ? (
-                            <span className="font-bold text-[#388E3C]">+{formatPrice(pi.potentialRevenueUplift, selectedCurrency)}</span>
+                            <span className="font-bold text-brand-green">+{formatPrice(pi.potentialRevenueUplift, selectedCurrency)}</span>
                           ) : (
                             <span className="text-muted-foreground text-[11px]">Optimized</span>
                           )}
@@ -598,11 +593,11 @@ export default function SellerDashboardPage() {
 
           {/* Refund / Cancellation Breakdown */}
           {refundBreakdown.length > 0 && (
-            <Card className="bg-card border-[#FF9F00]/30 rounded-sm overflow-hidden">
-              <div className="p-6 border-b border-[#FF9F00]/20 bg-[#FF9F00]/5 flex items-center gap-2">
-                <TrendingDown className="h-5 w-5 text-[#FF9F00]" />
+            <Card className="bg-card border-accent/30 rounded-sm overflow-hidden">
+              <div className="p-6 border-b border-accent/20 bg-accent/5 flex items-center gap-2">
+                <TrendingDown className="h-5 w-5 text-accent" />
                 <h2 className="font-bold text-foreground">Refund & Cancellation Breakdown</h2>
-                <Badge className="bg-[#FF9F00]/10 text-[#FF9F00] border border-[#FF9F00]/20 ml-auto">{a?.refundRate || 0}% rate</Badge>
+                <Badge className="bg-accent/10 text-accent border border-accent/20 ml-auto">{a?.refundRate || 0}% rate</Badge>
               </div>
               <div className="p-6 grid grid-cols-2 lg:grid-cols-4 gap-3">
                 {refundBreakdown.map((rb: RefundBreakdown, i: number) => (
@@ -617,7 +612,7 @@ export default function SellerDashboardPage() {
 
           {/* AI Recommendations */}
           {aiRecs && (
-            <Card className="bg-card border-[#2874F0]/20 rounded-sm overflow-hidden relative">
+            <Card className="bg-card border-primary/20 rounded-sm overflow-hidden relative">
               <div className="relative z-10 p-6 border-b border-border">
                 <h2 className="font-bold text-foreground flex items-center gap-2"><TrendingUp className="h-5 w-5 text-purple-400" /> AI-Powered Market Insights</h2>
                 <p className="text-xs text-muted-foreground mt-1">Trending prompts to inspire your next listing</p>
@@ -625,7 +620,7 @@ export default function SellerDashboardPage() {
               <div className="relative z-10 p-6 grid grid-cols-2 lg:grid-cols-5 gap-3">
                 {Array.isArray(aiRecs) && aiRecs.slice(0, 5).map((rec: AiRec, i: number) => (
                   <div key={i} className="p-3 rounded-sm bg-card border-border text-center hover:bg-muted transition-all">
-                    <p className="text-lg font-black text-[#2874F0]">#{i + 1}</p>
+                    <p className="text-lg font-black text-primary">#{i + 1}</p>
                     <p className="text-xs font-bold text-foreground truncate mt-1">{rec.title || rec.query || 'Trending'}</p>
                     {rec.score && <p className="text-[10px] text-muted-foreground mt-1">Score: {Math.round(rec.score * 100)}%</p>}
                   </div>
@@ -638,11 +633,11 @@ export default function SellerDashboardPage() {
           <Card className="bg-card border-border rounded-sm overflow-hidden">
             <div className="p-5 border-b border-border bg-muted">
               <h2 className="font-bold text-foreground flex items-center gap-2">
-                <Receipt className="h-5 w-5 text-[#2874F0]" /> Recent Orders — Fee Breakdown
+                <Receipt className="h-5 w-5 text-primary" /> Recent Orders — Fee Breakdown
               </h2>
             </div>
             <div className="p-5">
-              {ordersLoading ? <Loader2 className="h-6 w-6 animate-spin mx-auto text-[#2874F0]" /> :
+              {ordersLoading ? <Loader2 className="h-6 w-6 animate-spin mx-auto text-primary" /> :
                recentOrders.length === 0 ? <p className="text-center text-muted-foreground py-8 text-sm">No sales yet</p> :
                <div className="overflow-x-auto">
                  <table className="w-full text-xs">
@@ -655,7 +650,7 @@ export default function SellerDashboardPage() {
                        <th className="pb-2 pr-2 font-bold uppercase tracking-widest text-[10px] text-right">GST</th>
                        <th className="pb-2 pr-2 font-bold uppercase tracking-widest text-[10px] text-right">Closing</th>
                        <th className="pb-2 pr-2 font-bold uppercase tracking-widest text-[10px] text-right">Payment</th>
-                       <th className="pb-2 font-bold uppercase tracking-widest text-[10px] text-right text-[#388E3C]">Net</th>
+                        <th className="pb-2 font-bold uppercase tracking-widest text-[10px] text-right text-brand-green">Net</th>
                      </tr>
                    </thead>
                    <tbody>
@@ -664,11 +659,11 @@ export default function SellerDashboardPage() {
                          <td className="py-2.5 pr-2 font-mono text-[10px] text-muted-foreground">{o.orderId || o.id}</td>
                          <td className="py-2.5 pr-2 max-w-[120px] truncate text-foreground">{o.prompt?.title}</td>
                          <td className="py-2.5 pr-2 text-right font-bold text-foreground">{formatPrice(o.amount || 0, selectedCurrency)}</td>
-                         <td className="py-2.5 pr-2 text-right text-[#FF9F00]">-{formatPrice(o.commissionAmt || 0, selectedCurrency)}</td>
-                         <td className="py-2.5 pr-2 text-right text-[#FF9F00]">-{formatPrice(o.gstAmt || 0, selectedCurrency)}</td>
-                         <td className="py-2.5 pr-2 text-right text-purple-400">-{formatPrice(o.closingFee || 0, selectedCurrency)}</td>
-                         <td className="py-2.5 pr-2 text-right text-[#FF9F00]/70">-{formatPrice(o.paymentFeeAmt || 0, selectedCurrency)}</td>
-                         <td className="py-2.5 text-right font-black text-[#388E3C]">{formatPrice(o.netAmount || 0, selectedCurrency)}</td>
+                          <td className="py-2.5 pr-2 text-right text-accent">-{formatPrice(o.commissionAmt || 0, selectedCurrency)}</td>
+                          <td className="py-2.5 pr-2 text-right text-accent">-{formatPrice(o.gstAmt || 0, selectedCurrency)}</td>
+                          <td className="py-2.5 pr-2 text-right text-purple-400">-{formatPrice(o.closingFee || 0, selectedCurrency)}</td>
+                          <td className="py-2.5 pr-2 text-right text-accent/70">-{formatPrice(o.paymentFeeAmt || 0, selectedCurrency)}</td>
+                          <td className="py-2.5 text-right font-black text-brand-green">{formatPrice(o.netAmount || 0, selectedCurrency)}</td>
                        </tr>
                      ))}
                    </tbody>

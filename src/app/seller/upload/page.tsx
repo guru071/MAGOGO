@@ -36,7 +36,7 @@ export default function UploadPromptPage() {
 
   const handleChange = (field: string, value: any) => setForm(prev => ({ ...prev, [field]: value }))
 
-  const [paymentMethod, setPaymentMethod] = useState<'wallet' | 'razorpay'>('wallet')
+  const [paymentMethod, setPaymentMethod] = useState<'razorpay'>('razorpay')
 
   useEffect(() => {
     fetch('/api/categories')
@@ -209,7 +209,6 @@ export default function UploadPromptPage() {
       }
     }
 
-    // Direct wallet payment or free prompt
     try {
       await submitToAPI(imageUrl)
     } catch (e) {
@@ -221,13 +220,12 @@ export default function UploadPromptPage() {
   }
 
   const needsListingFee = !form.isFree && user?.role !== 'ADMIN' && estimate !== null
-  const hasEnoughWalletBalance = (user?.currentBalance || 0) >= (estimate?.totalFees || 0)
 
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12 relative z-10">
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
-      <Link href="/seller" className="flex items-center gap-1.5 text-sm font-bold text-muted-foreground hover:text-[#2874F0] transition-all mb-6">
-        <ArrowLeft className="h-4 w-4" /> Back to Dashboard
+      <Link href="/seller" className="flex items-center gap-1.5 text-sm font-bold text-muted-foreground hover:text-primary transition-all mb-6">
+        <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Back to Dashboard
       </Link>
 
       <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground mb-8">Upload New Prompt</h1>
@@ -236,15 +234,15 @@ export default function UploadPromptPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <Label htmlFor="title" className="text-foreground ml-1 font-bold">Title</Label>
-            <Input id="title" value={form.title} onChange={e => handleChange('title', e.target.value)} required placeholder="e.g., Ultra-Realistic Portrait Photography" className="mt-1.5 bg-card border-input text-foreground placeholder:text-muted-foreground focus:border-[#2874F0] focus:ring-1 focus:ring-[#2874F0] rounded-sm h-11" />
+            <Input id="title" value={form.title} onChange={e => handleChange('title', e.target.value)} required placeholder="e.g., Ultra-Realistic Portrait Photography" className="mt-1.5 bg-card border-input text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary rounded-sm h-11" />
           </div>
           <div>
             <Label htmlFor="description" className="text-foreground ml-1 font-bold">Description</Label>
-            <Textarea id="description" value={form.description} onChange={e => handleChange('description', e.target.value)} required rows={3} placeholder="Describe what this prompt does..." className="mt-1.5 bg-card border-input text-foreground placeholder:text-muted-foreground focus:border-[#2874F0] focus:ring-1 focus:ring-[#2874F0] rounded-sm" />
+            <Textarea id="description" value={form.description} onChange={e => handleChange('description', e.target.value)} required rows={3} placeholder="Describe what this prompt does..." className="mt-1.5 bg-card border-input text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary rounded-sm" />
           </div>
           <div>
             <Label htmlFor="promptText" className="text-foreground ml-1 font-bold">Prompt Text</Label>
-            <Textarea id="promptText" value={form.promptText} onChange={e => handleChange('promptText', e.target.value)} required rows={5} placeholder="Paste the actual prompt text here..." className="mt-1.5 bg-card border-input text-foreground placeholder:text-muted-foreground focus:border-[#2874F0] focus:ring-1 focus:ring-[#2874F0] rounded-sm font-mono text-sm" />
+            <Textarea id="promptText" value={form.promptText} onChange={e => handleChange('promptText', e.target.value)} required rows={5} placeholder="Paste the actual prompt text here..." className="mt-1.5 bg-card border-input text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary rounded-sm font-mono text-sm" />
           </div>
           <div>
             <Label htmlFor="categoryId" className="text-foreground ml-1 font-bold">Category</Label>
@@ -253,7 +251,7 @@ export default function UploadPromptPage() {
               value={form.categoryId}
               onChange={e => handleChange('categoryId', e.target.value)}
               required
-              className="mt-1.5 flex h-11 w-full rounded-sm border border-input bg-card px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#2874F0] focus-visible:border-[#2874F0] disabled:cursor-not-allowed disabled:opacity-50"
+              className="mt-1.5 flex h-11 w-full rounded-sm border border-input bg-card px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50"
             >
               <option value="" disabled>Select a category</option>
               {categoriesList.map(cat => (
@@ -264,66 +262,46 @@ export default function UploadPromptPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="recommendedAI" className="text-foreground ml-1 font-bold">AI Tool</Label>
-              <Input id="recommendedAI" value={form.recommendedAI} onChange={e => handleChange('recommendedAI', e.target.value)} placeholder="e.g., Midjourney v6" className="mt-1.5 bg-card border-input text-foreground placeholder:text-muted-foreground focus:border-[#2874F0] focus:ring-1 focus:ring-[#2874F0] rounded-sm h-11" />
+              <Input id="recommendedAI" value={form.recommendedAI} onChange={e => handleChange('recommendedAI', e.target.value)} placeholder="e.g., Midjourney v6" className="mt-1.5 bg-card border-input text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary rounded-sm h-11" />
             </div>
             <div>
               <Label htmlFor="tags" className="text-foreground ml-1 font-bold">Tags (comma-separated)</Label>
-              <Input id="tags" value={form.tags} onChange={e => handleChange('tags', e.target.value)} placeholder="photo, portrait, realistic" className="mt-1.5 bg-card border-input text-foreground placeholder:text-muted-foreground focus:border-[#2874F0] focus:ring-1 focus:ring-[#2874F0] rounded-sm h-11" />
+              <Input id="tags" value={form.tags} onChange={e => handleChange('tags', e.target.value)} placeholder="photo, portrait, realistic" className="mt-1.5 bg-card border-input text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary rounded-sm h-11" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="price" className="text-foreground ml-1 font-bold">Price ({getSymbol(selectedCurrency)} {selectedCurrency})</Label>
-              <Input id="price" type="number" min="0" step="0.01" value={form.price} onChange={e => handleChange('price', e.target.value)} disabled={form.isFree} className="mt-1.5 bg-card border-input text-foreground placeholder:text-muted-foreground focus:border-[#2874F0] focus:ring-1 focus:ring-[#2874F0] rounded-sm h-11 disabled:bg-muted" />
+              <Input id="price" type="number" min="0" step="0.01" value={form.price} onChange={e => handleChange('price', e.target.value)} disabled={form.isFree} className="mt-1.5 bg-card border-input text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary rounded-sm h-11 disabled:bg-muted" />
               {!form.isFree && parseFloat(form.price) > 0 && selectedCurrency !== 'USD' && (
                 <p className="text-xs text-muted-foreground mt-1 ml-1">≈ {getSymbol('USD')}{(parseFloat(form.price) / getRate(selectedCurrency)).toFixed(2)} USD</p>
               )}
             </div>
             <div className="flex items-end pb-3">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={form.isFree} onChange={e => handleChange('isFree', e.target.checked)} className="rounded border-input bg-card text-[#2874F0] focus:ring-[#2874F0] w-5 h-5" />
+                <input type="checkbox" checked={form.isFree} onChange={e => handleChange('isFree', e.target.checked)} className="rounded border-input bg-card text-primary focus:ring-primary w-5 h-5" />
                 <span className="text-sm font-bold text-foreground">Free prompt</span>
               </label>
             </div>
           </div>
 
           {needsListingFee && (
-            <div className="p-5 rounded-sm border bg-card border-[#2874F0]/30 relative overflow-hidden">
+            <div className="p-5 rounded-sm border bg-card border-primary/30 relative overflow-hidden">
               <div className="relative z-10">
                 <div className="flex justify-between items-center mb-4">
-                  <span className="text-sm font-bold text-foreground uppercase tracking-widest">Upfront Listing Fee</span>
-                  <span className="text-xl font-black text-[#2874F0]">
+                  <span className="text-sm font-bold text-foreground uppercase tracking-widest">Listing Fee</span>
+                  <span className="text-xl font-black text-primary">
                     {formatPrice(estimate?.totalFees || 0, selectedCurrency)}
                   </span>
                 </div>
-                
-                <div className="space-y-3 mt-4 border-t border-border pt-4">
-                  <p className="text-sm font-bold text-foreground mb-2">Select Payment Method:</p>
-                  
-                  <label className={`flex items-center gap-3 p-4 rounded-sm border cursor-pointer transition-colors ${paymentMethod === 'wallet' ? 'border-[#2874F0] bg-[#2874F0]/5' : 'border-input bg-card'}`}>
-                    <input type="radio" name="paymentMethod" value="wallet" checked={paymentMethod === 'wallet'} onChange={() => setPaymentMethod('wallet')} className="text-[#2874F0] focus:ring-[#2874F0] w-4 h-4 bg-transparent border-input" disabled={!hasEnoughWalletBalance} />
-                    <div className="flex-1">
-                      <div className="text-sm font-bold text-foreground">Pay from Wallet</div>
-                      <div className="text-xs text-muted-foreground font-medium">Current Balance: {formatPrice(user?.currentBalance || 0, selectedCurrency)}</div>
-                    </div>
-                    {!hasEnoughWalletBalance && <span className="text-[10px] uppercase font-bold text-[#E53935] bg-[#E53935]/10 border border-[#E53935]/20 px-2 py-1 rounded-sm">Insufficient</span>}
-                  </label>
-
-                  <label className={`flex items-center gap-3 p-4 rounded-sm border cursor-pointer transition-colors ${paymentMethod === 'razorpay' ? 'border-[#2874F0] bg-[#2874F0]/5' : 'border-input bg-card'}`}>
-                    <input type="radio" name="paymentMethod" value="razorpay" checked={paymentMethod === 'razorpay'} onChange={() => setPaymentMethod('razorpay')} className="text-[#2874F0] focus:ring-[#2874F0] w-4 h-4 bg-transparent border-input" />
-                    <div className="flex-1">
-                      <div className="text-sm font-bold text-foreground">Pay directly with Razorpay</div>
-                      <div className="text-xs text-muted-foreground font-medium">Pay via UPI, Cards, NetBanking</div>
-                    </div>
-                  </label>
-                </div>
+                <p className="text-xs text-muted-foreground mt-2">Pay via Razorpay (UPI, Cards, NetBanking)</p>
               </div>
             </div>
           )}
 
           {user?.role === 'ADMIN' && (
-            <div className="p-3 rounded-sm bg-[#388E3C]/10 border border-[#388E3C]/30">
-              <span className="text-sm font-bold text-[#388E3C]">Admin Bypass: No listing fee required.</span>
+            <div className="p-3 rounded-sm bg-brand-green/10 border border-brand-green/30">
+              <span className="text-sm font-bold text-brand-green">Admin Bypass: No listing fee required.</span>
             </div>
           )}
           <div>
@@ -332,12 +310,12 @@ export default function UploadPromptPage() {
               {imagePreview ? (
                 <div className="relative inline-block">
                   <img src={imagePreview} alt="Preview" className="h-40 w-60 object-cover rounded-sm border border-border shadow-sm" />
-                  <button type="button" onClick={clearImage} className="absolute -top-2 -right-2 h-7 w-7 bg-[#E53935] text-white rounded-full flex items-center justify-center shadow-sm">
+                  <button type="button" onClick={clearImage} className="absolute -top-2 -right-2 h-7 w-7 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center shadow-sm" aria-label="Clear image">
                     <X className="h-3.5 w-3.5" />
                   </button>
                 </div>
               ) : (
-                <label className="flex flex-col items-center justify-center h-32 w-60 border-2 border-dashed border-input bg-card rounded-sm cursor-pointer hover:border-[#2874F0] hover:bg-muted transition-colors">
+                <label className="flex flex-col items-center justify-center h-32 w-60 border-2 border-dashed border-input bg-card rounded-sm cursor-pointer hover:border-primary hover:bg-muted transition-colors">
                   <ImagePlus className="h-8 w-8 text-muted-foreground" />
                   <span className="text-xs font-bold text-muted-foreground mt-2">Click to upload (max 5MB)</span>
                   <input type="file" accept="image/*" onChange={handleImageSelect} className="hidden" />
@@ -347,15 +325,11 @@ export default function UploadPromptPage() {
           </div>
           <Button 
             type="submit" 
-            disabled={
-              loading || 
-              uploadingImage || 
-              (needsListingFee && paymentMethod === 'wallet' && !hasEnoughWalletBalance)
-            } 
-            className="w-full bg-[#2874F0] hover:bg-[#2874F0]/90 text-white font-extrabold h-14 rounded-sm mt-4 transition-all disabled:opacity-50"
+            disabled={loading || uploadingImage} 
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-extrabold h-14 rounded-sm mt-4 transition-all disabled:opacity-50 cursor-pointer"
           >
             {loading && <Loader2 className="h-5 w-5 mr-2 animate-spin" />}
-            <Sparkles className="h-5 w-5 mr-2" /> {needsListingFee && paymentMethod === 'razorpay' ? 'Pay & Submit Prompt' : 'Submit Prompt'}
+            <Sparkles className="h-5 w-5 mr-2" /> {needsListingFee ? 'Pay & Submit Prompt' : 'Submit Prompt'}
           </Button>
         </form>
       </Card>
