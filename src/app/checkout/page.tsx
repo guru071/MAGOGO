@@ -16,7 +16,18 @@ import {
 import { toast } from 'sonner'
 import { Loader2, CreditCard, Lock, ShoppingBag, Smartphone, ShieldCheck } from 'lucide-react'
 import Link from 'next/link'
-import Script from 'next/script'
+
+function loadRazorpayScript(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (typeof window !== 'undefined' && (window as any).Razorpay) { resolve(); return }
+    const script = document.createElement('script')
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+    script.async = true
+    script.onload = () => resolve()
+    script.onerror = () => reject(new Error('Failed to load Razorpay SDK'))
+    document.body.appendChild(script)
+  })
+}
 
 export default function CheckoutPage() {
   const router = useRouter()
@@ -78,6 +89,12 @@ export default function CheckoutPage() {
         return
       }
       if (paymentMethod === 'RAZORPAY') {
+        const rzKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+        if (!rzKey) {
+          toast.error('Razorpay is not configured (missing key)')
+          setLoading(false); return
+        }
+
         const rzRes = await fetch('/api/checkout/razorpay', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -89,8 +106,11 @@ export default function CheckoutPage() {
           setLoading(false); return
         }
 
+        // Dynamically load Razorpay checkout script if not already loaded
+        await loadRazorpayScript();
+
         const options = {
-          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+          key: rzKey,
           amount: rzJson.amount,
           currency: 'INR',
           name: 'MAGHGO',
@@ -121,9 +141,9 @@ export default function CheckoutPage() {
           prefill: {
             name: user.name || '',
             email: user.email || '',
-            vpa: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.startsWith('rzp_test_') ? 'success@razorpay' : undefined
+            vpa: rzKey.startsWith('rzp_test_') ? 'success@razorpay' : undefined
           },
-          theme: { color: '#2874F0' }, // brand primary, can't use CSS var here
+          theme: { color: '#2874F0' },
           modal: {
             ondismiss: function() {
               disableRazorpayProtections();
@@ -166,7 +186,6 @@ export default function CheckoutPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="beforeInteractive" />
       <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground mb-6">Checkout</h1>
 
       <div className="grid lg:grid-cols-5 gap-6">

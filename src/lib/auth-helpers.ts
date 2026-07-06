@@ -17,6 +17,7 @@ export type AuthedUser = {
   isVerified: boolean;
   isActive: boolean;
   isBanned: boolean;
+  createdAt: Date;
 };
 
 export async function getCurrentUser(): Promise<AuthedUser | null> {
@@ -29,7 +30,7 @@ export async function getCurrentUser(): Promise<AuthedUser | null> {
     select: {
       id: true, authUserId: true, email: true, name: true, avatar: true,
       role: true, isSeller: true, bio: true, totalEarnings: true,
-      currentBalance: true, totalSpent: true, isVerified: true, isActive: true, isBanned: true,
+      currentBalance: true, totalSpent: true, isVerified: true, isActive: true, isBanned: true, createdAt: true,
     },
   })
   return profile as AuthedUser | null

@@ -140,6 +140,11 @@ model Prompt {
   @@index([sellerId])
   @@index([isFree])
   @@index([isTrending])
+  @@index([price])
+  @@index([rating])
+  @@index([createdAt])
+  @@index([likeCount])
+  @@index([status, categoryId, price, createdAt])
 }
 
 model Order {

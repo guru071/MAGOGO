@@ -11,7 +11,7 @@ import {
   Sparkles, Wallet,
   Star, ArrowUpRight, ArrowDownRight, Users, BarChart3,
   AlertTriangle, Target, Zap, Repeat,
-  TrendingDown, Hash, Activity, Receipt,
+  TrendingDown, Hash, Activity, Receipt, Menu, X,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
@@ -72,6 +72,7 @@ export default function SellerDashboardPage() {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
   const [recentOrders, setRecentOrders] = useState<any[]>([])
   const [ordersLoading, setOrdersLoading] = useState(true)
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
 
   useEffect(() => {
     if (user?.isSeller) {
@@ -187,8 +188,45 @@ export default function SellerDashboardPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 grid lg:grid-cols-12 gap-8">
-        {/* Sidebar */}
-        <div className="lg:col-span-3 space-y-2">
+        {/* Mobile sidebar toggle */}
+        <div className="lg:hidden flex items-center gap-2 mb-4">
+          <Button variant="outline" size="sm" className="border-border text-muted-foreground cursor-pointer" onClick={() => setMobileSidebarOpen(true)}>
+            <Menu className="h-4 w-4 mr-2" /> Menu
+          </Button>
+        </div>
+
+        {/* Mobile sidebar drawer */}
+        {mobileSidebarOpen && (
+          <div className="fixed inset-0 z-50 lg:hidden" onClick={() => setMobileSidebarOpen(false)}>
+            <div className="absolute inset-0 bg-black/40" />
+            <div className="absolute left-0 top-0 bottom-0 w-64 bg-card border-r border-border p-4" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between mb-6">
+                <span className="font-extrabold text-foreground">MAGHGO</span>
+                <button onClick={() => setMobileSidebarOpen(false)} className="text-muted-foreground hover:text-foreground cursor-pointer">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="space-y-1">
+                <Button variant="ghost" className="w-full justify-start bg-card border border-primary/30 text-primary font-bold rounded-sm">
+                  <BarChart3 className="h-4 w-4 mr-3" /> Dashboard
+                </Button>
+                <Link href="/seller/upload" onClick={() => setMobileSidebarOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:bg-muted hover:text-foreground rounded-sm">
+                    <Sparkles className="h-4 w-4 mr-3" /> Upload Prompt
+                  </Button>
+                </Link>
+                <Link href="/seller/payouts" onClick={() => setMobileSidebarOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:bg-muted hover:text-foreground rounded-sm">
+                    <Wallet className="h-4 w-4 mr-3" /> Payouts
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Desktop Sidebar */}
+        <div className="hidden lg:block lg:col-span-3 space-y-2">
           <Button variant="ghost" className="w-full justify-start bg-card border border-primary/30 text-primary font-bold rounded-sm">
             <BarChart3 className="h-4 w-4 mr-3" /> Dashboard
           </Button>

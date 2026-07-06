@@ -86,6 +86,11 @@ export async function GET(req: NextRequest) {
     else if (sortBy === 'newest') orderBy = { createdAt: 'desc' };
     else if (sortBy === 'relevance') orderBy = [{ likeCount: 'desc' }, { rating: 'desc' }];
 
+    // Build a filter-aware where clause for facets (same filters as main query but without price range for category/tag facets)
+    const facetWhere = { ...where };
+    // Don't pass price range to category/tag facets since ranges are relative
+    delete facetWhere.price;
+
     const [prompts, total, categoryFacets, allPriceData, allTagData] = await Promise.all([
       db.prompt.findMany({
         where,
@@ -100,16 +105,16 @@ export async function GET(req: NextRequest) {
       db.prompt.count({ where }),
       db.prompt.groupBy({
         by: ['categoryId'],
-        where: { status: 'APPROVED' },
+        where: facetWhere,
         _count: { id: true },
       }),
       db.prompt.aggregate({
-        where: { status: 'APPROVED' },
+        where,
         _min: { price: true },
         _max: { price: true },
       }),
       db.prompt.findMany({
-        where: { status: 'APPROVED' },
+        where: facetWhere,
         select: { tags: true },
         take: 200,
       }),
@@ -183,7 +188,7 @@ export async function GET(req: NextRequest) {
 
     const totalPages = Math.ceil(total / limit);
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       data: {
         prompts: await sanitizePromptsForUser(prompts, user),
@@ -194,6 +199,8 @@ export async function GET(req: NextRequest) {
         suggestion,
       },
     });
+    response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+    return response;
   } catch { 
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }

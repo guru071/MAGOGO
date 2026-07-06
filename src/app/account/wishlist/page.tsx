@@ -16,9 +16,15 @@ export default function WishlistPage() {
   }, [user, fetchWishlist])
 
   const handleRemove = async (id: string) => {
-    await toggleWishlist(id)
-    toast.success('Removed from wishlist')
-    fetchWishlist()
+    const prev = useStore.getState().wishlist
+    useStore.getState().setWishlist(prev.filter(p => p.id !== id))
+    const ok = await toggleWishlist(id)
+    if (ok) {
+      toast.success('Removed from wishlist')
+    } else {
+      useStore.getState().setWishlist(prev)
+      toast.error('Failed to remove')
+    }
   }
 
   const handleAddToCart = (prompt: Prompt) => {

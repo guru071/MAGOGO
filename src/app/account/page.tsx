@@ -37,9 +37,10 @@ export default function AccountPage() {
     router.push('/')
   }
 
+  const memberSince = user.createdAt ? new Date(user.createdAt).getFullYear().toString() : 'N/A'
   const stats = [
     { label: 'Total Spent', value: formatPrice(user.totalSpent || 0), icon: TrendingUp, color: 'text-[#388E3C]' },
-    { label: 'Member Since', value: new Date().getFullYear().toString(), icon: User, color: 'text-[#2874F0]' },
+    { label: 'Member Since', value: memberSince, icon: User, color: 'text-[#2874F0]' },
   ]
 
   return (

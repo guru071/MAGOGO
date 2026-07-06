@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useStore, formatPrice, formatAI } from '@/store/marketplace'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -52,10 +52,12 @@ export default function BrowsePage() {
   const [localPrompts, setLocalPrompts] = useState<any[]>([])
   const [localTotal, setLocalTotal] = useState(0)
   const [localTotalPages, setLocalTotalPages] = useState(1)
+
   useEffect(() => {
     fetchCategories()
   }, [fetchCategories])
 
+  // Parse URL params once categories load — the debounce effect below handles the actual search
   useEffect(() => {
     if (categories.length === 0) return
     const params = new URLSearchParams(window.location.search)
@@ -65,20 +67,11 @@ export default function BrowsePage() {
 
     if (catParam) {
       const match = categories.find(c => c.slug === catParam || c.id === catParam)
-      if (match && selectedCategories.length === 0) {
-        queueMicrotask(() => setSelectedCategories([match.id]))
-      }
+      if (match) setSelectedCategories([match.id])
     }
-
-    if (sortParam && sortBy === 'relevance') {
-      if (sortParam === 'popular') queueMicrotask(() => setSortBy('relevance'))
-      else if (sortParam === 'newest') queueMicrotask(() => setSortBy('newest'))
-    }
-
-    if (qParam && !searchQuery) {
-      queueMicrotask(() => useStore.getState().setSearchQuery(qParam))
-    }
-  }, [categories, searchQuery, selectedCategories, sortBy])
+    if (sortParam === 'newest') setSortBy('newest')
+    if (qParam) useStore.getState().setSearchQuery(qParam)
+  }, [categories])
 
   const buildParams = useCallback((overridePage?: number) => {
     const params = new URLSearchParams()
@@ -119,9 +112,13 @@ export default function BrowsePage() {
     }
   }, [buildParams])
 
+  // Debounced search on filter changes (includes initial load after URL params are parsed)
   useEffect(() => {
-    queueMicrotask(() => performSearch(1))
-  }, [searchQuery, sortBy, selectedCategories, selectedPriceRange, minRatingFilter, performSearch])
+    // Skip the very first render (categories haven't loaded yet, URL params not parsed)
+    if (categories.length === 0) return
+    const timer = setTimeout(() => performSearch(1), 300)
+    return () => clearTimeout(timer)
+  }, [searchQuery, sortBy, selectedCategories, selectedPriceRange, minRatingFilter, categories, performSearch])
 
   const goToPage = (p: number) => {
     if (p < 1 || p > localTotalPages) return
@@ -404,7 +401,7 @@ export default function BrowsePage() {
                       <Card className="flipkart-card overflow-hidden h-full flex flex-col group cursor-pointer">
                         <div className="relative h-36 bg-[#F1F3F6] flex items-center justify-center overflow-hidden">
                           {getCoverImage(prompt) ? (
-                            <img src={getCoverImage(prompt)} alt={prompt.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                            <img src={getCoverImage(prompt)} alt={prompt.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                           ) : (
                             <Sparkles className="h-10 w-10 text-[#C4C4C4]" />
                           )}
