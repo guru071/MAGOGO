@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     const feeBreakdown = calculateFees(amount || 0, feeConfig, promptLength, categoryName);
 
     return NextResponse.json({ success: true, data: feeBreakdown });
-  } catch { } {
+  } catch {
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

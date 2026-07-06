@@ -76,7 +76,7 @@ export default function CheckoutPage() {
 
         const options = {
           key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-          amount: Math.round(rzJson.amount * getINRRate() * 100),
+          amount: Math.round(rzJson.amount * 100),
           currency: 'INR',
           name: 'MAGHGO',
           description: 'Prompt Purchase',
@@ -90,9 +90,6 @@ export default function CheckoutPage() {
                 razorpayOrderId: response.razorpay_order_id,
                 razorpayPaymentId: response.razorpay_payment_id,
                 razorpaySignature: response.razorpay_signature,
-                promptIds: cart.map(p => p.id),
-                couponCode: code || undefined,
-                currency: selectedCurrency
               })
             })
             const verifyJson = await verifyRes.json()
@@ -159,7 +156,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 relative z-10">
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="beforeInteractive" />
       <h1 className="text-2xl sm:text-3xl font-extrabold text-white mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">Checkout</h1>
 
       <div className="grid lg:grid-cols-5 gap-6">

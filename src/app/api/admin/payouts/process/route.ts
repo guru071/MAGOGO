@@ -6,7 +6,10 @@ export async function POST(_req: NextRequest) {
   try {
     const user = await getCurrentUser();
     if (!user || user.role !== 'ADMIN') return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 });
-    const sellers = await db.user.findMany({ where: { isSeller: true, currentBalance: { gt: 0 } } });
+    const MIN_PAYOUT = 10; // $10 minimum payout
+    const sellers = await db.user.findMany({
+      where: { isSeller: true, currentBalance: { gte: MIN_PAYOUT } },
+    });
     const tenDaysAgo = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000);
     const results: any[] = [];
     for (const seller of sellers) {

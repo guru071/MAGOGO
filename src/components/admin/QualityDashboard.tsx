@@ -227,7 +227,7 @@ export default function QualityDashboard() {
                       <XCircle className="h-3 w-3 mr-1" /> Revise
                     </Button>
                     <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" asChild>
-                      <a href={`/prompts/${p.id}`} target="_blank" rel="noopener noreferrer">
+                      <a href={`/prompt/${p.id}`} target="_blank" rel="noopener noreferrer">
                         <Eye className="h-3 w-3" />
                       </a>
                     </Button>

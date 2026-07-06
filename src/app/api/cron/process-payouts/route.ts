@@ -77,7 +77,10 @@ export async function POST(req: NextRequest) {
           });
         }
 
-        // CRITICAL FIX: Deduct balance if money actually left the platform
+        // Deduct balance if money actually left the platform
+        // Note: If the seller used the Payout Request flow (escrow), their balance
+        // was already deducted at request time. This cron path pays from accumulated
+        // order earnings that have NOT been escrowed, so deduction is correct.
         if (status === 'COMPLETED') {
           await tx.user.update({
             where: { id: sellerId },

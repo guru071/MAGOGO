@@ -402,16 +402,30 @@
   overflow: hidden;
 }
 
-.liquid-glass,
-.glass-panel,
-.glass-panel-heavy,
-.neon-border,
-.neon-glow {
-  /* reset to flipkart-card equivalent */
-  background: white;
-  border: 1px solid #F0F0F0;
+.liquid-glass {
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 0.375rem;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.08);
+}
+
+.glass-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.08);
+}
+
+.glass-panel-heavy {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.1);
+}
+
+.neon-border,
+.neon-glow {
+  background: var(--card);
 }
 
 @source "../";

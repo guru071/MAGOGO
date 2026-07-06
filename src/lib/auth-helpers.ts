@@ -2,7 +2,24 @@ import { createSupabaseServerClient } from './supabase-server'
 import { db } from './db'
 import type { User } from '@prisma/client'
 
-export async function getCurrentUser(): Promise<Partial<User> | null> {
+export type AuthedUser = {
+  id: string;
+  authUserId: string;
+  email: string | null;
+  name: string | null;
+  avatar: string | null;
+  role: string;
+  isSeller: boolean;
+  bio: string | null;
+  totalEarnings: number;
+  currentBalance: number;
+  totalSpent: number;
+  isVerified: boolean;
+  isActive: boolean;
+  isBanned: boolean;
+};
+
+export async function getCurrentUser(): Promise<AuthedUser | null> {
   const supabase = await createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
@@ -15,16 +32,16 @@ export async function getCurrentUser(): Promise<Partial<User> | null> {
       currentBalance: true, totalSpent: true, isVerified: true, isActive: true, isBanned: true,
     },
   })
-  return profile
+  return profile as AuthedUser | null
 }
 
-export async function requireUser(): Promise<Partial<User>> {
+export async function requireUser(): Promise<AuthedUser> {
   const user = await getCurrentUser()
   if (!user) throw new Error('Unauthorized')
   return user
 }
 
-export async function requireAdmin(): Promise<Partial<User>> {
+export async function requireAdmin(): Promise<AuthedUser> {
   const user = await requireUser()
   if (user.role !== 'ADMIN') throw new Error('Forbidden: Admin only')
   return user

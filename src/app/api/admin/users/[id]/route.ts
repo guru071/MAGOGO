@@ -44,7 +44,14 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       return NextResponse.json({ success: true, data: user });
     }
 
-    const user = await db.user.update({ where: { id }, data: body });
+    const allowedFields = ['name', 'email', 'bio', 'avatar', 'country'];
+    const filteredData: Record<string, unknown> = {};
+    for (const key of allowedFields) {
+      if (body[key] !== undefined) {
+        filteredData[key] = body[key];
+      }
+    }
+    const user = await db.user.update({ where: { id }, data: filteredData });
     return NextResponse.json({ success: true, data: user });
   } catch { 
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });

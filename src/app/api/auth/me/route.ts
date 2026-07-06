@@ -5,14 +5,14 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
-    const tokenParam = searchParams.get('token');
-
     let supabaseUserId: string | undefined;
 
-    if (tokenParam) {
+    // Check Authorization header first (preferred), then fall back to cookie-based session
+    const authHeader = req.headers.get('Authorization');
+    if (authHeader?.startsWith('Bearer ')) {
+      const token = authHeader.slice(7);
       const adminClient = createSupabaseAdminClient();
-      const { data: { user } } = await adminClient.auth.getUser(tokenParam);
+      const { data: { user } } = await adminClient.auth.getUser(token);
       if (user) supabaseUserId = user.id;
     }
 

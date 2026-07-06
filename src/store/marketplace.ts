@@ -88,7 +88,7 @@ export function formatPrice(usdAmount: number, currencyCode?: string): string {
 
 export interface User { id: string; email: string; name: string; avatar?: string; role: string; isSeller: boolean; bio?: string; totalEarnings: number; currentBalance: number; totalSpent: number; isVerified: boolean; bankName?: string; bankAccount?: string; bankIfsc?: string; upiId?: string; paypalEmail?: string; paymentMethod?: string; }
 export interface Category { id: string; name: string; slug: string; icon?: string; description?: string; promptCount: number; }
-export interface Prompt { id: string; title: string; slug: string; description: string; promptText?: string | null; hasAccess?: boolean; isPromptLocked?: boolean; hasPurchased?: boolean; sampleImages: string; categoryId: string; tags: string; recommendedAI: string; price: number; isFree: boolean; originalPrice?: number; discount: number; platformFee: number; sellerId: string; likeCount: number; downloadCount: number; viewCount: number; rating: number; reviewCount: number; status: string; isFeatured: boolean; isTrending: boolean; isPremium: boolean; createdAt: string; seller?: { id: string; name: string; avatar: string; isSeller?: boolean; totalEarnings?: number; bio?: string; }; category?: { id: string; name: string; slug: string; }; reviews?: any[]; }
+export interface Prompt { id: string; title: string; slug: string; description: string; promptText?: string | null; hasAccess?: boolean; isPromptLocked?: boolean; hasPurchased?: boolean; accessReason?: string | null; purchasedOrderId?: string | null; sampleImages: string; categoryId: string; tags: string; recommendedAI: string; price: number; isFree: boolean; originalPrice?: number; discount: number; platformFee: number; sellerId: string; likeCount: number; downloadCount: number; viewCount: number; rating: number; reviewCount: number; status: string; isFeatured: boolean; isTrending: boolean; isPremium: boolean; createdAt: string; seller?: { id: string; name: string; avatar: string; isSeller?: boolean; totalEarnings?: number; bio?: string; }; category?: { id: string; name: string; slug: string; }; reviews?: any[]; }
 export interface Order { id: string; orderId: string; buyerId: string; promptId: string; sellerId: string; amount: number; platformFee: number; sellerAmount: number; paymentMethod: string; currency?: string; status: string; couponCode?: string; createdAt: string; prompt?: { id: string; title: string; sampleImages: string; price: number; isFree: boolean; }; buyer?: { id: string; name: string; avatar: string; }; }
 
 type View = 'landing'|'browse'|'prompt-detail'|'cart'|'checkout'|'profile'|'seller-dashboard'|'upload-prompt'|'seller-setup'|'admin'|'orders'|'wishlist'|'security'|'chat';
@@ -145,6 +145,7 @@ interface Store {
   toggleWishlist: (promptId: string) => Promise<boolean>;
   fetchOrders: (type?: string) => Promise<void>;
   createOrder: (promptId: string, paymentMethod: string, couponCode?: string, currency?: string) => Promise<boolean>;
+  signInWithGoogle: () => Promise<void>;
   themeStyle: 'normal' | 'universe';
   setThemeStyle: (style: 'normal' | 'universe') => void;
   fetchAdminStats: () => Promise<void>;
@@ -170,6 +171,19 @@ export const useStore = create<Store>((set, get) => ({
   selectedCurrency: typeof window !== 'undefined' ? (localStorage.getItem('pb_currency') || 'USD') : 'USD',
   showFilterPanel: false,
   themeStyle: typeof window !== 'undefined' ? ((localStorage.getItem('pb_theme_style') as 'normal' | 'universe') || 'normal') : 'normal',
+
+  signInWithGoogle: async () => {
+    try {
+      const supabase = createSupabaseBrowserClient();
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      if (error) throw new Error(error.message);
+    } catch (e) { console.error('[store] signInWithGoogle:', e); throw e; }
+  },
 
   setThemeStyle: (style) => {
     set({ themeStyle: style });

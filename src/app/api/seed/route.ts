@@ -1,4 +1,5 @@
 import { db } from '@/lib/db';
+import { requireAdmin } from '@/lib/auth-helpers';
 import { NextResponse } from 'next/server';
 
 const CATEGORIES = [
@@ -22,6 +23,8 @@ const CATEGORIES = [
 
 export async function POST() {
   try {
+    await requireAdmin();
+
     // Delete existing data (keep registered users, remove default admin only)
     await db.review.deleteMany();
     await db.comment.deleteMany();

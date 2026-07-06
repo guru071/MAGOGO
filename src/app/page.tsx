@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/card'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useStore, formatPrice } from '@/store/marketplace'
+import FlashDealsBanner from '@/components/marketplace/FlashDealsBanner'
 import {
   Sparkles, ArrowRight, Star, Shield, Zap, Users, TrendingUp,
   MessageSquare, Palette, Code, Megaphone, Pen, Briefcase, Camera,
@@ -97,7 +98,7 @@ export default function LandingPage() {
                 </Button>
               </Link>
               <Link href="/seller">
-                <Button variant="outline" size="lg" className="glass-panel text-white hover:bg-white/10 font-medium h-14 px-8 rounded-full border-white/20 transition-all hover:scale-105">
+                <Button variant="outline" size="lg" className="glass-panel text-foreground hover:bg-accent font-medium h-14 px-8 rounded-full border-border transition-all hover:scale-105">
                   Become a Seller
                 </Button>
               </Link>
@@ -110,8 +111,8 @@ export default function LandingPage() {
                 { value: loading ? '-' : `${stats.sellers}+`, label: 'Active Sellers' },
               ].map((s) => (
                 <div key={s.label} className="relative z-10">
-                  <p className="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-white to-white/70">{s.value}</p>
-                  <p className="text-sm text-neon-blue/80 mt-1 uppercase tracking-widest font-semibold">{s.label}</p>
+                  <p className="text-3xl sm:text-4xl font-extrabold text-foreground">{s.value}</p>
+                  <p className="text-sm text-neon-blue mt-1 uppercase tracking-widest font-semibold">{s.label}</p>
                 </div>
               ))}
             </div>
@@ -159,22 +160,22 @@ export default function LandingPage() {
                     </div>
                     <div className="p-4 flex flex-col flex-1 relative z-10">
                       <div className="flex items-center gap-2 mb-3">
-                        <Badge variant="outline" className="text-[10px] bg-white/5 border-white/10 text-white/70 backdrop-blur-md">{prompt.recommendedAI || 'General'}</Badge>
-                        <span className="text-[10px] text-white/50 flex items-center gap-1"><Star className="h-3 w-3 text-neon-blue fill-neon-blue shadow-[0_0_5px_rgba(0,210,255,0.8)]" /> {prompt.rating.toFixed(1)}</span>
+                        <Badge variant="outline" className="text-[10px] bg-card border-border text-muted-foreground">{prompt.recommendedAI || 'General'}</Badge>
+                        <span className="text-[10px] text-muted-foreground flex items-center gap-1"><Star className="h-3 w-3 text-neon-blue fill-neon-blue" /> {prompt.rating.toFixed(1)}</span>
                       </div>
                       <h3 className="font-bold text-white text-base line-clamp-1 mb-1 group-hover:text-neon-blue transition-colors h-[24px]">{prompt.title}</h3>
-                      <p className="text-xs text-white/50 line-clamp-1 h-[16px]">{prompt.description}</p>
+                      <p className="text-xs text-muted-foreground line-clamp-1 h-[16px]">{prompt.description}</p>
                       
-                      <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/10">
+                      <div className="mt-auto flex items-center justify-between pt-4 border-t border-border">
                         <div className="flex flex-col">
-                          <span className="text-[10px] text-white/30 line-through">
+                          <span className="text-[10px] text-muted-foreground line-through">
                             {prompt.originalPrice && prompt.originalPrice > prompt.price ? formatPrice(prompt.originalPrice, selectedCurrency) : ''}
                           </span>
-                          <span className="font-extrabold text-white text-xl drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
+                          <span className="font-extrabold text-foreground text-xl">
                             {prompt.isFree ? 'FREE' : formatPrice(prompt.price, selectedCurrency)}
                           </span>
                         </div>
-                        <Button size="icon" className="bg-white/10 text-white hover:bg-neon-blue hover:text-black hover:shadow-[0_0_15px_rgba(0,210,255,0.8)] rounded-full h-10 w-10 shrink-0 transition-all">
+                        <Button size="icon" className="bg-muted text-muted-foreground hover:bg-neon-blue hover:text-white rounded-full h-10 w-10 shrink-0 transition-all">
                           <ShoppingCart className="h-4 w-4" />
                         </Button>
                       </div>
@@ -187,6 +188,8 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <FlashDealsBanner />
+
       {/* CATEGORIES */}
       <section id="categories" className="py-16 sm:py-24 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -198,7 +201,7 @@ export default function LandingPage() {
             {loading ? (
               <div className="col-span-full py-12 text-center"><Loader2 className="h-8 w-8 animate-spin text-neon-purple mx-auto" /></div>
             ) : categories.length === 0 ? (
-              <div className="col-span-full py-12 text-center text-white/40">No categories available</div>
+              <div className="col-span-full py-12 text-center text-muted-foreground">No categories available</div>
             ) : categories.map((cat: any, i: number) => {
               const style = CATEGORY_STYLES[cat.slug] || { icon: Sparkles, color: 'text-white' };
               const Icon = style.icon;
@@ -210,8 +213,8 @@ export default function LandingPage() {
                     <div className={`h-14 w-14 rounded-full mb-4 flex items-center justify-center bg-white/5 border border-white/10 group-hover:scale-110 transition-transform ${style.color}`}>
                       <Icon className="h-7 w-7 drop-shadow-md group-hover:drop-shadow-[0_0_10px_currentColor]" />
                     </div>
-                    <p className="font-semibold text-sm text-white group-hover:text-neon-blue transition-all">{cat.name}</p>
-                    <p className="text-[10px] text-white/40 mt-1 uppercase font-semibold tracking-widest">{cat.promptCount || 0} items</p>
+                    <p className="font-semibold text-sm text-foreground group-hover:text-neon-blue transition-all">{cat.name}</p>
+                    <p className="text-[10px] text-muted-foreground mt-1 uppercase font-semibold tracking-widest">{cat.promptCount || 0} items</p>
                   </Link>
                 </motion.div>
               );
@@ -229,8 +232,8 @@ export default function LandingPage() {
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-[conic-gradient(var(--tw-gradient-stops))] from-neon-blue/40 via-neon-purple/40 to-neon-pink/40 blur-3xl opacity-30 animate-[spin_10s_linear_infinite]" />
             </div>
             <div className="relative z-10">
-              <h2 className="text-4xl sm:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/50 tracking-tight mb-6">Unleash AI Potential</h2>
-              <p className="text-white/70 text-lg sm:text-xl max-w-2xl mx-auto mb-10 font-light">
+              <h2 className="text-4xl sm:text-6xl font-extrabold text-foreground tracking-tight mb-6">Unleash AI Potential</h2>
+              <p className="text-muted-foreground text-lg sm:text-xl max-w-2xl mx-auto mb-10 font-light">
                 Join the MAGHGO ecosystem today. Transform your workflow with world-class digital AI prompts, or start monetizing your prompt engineering skills.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
@@ -240,7 +243,7 @@ export default function LandingPage() {
                   </Button>
                 </Link>
                 <Link href="/seller">
-                  <Button size="lg" variant="outline" className="h-14 px-10 text-lg border-white/20 text-white hover:bg-white/10 glass-panel font-medium rounded-full w-full sm:w-auto hover:scale-105 transition-all">
+                  <Button size="lg" variant="outline" className="h-14 px-10 text-lg border-border text-foreground hover:bg-accent/10 glass-panel font-medium rounded-full w-full sm:w-auto hover:scale-105 transition-all">
                     Seller Central
                   </Button>
                 </Link>
