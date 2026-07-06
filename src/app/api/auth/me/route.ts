@@ -29,10 +29,26 @@ export async function GET(req: NextRequest) {
     let profile;
     try {
       profile = await db.user.findUnique({ where: { authUserId: supabaseUserId } });
-    } catch (e) { console.error('[auth/me] DB fetch error', e); /* DB unavailable */ }
+    } catch (e) { console.error('[auth/me] DB fetch error', e); }
 
     if (!profile) {
-      return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
+      const supabase = await createSupabaseServerClient();
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (authUser?.email) {
+        profile = await db.user.upsert({
+          where: { email: authUser.email },
+          update: { authUserId: supabaseUserId },
+          create: {
+            authUserId: supabaseUserId,
+            email: authUser.email,
+            name: authUser.user_metadata?.name || authUser.email.split('@')[0],
+            avatar: authUser.user_metadata?.avatar_url || authUser.user_metadata?.picture || null,
+            role: 'BUYER',
+          },
+        });
+      } else {
+        return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
+      }
     }
 
     return NextResponse.json({ success: true, data: profile });
