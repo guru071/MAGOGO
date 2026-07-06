@@ -50,7 +50,7 @@ export async function POST() {
         { key: 'minWithdrawal', value: '50' },
         { key: 'payoutCycleDays', value: '10' },
         { key: 'supportEmail', value: 'support@maghgo.com' },
-        { key: 'supportedCurrencies', value: JSON.stringify(['USD', 'INR', 'EUR', 'GBP', 'AUD', 'CAD', 'SGD', 'AED', 'SAR', 'JPY']) },
+        { key: 'supportedCurrencies', value: JSON.stringify(['USD', 'INR', 'EUR', 'GBP', 'AUD', 'CAD', 'AED', 'JPY', 'BRL', 'NGN']) },
       ],
     });
 

@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { motion } from 'framer-motion';
+import { formatUSD } from '@/store/marketplace';
 import { toast } from 'sonner';
 import { Banknote, Loader2, Send } from 'lucide-react';
 
@@ -50,7 +51,7 @@ export default function AdminPayouts({ token }: { token: string }) {
       <div className="flex items-center justify-between flex-wrap gap-2">
         <h2 className="text-lg font-semibold flex items-center gap-2"><Banknote className="h-5 w-5 text-green-600" /> Payouts</h2>
         <div className="flex items-center gap-3">
-          {pendingCount > 0 && <Badge variant="secondary" className="bg-amber-100 text-amber-700">{pendingCount} pending · ${pendingTotal.toFixed(2)}</Badge>}
+          {pendingCount > 0 && <Badge variant="secondary" className="bg-amber-100 text-amber-700">{pendingCount} pending · {formatUSD(pendingTotal)}</Badge>}
           <Button size="sm" className="gap-1.5" onClick={processAll} disabled={processing || pendingCount === 0}>
             {processing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} Process All
           </Button>
@@ -74,7 +75,7 @@ export default function AdminPayouts({ token }: { token: string }) {
                   <TableCell>
                     <div><p className="font-medium text-sm">{p.seller?.name || 'Unknown'}</p><p className="text-xs text-muted-foreground">{p.seller?.paymentMethod} {p.seller?.upiId || p.seller?.paypalEmail || p.seller?.bankAccount || ''}</p></div>
                   </TableCell>
-                  <TableCell className="font-semibold text-green-600">${p.amount?.toFixed(2)}</TableCell>
+                  <TableCell className="font-semibold text-green-600">{formatUSD(p.amount || 0)}</TableCell>
                   <TableCell className="text-xs">{p.periodStart ? `${new Date(p.periodStart).toLocaleDateString()} - ${new Date(p.periodEnd).toLocaleDateString()}` : '-'}</TableCell>
                   <TableCell><Badge className={`text-[10px] ${STATUS_BADGE[p.status] || ''}`}>{p.status}</Badge></TableCell>
                   <TableCell className="text-xs font-mono text-muted-foreground max-w-[120px] truncate">{p.transactionId || '-'}</TableCell>

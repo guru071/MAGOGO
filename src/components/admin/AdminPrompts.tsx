@@ -12,6 +12,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { motion } from 'framer-motion';
 import { Search, ChevronLeft, ChevronRight, CheckCircle, XCircle, Trash2, Star, TrendingUp } from 'lucide-react';
 import { toast } from 'sonner';
+import { formatUSD } from '@/store/marketplace';
 
 const api = async (url: string, opts?: RequestInit) => {
   const res = await fetch(url, { headers: { 'Content-Type': 'application/json', ...opts?.headers }, ...opts });
@@ -112,7 +113,7 @@ export default function AdminPrompts({ token }: { token: string }) {
                   <TableCell className="text-sm font-medium max-w-[200px] truncate">{p.title}</TableCell>
                   <TableCell className="hidden md:table-cell text-xs text-muted-foreground">{p.seller?.name}</TableCell>
                   <TableCell className="hidden lg:table-cell text-xs text-muted-foreground">{p.category?.name}</TableCell>
-                  <TableCell className="text-right text-sm font-medium">{p.isFree ? <Badge className="bg-green-100 text-green-700 text-[10px]">FREE</Badge> : `$${p.price?.toFixed(2)}`}</TableCell>
+                  <TableCell className="text-right text-sm font-medium">{p.isFree ? <Badge className="bg-green-100 text-green-700 text-[10px]">FREE</Badge> : formatUSD(p.price)}</TableCell>
                   <TableCell><Badge className={`text-[10px] ${STATUS_COLORS[p.status] || ''}`}>{p.status}</Badge></TableCell>
                   <TableCell className="text-center"><Star className={`h-4 w-4 mx-auto cursor-pointer transition ${p.isFeatured ? 'text-amber-500 fill-amber-500' : 'text-muted-foreground hover:text-amber-400'}`} onClick={() => updatePrompt(p.id, { status: p.status, isFeatured: !p.isFeatured, isTrending: p.isTrending })} /></TableCell>
                   <TableCell className="text-center"><TrendingUp className={`h-4 w-4 mx-auto cursor-pointer transition ${p.isTrending ? 'text-[#FF6600]' : 'text-muted-foreground hover:text-[#FF6600]'}`} onClick={() => updatePrompt(p.id, { status: p.status, isFeatured: p.isFeatured, isTrending: !p.isTrending })} /></TableCell>

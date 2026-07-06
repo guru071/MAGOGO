@@ -10,7 +10,7 @@ import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Save, Calculator, DollarSign, Percent, Receipt, Landmark, TrendingDown, PiggyBank } from 'lucide-react';
 import { toast } from 'sonner';
-import { formatPrice } from '@/store/marketplace';
+import { formatPrice, formatUSD } from '@/store/marketplace';
 
 interface FeeConfig {
   commissionRate: number
@@ -196,7 +196,7 @@ export default function FeeSettings() {
                 <DollarSign className="h-3.5 w-3.5 text-muted-foreground" />
                 Closing Fee (per order)
               </Label>
-              <Badge variant="secondary" className="font-mono text-xs">${config.closingFee.toFixed(2)}</Badge>
+              <Badge variant="secondary" className="font-mono text-xs">{formatUSD(config.closingFee)}</Badge>
             </div>
             <Slider
               min={0} max={10} step={0.1}

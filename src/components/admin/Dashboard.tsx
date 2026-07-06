@@ -7,6 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip as RTooltip, ResponsiveContainer, CartesianGrid, LineChart, Line, PieChart, Pie, Cell, Legend, ComposedChart, RadialBarChart, RadialBar, FunnelChart, Funnel, LabelList } from 'recharts';
 import { DollarSign, ShoppingBag, Users, Crown, Package, FileText, Clock, CheckCircle, Banknote, Megaphone, Flag, Zap, Trophy, ScrollText, TrendingUp, BarChart3, AlertTriangle, Repeat, Sun, Hash, ArrowUpRight, ArrowDownRight, Minus, Sparkles, Activity, Download, Eye, AlertCircle, Target, GitCompare, TrendingDown, Brain, Shield } from 'lucide-react';
+import { formatUSD } from '@/store/marketplace';
 
 const DOW_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTH_LABELS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -67,14 +68,14 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
     : revenueData;
 
   const kpis = [
-    { label: 'Revenue', value: `$${(a?.totalRevenue || 0).toFixed(2)}`, icon: DollarSign, color: 'text-neon-blue', bg: 'bg-neon-blue', delta: a?.revenueGrowth, badge: true },
+    { label: 'Revenue', value: formatUSD(a?.totalRevenue || 0), icon: DollarSign, color: 'text-neon-blue', bg: 'bg-neon-blue', delta: a?.revenueGrowth, badge: true },
     { label: 'Orders', value: a?.totalOrders || 0, icon: ShoppingBag, color: 'text-neon-pink', bg: 'bg-neon-pink', delta: a?.orderGrowth, badge: true },
     { label: 'New Users', value: a?.newUsers || 0, icon: Users, color: 'text-rose-600', bg: 'bg-rose-500', delta: a?.userGrowth, badge: true },
-    { label: 'Avg Order', value: `$${a?.avgOrderValue?.toFixed(2) || '0.00'}`, icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-500', delta: 0 },
+    { label: 'Avg Order', value: formatUSD(a?.avgOrderValue || 0), icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-500', delta: 0 },
     { label: 'Conversion', value: `${a?.conversionRate?.toFixed(1) || 0}%`, icon: Target, color: 'text-purple-600', bg: 'bg-purple-500', delta: 0 },
     { label: 'Pending', value: a?.pendingPrompts || 0, icon: Clock, color: 'text-orange-600', bg: 'bg-orange-500', delta: 0 },
-    { label: 'Prev Revenue', value: `$${(a?.prevRevenue || 0).toFixed(2)}`, icon: GitCompare, color: 'text-teal-600', bg: 'bg-teal-500', delta: 0 },
-    { label: 'Predicted (30d)', value: `$${(predictive.predictedNextMonthRevenue || 0).toFixed(0)}`, icon: Brain, color: 'text-indigo-600', bg: 'bg-indigo-500', delta: predictive.predictedGrowth },
+    { label: 'Prev Revenue', value: formatUSD(a?.prevRevenue || 0), icon: GitCompare, color: 'text-teal-600', bg: 'bg-teal-500', delta: 0 },
+    { label: 'Predicted (30d)', value: formatUSD(predictive.predictedNextMonthRevenue || 0), icon: Brain, color: 'text-indigo-600', bg: 'bg-indigo-500', delta: predictive.predictedGrowth },
   ];
 
   return (
@@ -162,7 +163,7 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
             <div className="mt-2 flex items-center gap-2 text-xs">
               <Brain className="h-3 w-3 text-indigo-400" />
               <span className="text-white/60">Next 30d prediction:</span>
-              <span className="font-bold text-indigo-400">${(predictive.predictedNextMonthRevenue || 0).toFixed(0)}</span>
+              <span className="font-bold text-indigo-400">{formatUSD(predictive.predictedNextMonthRevenue || 0)}</span>
               <span className={predictive.predictedGrowth > 0 ? 'text-emerald-400' : 'text-red-400'}>
                 ({predictive.predictedGrowth > 0 ? '+' : ''}{predictive.predictedGrowth}%)
               </span>
@@ -208,7 +209,7 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
                 <div key={i} className="flex items-center gap-2 p-2 rounded-xl bg-black/40 border border-red-500/20 text-sm shrink-0">
                   <div className={`h-2 w-2 rounded-full ${a.type === 'spike' || a.type === 'high' ? 'bg-emerald-400 shadow-[0_0_5px_rgba(16,185,129,0.8)]' : 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.8)]'}`} />
                   <span className="text-xs text-white/60">{a.day}</span>
-                  <span className="font-bold text-xs text-white">${a.value.toFixed(2)}</span>
+                  <span className="font-bold text-xs text-white">{formatUSD(a.value)}</span>
                   {a.zScore && <span className="text-[10px] text-white/40">z={a.zScore}</span>}
                   {a.type === 'spike' && <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px]">Spike</Badge>}
                   {a.type === 'drop' && <Badge className="bg-red-500/20 text-red-300 border-red-500/30 text-[10px]">Drop</Badge>}
@@ -355,7 +356,7 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between mb-0.5">
                         <span className="text-sm font-bold text-white truncate">{cat.name}</span>
-                        <span className="text-sm font-black text-neon-blue">${cat.revenue.toFixed(2)}</span>
+                        <span className="text-sm font-black text-neon-blue">{formatUSD(cat.revenue)}</span>
                       </div>
                       <div className="flex items-center gap-2 mt-1">
                         <div className="flex-1 h-1.5 bg-black/40 rounded-full overflow-hidden">
@@ -368,7 +369,7 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
                         <span>{cat.prompts} prompts</span>
                         <span>·</span>
                         <span>{cat.sellers} sellers</span>
-                        {cat.refunds > 0 && <><span>·</span><span className="text-red-400">${cat.refunds.toFixed(2)} refunds</span></>}
+                        {cat.refunds > 0 && <><span>·</span><span className="text-red-400">{formatUSD(cat.refunds)} refunds</span></>}
                       </div>
                     </div>
                   </div>
@@ -396,8 +397,8 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
                 <div key={pm.method} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-sm">
                   <span className="font-bold text-white">{pm.method}</span>
                   <div className="flex items-center gap-3">
-                    <span className="text-xs text-white/50">{pm.count} txns · ${pm.avgAmount.toFixed(2)} avg</span>
-                    <span className="font-black text-emerald-400">${pm.revenue.toFixed(2)}</span>
+                    <span className="text-xs text-white/50">{pm.count} txns · {formatUSD(pm.avgAmount)} avg</span>
+                    <span className="font-black text-emerald-400">{formatUSD(pm.revenue)}</span>
                   </div>
                 </div>
               ))}
@@ -420,7 +421,7 @@ export default function Dashboard({ stats, analytics, activityLogs, loadTab }: {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
                         <p className="font-bold text-sm text-white truncate">{seller.name}</p>
-                        <span className="font-black text-neon-blue text-sm ml-2">${seller.revenue?.toFixed(2)}</span>
+                        <span className="font-black text-neon-blue text-sm ml-2">{formatUSD(seller.revenue || 0)}</span>
                       </div>
                       <div className="flex-1 h-1.5 bg-black/40 rounded-full overflow-hidden mt-1">
                         <motion.div className="h-full rounded-full bg-gradient-to-r from-neon-blue to-[#ff0080]" initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.5, delay: i * 0.03 }} />

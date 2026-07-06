@@ -13,6 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { motion } from 'framer-motion';
 import { Search, ChevronLeft, ChevronRight, RefreshCw, ShoppingBag, RotateCcw, Clock, CheckCircle, XCircle, AlertTriangle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { formatUSD } from '@/store/marketplace';
 
 const api = async (url: string, opts?: RequestInit) => {
   const res = await fetch(url, { headers: { 'Content-Type': 'application/json', ...opts?.headers }, ...opts });
@@ -85,7 +86,7 @@ export default function AdminOrders({ token }: { token: string }) {
         headers: { 'x-token': token },
         body: JSON.stringify({ orderId: refundOrder.id, reason: refundReason || 'Admin refund' }),
       });
-      toast.success(`Refunded $${data.amount.toFixed(2)} via ${data.method === 'razorpay' ? 'Razorpay' : 'balance credit'}`);
+      toast.success(`Refunded ${formatUSD(data.amount)} via ${data.method === 'razorpay' ? 'Razorpay' : 'balance credit'}`);
       setRefundDialogOpen(false);
       setRefundOrder(null);
       setRefundReason('');
@@ -123,7 +124,7 @@ export default function AdminOrders({ token }: { token: string }) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3 flex-wrap">
           <Badge variant="outline" className="text-sm">{total} Total Orders</Badge>
-          <Badge variant="outline" className="text-sm text-green-600">${totalValue.toFixed(2)} Total Value</Badge>
+          <Badge variant="outline" className="text-sm text-green-600">{formatUSD(totalValue)} Total Value</Badge>
           {Object.entries(statusCounts).map(([s, c]) => (
             <Badge key={s} className={`text-[10px] cursor-pointer ${statusFilter === s ? 'ring-2 ring-offset-1 ring-primary' : ''} ${statusColor(s)}`}
               onClick={() => { setStatusFilter(s); setPage(1); }}>
@@ -226,9 +227,9 @@ export default function AdminOrders({ token }: { token: string }) {
                         {o.prompt?.title || 'Unknown'}
                       </TableCell>
                       <TableCell className="text-right">
-                        <span className="font-semibold text-green-600 text-sm">${(o.amount || 0).toFixed(2)}</span>
+                        <span className="font-semibold text-green-600 text-sm">{formatUSD(o.amount || 0)}</span>
                         {o.platformFee > 0 && (
-                          <p className="text-[10px] text-muted-foreground">fee: ${o.platformFee.toFixed(2)}</p>
+                          <p className="text-[10px] text-muted-foreground">fee: {formatUSD(o.platformFee)}</p>
                         )}
                       </TableCell>
                       <TableCell className="hidden sm:table-cell text-xs text-muted-foreground">
@@ -307,7 +308,7 @@ export default function AdminOrders({ token }: { token: string }) {
             <div className="space-y-3 py-2">
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div><span className="text-muted-foreground">Buyer:</span> <span className="font-medium">{refundOrder.buyer?.name}</span></div>
-                <div><span className="text-muted-foreground">Amount:</span> <span className="font-semibold text-green-600">${refundOrder.amount?.toFixed(2)}</span></div>
+                <div><span className="text-muted-foreground">Amount:</span> <span className="font-semibold text-green-600">{formatUSD(refundOrder.amount || 0)}</span></div>
                 <div className="col-span-2"><span className="text-muted-foreground">Prompt:</span> <span className="font-medium">{refundOrder.prompt?.title}</span></div>
               </div>
               <div className="space-y-1.5">

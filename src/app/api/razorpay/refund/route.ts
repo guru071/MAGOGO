@@ -1,6 +1,7 @@
 import { db } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth-helpers';
 import { NextRequest, NextResponse } from 'next/server';
+import { formatUSD } from '@/lib/currencies';
 
 export async function POST(req: NextRequest) {
   try {
@@ -113,7 +114,7 @@ export async function POST(req: NextRequest) {
         data: {
           userId: user.id!,
           action: 'ORDER_REFUNDED',
-          details: `Refunded order ${order.orderId} for $${order.amount.toFixed(2)} (Buyer: ${order.buyer.name}). Reason: ${reason || 'No reason provided'}. ${refundId ? `Razorpay refund ID: ${refundId}` : 'Manual balance credit.'}`,
+          details: `Refunded order ${order.orderId} for ${formatUSD(order.amount)} (Buyer: ${order.buyer.name}). Reason: ${reason || 'No reason provided'}. ${refundId ? `Razorpay refund ID: ${refundId}` : 'Manual balance credit.'}`,
           ipAddress: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || undefined,
         },
       });

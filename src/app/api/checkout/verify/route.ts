@@ -2,6 +2,7 @@ import { db } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth-helpers';
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyPayment } from '@/lib/razorpay';
+import { formatUSD } from '@/lib/currencies';
 
 export async function POST(req: NextRequest) {
   try {
@@ -122,7 +123,7 @@ export async function POST(req: NextRequest) {
           data: { 
             userId: order.sellerId, 
             title: 'New Sale!', 
-            message: `Your prompt "${order.prompt.title}" was purchased for $${order.amount.toFixed(2)} (net: $${updatedOrder.sellerAmount.toFixed(2)} after fees)`, 
+            message: `Your prompt "${order.prompt.title}" was purchased for ${formatUSD(order.amount)} (net: ${formatUSD(updatedOrder.sellerAmount)} after fees)`, 
             type: 'ORDER' 
           } 
         });

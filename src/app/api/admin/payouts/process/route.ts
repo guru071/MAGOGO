@@ -1,6 +1,7 @@
 import { db } from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth-helpers';
 import { NextRequest, NextResponse } from 'next/server';
+import { formatUSD } from '@/lib/currencies';
 
 export async function POST(_req: NextRequest) {
   try {
@@ -18,7 +19,7 @@ export async function POST(_req: NextRequest) {
         data: { sellerId: seller.id, amount, periodStart: tenDaysAgo, periodEnd: new Date(), status: 'COMPLETED', transactionId: `PAY-${Date.now().toString(36).toUpperCase()}`, notes: 'Automatic payout' }
       });
       await db.user.update({ where: { id: seller.id }, data: { currentBalance: 0 } });
-      await db.notification.create({ data: { userId: seller.id, title: 'Payout Processed!', message: `$${amount.toFixed(2)} has been processed to your account.`, type: 'PAYOUT' } });
+      await db.notification.create({ data: { userId: seller.id, title: 'Payout Processed!', message: `${formatUSD(amount)} has been processed to your account.`, type: 'PAYOUT' } });
       results.push(payout);
     }
     return NextResponse.json({ success: true, data: { processed: results.length, payouts: results } });

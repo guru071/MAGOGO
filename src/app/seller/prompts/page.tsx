@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useStore, formatPrice, CURRENCIES } from '@/store/marketplace'
+import { useStore, formatPrice, CURRENCIES, getSymbol, getRate } from '@/store/marketplace'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -220,7 +220,7 @@ export default function SellerPromptsPage() {
             <DialogTitle>Edit Price</DialogTitle>
           </DialogHeader>
           <div className="py-4">
-            <label className="text-sm font-medium text-white/70 mb-2 block">New Price ({CURRENCIES.find(c => c.code === selectedCurrency)?.symbol || '$'} {selectedCurrency})</label>
+            <label className="text-sm font-medium text-white/70 mb-2 block">New Price ({getSymbol(selectedCurrency)} {selectedCurrency})</label>
             <Input
               type="number"
               min="0"
@@ -228,10 +228,10 @@ export default function SellerPromptsPage() {
               value={editPrice}
               onChange={(e) => setEditPrice(e.target.value)}
               className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-neon-blue focus:ring-neon-blue"
-              placeholder={`e.g. ${(5.99 * (CURRENCIES.find(c => c.code === selectedCurrency)?.rate || 1)).toFixed(2)}`}
+              placeholder={`e.g. ${(5.99 * getRate(selectedCurrency)).toFixed(2)}`}
             />
             {parseFloat(editPrice) > 0 && selectedCurrency !== 'USD' && (
-              <p className="text-xs text-white/40 mt-1 ml-1">≈ ${(parseFloat(editPrice) / (CURRENCIES.find(c => c.code === selectedCurrency)?.rate || 1)).toFixed(2)} USD</p>
+              <p className="text-xs text-white/40 mt-1 ml-1">≈ {getSymbol('USD')}{(parseFloat(editPrice) / getRate(selectedCurrency)).toFixed(2)} USD</p>
             )}
             <p className="text-xs text-white/50 mt-2">Set to 0 to make it FREE.</p>
           </div>

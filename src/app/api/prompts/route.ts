@@ -3,6 +3,7 @@ import { getCurrentUser } from '@/lib/auth-helpers';
 import { NextRequest, NextResponse } from 'next/server';
 import { sanitizePromptsForUser } from '@/lib/prompt-security';
 import { sanitizeInput } from '@/lib/security';
+import { formatUSD } from '@/lib/currencies';
 
 function slugify(t: string) { return t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Date.now().toString(36); }
 
@@ -111,7 +112,7 @@ export async function POST(req: NextRequest) {
       if (listingFee > 0 && !isDirectRazorpay) {
         const dbUser = await tx.user.findUnique({ where: { id: user.id! } });
         if (!dbUser || dbUser.currentBalance < listingFee) {
-          return { error: `Insufficient balance. You need $${listingFee.toFixed(2)} in your wallet to list this prompt.` };
+          return { error: `Insufficient balance. You need ${formatUSD(listingFee)} in your wallet to list this prompt.` };
         }
         
         await tx.user.update({
