@@ -2,12 +2,34 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Search, User, Menu } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Search, User, Menu, LogOut, LayoutDashboard } from 'lucide-react';
+import { createClient } from '@/utils/supabase/client';
 import { Button } from '@/components/ui/button';
 import { CartSidebar } from '@/components/layout/CartSidebar';
 
 export function Navbar() {
   const router = useRouter();
+  const [user, setUser] = useState<any>(null);
+  const supabase = createClient();
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data?.user) setUser(data.user);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase]);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    router.push('/');
+  };
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -49,12 +71,29 @@ export function Navbar() {
             <Search className="h-5 w-5" />
           </Button>
           <div className="flex items-center gap-4">
-            <Button variant="ghost" className="hidden sm:inline-flex hover:text-primary transition-colors asChild">
-              <Link href="/login">Sign In</Link>
-            </Button>
-            <Button className="bg-primary hover:bg-primary/90 text-white rounded-full px-6 asChild">
-              <Link href="/login">Sign Up</Link>
-            </Button>
+            {user ? (
+              <>
+                <Button variant="ghost" className="hidden sm:inline-flex hover:text-primary transition-colors asChild">
+                  <Link href="/dashboard/seller">
+                    <LayoutDashboard className="w-4 h-4 mr-2" />
+                    Dashboard
+                  </Link>
+                </Button>
+                <Button onClick={handleSignOut} variant="ghost" className="hidden sm:inline-flex text-muted-foreground hover:text-white transition-colors">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" className="hidden sm:inline-flex hover:text-primary transition-colors asChild">
+                  <Link href="/login">Sign In</Link>
+                </Button>
+                <Button className="bg-primary hover:bg-primary/90 text-white rounded-full px-6 asChild">
+                  <Link href="/login">Sign Up</Link>
+                </Button>
+              </>
+            )}
           </div>
           <Button variant="ghost" size="icon" className="md:hidden text-muted-foreground">
             <Menu className="h-5 w-5" />
