@@ -74,9 +74,15 @@ export function Navbar() {
             {user ? (
               <>
                 <Button variant="ghost" className="hidden sm:inline-flex hover:text-primary transition-colors asChild">
+                  <Link href="/dashboard/purchases">
+                    <LayoutDashboard className="w-4 h-4 mr-2" />
+                    My Purchases
+                  </Link>
+                </Button>
+                <Button variant="ghost" className="hidden sm:inline-flex hover:text-primary transition-colors asChild">
                   <Link href="/dashboard/seller">
                     <LayoutDashboard className="w-4 h-4 mr-2" />
-                    Dashboard
+                    Seller Admin
                   </Link>
                 </Button>
                 <Button onClick={handleSignOut} variant="ghost" className="hidden sm:inline-flex text-muted-foreground hover:text-white transition-colors">

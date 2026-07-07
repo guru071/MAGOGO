@@ -34,10 +34,22 @@ export default async function PromptsPage({
   }
 
   // Fetch prompts
+  // Fetch prompts without the secret promptText!
   const prompts = await prisma.prompt.findMany({
     where,
     orderBy: { createdAt: 'desc' },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      description: true,
+      price: true,
+      sampleImages: true,
+      tags: true,
+      status: true,
+      downloadCount: true,
+      categoryId: true,
+      createdAt: true,
       seller: {
         select: {
           name: true,

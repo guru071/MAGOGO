@@ -41,9 +41,18 @@ export function CartSidebar() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount: total }),
       });
+      
+      if (orderRes.status === 401) {
+        alert("Please log in to purchase these prompts.");
+        window.location.href = "/login";
+        return;
+      }
+      
       const orderData = await orderRes.json();
 
       if (!orderData.orderId) throw new Error("Failed to create order");
+
+      const promptIds = cart.map(item => item.id);
 
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
@@ -56,7 +65,7 @@ export function CartSidebar() {
           const verifyRes = await fetch("/api/checkout/verify", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(response),
+            body: JSON.stringify({ ...response, promptIds }),
           });
           const verifyData = await verifyRes.json();
           if (verifyData.success) {
