@@ -1,342 +1,72 @@
 @import "tailwindcss";
-@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: hsl(240 10% 3.9%);
+  --foreground: hsl(0 0% 98%);
+  --card: hsl(240 10% 3.9%);
+  --card-foreground: hsl(0 0% 98%);
+  --popover: hsl(240 10% 3.9%);
+  --popover-foreground: hsl(0 0% 98%);
+  --primary: hsl(252 56% 57%);
+  --primary-foreground: hsl(0 0% 98%);
+  --secondary: hsl(240 3.7% 15.9%);
+  --secondary-foreground: hsl(0 0% 98%);
+  --muted: hsl(240 3.7% 15.9%);
+  --muted-foreground: hsl(240 5% 64.9%);
+  --accent: hsl(252 56% 57%);
+  --accent-foreground: hsl(0 0% 98%);
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --border: hsl(240 3.7% 15.9%);
+  --input: hsl(240 3.7% 15.9%);
+  --ring: hsl(240 4.9% 83.9%);
+  --chart-1: hsl(220 70% 50%);
+  --chart-2: hsl(160 60% 45%);
+  --chart-3: hsl(30 80% 55%);
+  --chart-4: hsl(280 65% 60%);
+  --chart-5: hsl(340 75% 55%);
+  --radius: 0.75rem;
+}
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --color-brand-blue: #2874F0;
-  --color-brand-orange: #FF9F00;
-  --color-brand-green: #388E3C;
-  --color-brand-red: #FF6161;
-  --color-brand-buy: #FB641B;
-  --color-neon-blue: #00d2ff;
-  --color-neon-purple: #3a7bd5;
-  --color-neon-pink: #ff0080;
-  --color-glass: rgba(255, 255, 255, 0.05);
-  --color-glass-border: rgba(255, 255, 255, 0.1);
-}
-
-:root {
-  --radius: 0.375rem;
-  --background: #F1F3F6;
-  --foreground: #212121;
-  --card: #FFFFFF;
-  --card-foreground: #212121;
-  --popover: #FFFFFF;
-  --popover-foreground: #212121;
-  --primary: #2874F0;
-  --primary-foreground: #FFFFFF;
-  --secondary: #F1F3F6;
-  --secondary-foreground: #212121;
-  --muted: #F1F3F6;
-  --muted-foreground: #878787;
-  --accent: #FF9F00;
-  --accent-foreground: #FFFFFF;
-  --destructive: #E53935;
-  --destructive-foreground: #FFFFFF;
-  --border: #F0F0F0;
-  --input: #E0E0E0;
-  --ring: #2874F0;
-  --chart-1: #2874F0;
-  --chart-2: #FF9F00;
-  --chart-3: #388E3C;
-  --chart-4: #FB641B;
-  --chart-5: #7B1FA2;
-  --sidebar: #FFFFFF;
-  --sidebar-foreground: #212121;
-  --sidebar-primary: #2874F0;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #F1F3F6;
-  --sidebar-accent-foreground: #212121;
-  --sidebar-border: #F0F0F0;
-  --sidebar-ring: #2874F0;
-}
-
-.dark {
-  --background: #0D0D0D;
-  --foreground: #F5F5F5;
-  --card: #1A1A1A;
-  --card-foreground: #F5F5F5;
-  --popover: #1A1A1A;
-  --popover-foreground: #F5F5F5;
-  --primary: #2874F0;
-  --primary-foreground: #FFFFFF;
-  --secondary: #2D2D2D;
-  --secondary-foreground: #F5F5F5;
-  --muted: #2D2D2D;
-  --muted-foreground: #9E9E9E;
-  --accent: #FF9F00;
-  --accent-foreground: #FFFFFF;
-  --destructive: #CF6679;
-  --destructive-foreground: #000000;
-  --border: #333333;
-  --input: #333333;
-  --ring: #2874F0;
-  --sidebar: #1A1A1A;
-  --sidebar-foreground: #F5F5F5;
-  --sidebar-primary: #2874F0;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #2D2D2D;
-  --sidebar-accent-foreground: #F5F5F5;
-  --sidebar-border: #333333;
-  --sidebar-ring: #2874F0;
-}
-
-@layer utilities {
-  .flipkart-header {
-    background: #2874F0;
-    color: white;
-  }
-
-  .flipkart-card {
-    background: white;
-    border: 1px solid #F0F0F0;
-    border-radius: 0.375rem;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.08);
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
-  }
-
-  .flipkart-card:hover {
-    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.12);
-    transform: translateY(-1px);
-  }
-
-  .flipkart-price {
-    font-weight: 700;
-    font-size: 1rem;
-    color: #212121;
-  }
-
-  .flipkart-original-price {
-    color: #878787;
-    text-decoration: line-through;
-    font-size: 0.875rem;
-    margin-left: 0.5rem;
-  }
-
-  .flipkart-discount {
-    color: #388E3C;
-    font-weight: 500;
-    font-size: 0.8125rem;
-    margin-left: 0.5rem;
-  }
-
-  .flipkart-rating {
-    background: #388E3C;
-    color: white;
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    display: inline-flex;
-    align-items: center;
-    gap: 2px;
-  }
-
-  .flipkart-btn-primary {
-    background: #FF9F00;
-    color: white;
-    font-weight: 600;
-    font-size: 0.875rem;
-    border-radius: 0.375rem;
-    padding: 0.5rem 1.5rem;
-    transition: background 0.15s ease;
-  }
-
-  .flipkart-btn-primary:hover {
-    background: #FB641B;
-  }
-
-  .flipkart-btn-secondary {
-    background: #2874F0;
-    color: white;
-    font-weight: 600;
-    font-size: 0.875rem;
-    border-radius: 0.375rem;
-    padding: 0.5rem 1.5rem;
-    transition: background 0.15s ease;
-  }
-
-  .flipkart-btn-secondary:hover {
-    background: #1a5dc7;
-  }
-
-  .flipkart-section-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #212121;
-    padding: 1rem 0;
-  }
-
-  .flipkart-badge-free {
-    background: #388E3C;
-    color: white;
-    font-size: 0.625rem;
-    font-weight: 600;
-    padding: 0.125rem 0.375rem;
-    border-radius: 2px;
-  }
-
-  .flipkart-badge-discount {
-    background: #FF9F00;
-    color: white;
-    font-size: 0.625rem;
-    font-weight: 600;
-    padding: 0.125rem 0.375rem;
-    border-radius: 2px;
-  }
-
-  .flipkart-nav-link {
-    color: white;
-    font-weight: 500;
-    font-size: 0.8125rem;
-    transition: opacity 0.15s;
-  }
-
-  .flipkart-nav-link:hover {
-    opacity: 0.9;
-  }
-
-  .flipkart-search-input {
-    border: none;
-    border-radius: 0.25rem;
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-    width: 100%;
-    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.1);
-  }
-
-  .flipkart-search-input:focus {
-    outline: none;
-    box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.15);
-  }
-
-  .flipkart-badge-count {
-    background: #FF6161;
-    color: white;
-    font-size: 0.625rem;
-    font-weight: 700;
-    border-radius: 9999px;
-    min-width: 1rem;
-    height: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 0.25rem;
-  }
-
-  .flipkart-filter-sidebar {
-    background: white;
-    border: 1px solid #F0F0F0;
-    border-radius: 0.375rem;
-    padding: 1rem;
-  }
-
-  .flipkart-breadcrumb {
-    color: #878787;
-    font-size: 0.75rem;
-  }
-
-  .flipkart-breadcrumb a {
-    color: #2874F0;
-  }
-
-  .flipkart-category-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.25rem;
-    cursor: pointer;
-    padding: 0.5rem;
-    transition: transform 0.15s;
-  }
-
-  .flipkart-category-item:hover {
-    transform: scale(1.05);
-  }
-
-  .flipkart-category-icon {
-    width: 4rem;
-    height: 4rem;
-    border-radius: 9999px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    border: 1px solid #F0F0F0;
-    background: white;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-  }
-
-  .flipkart-category-label {
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: #212121;
-    text-align: center;
-  }
-
-  .flipkart-tab {
-    padding: 0.5rem 1rem;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    color: #878787;
-    border-bottom: 2px solid transparent;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-
-  .flipkart-tab.active {
-    color: #2874F0;
-    border-bottom-color: #2874F0;
-  }
-
-  .flipkart-tab:hover {
-    color: #2874F0;
-  }
-
-  .gradient-text {
-    background: linear-gradient(135deg, #2874F0, #FF9F00);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
 
 @layer base {
@@ -344,98 +74,16 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    @apply bg-background text-foreground bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#1a103c] via-background to-background min-h-screen antialiased;
   }
 }
 
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #C4C4C4; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #878787; }
-
-.hide-scrollbar::-webkit-scrollbar { display: none; }
-.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-.prompt-card-hover {
-  transition: all 0.2s ease;
+.glass {
+  @apply bg-black/40 backdrop-blur-xl border border-white/10 shadow-2xl;
 }
-
-.prompt-card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+.glass-hover {
+  @apply hover:bg-black/60 transition-all duration-300;
 }
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400;
 }
-
-.shimmer {
-  background: linear-gradient(90deg, #F5F5F5 25%, #EEEEEE 50%, #F5F5F5 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-4 {
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-6 {
-  display: -webkit-box;
-  -webkit-line-clamp: 6;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.liquid-glass {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 0.375rem;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.08);
-}
-
-.glass-panel {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 0.375rem;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.08);
-}
-
-.glass-panel-heavy {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.1);
-}
-
-.neon-border,
-.neon-glow {
-  background: var(--card);
-}
-
-/* Safe area padding for mobile bottom nav */
-.pb-safe {
-  padding-bottom: env(safe-area-inset-bottom, 0.5rem);
-}
-
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-@source "../";

@@ -1050,8 +1050,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIs...
 SUPABASE_SERVICE_ROLE_KEY     = eyJhbGciOiJIUzI1NiIs...
 
 # ── App URLs (Required) ──
-NEXT_PUBLIC_SITE_URL = http://localhost:3000
-NEXT_PUBLIC_APP_URL  = http://localhost:3000
+NEXT_PUBLIC_SITE_URL = https://maghgo.goatecch.tech
+NEXT_PUBLIC_APP_URL  = https://maghgo.goatecch.tech
 NEXT_PUBLIC_BASE_PATH =
 
 # ── Razorpay (Payments) ──

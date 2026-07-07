@@ -1,171 +1,49 @@
-import { db } from '@/lib/db';
-import { getCurrentUser } from '@/lib/auth-helpers';
-import { NextRequest, NextResponse } from 'next/server';
-import { sanitizePromptsForUser } from '@/lib/prompt-security';
-import { sanitizeInput } from '@/lib/security';
-import { formatUSD } from '@/lib/currencies';
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { createClient } from "@/utils/supabase/server";
 
-function slugify(t: string) { return t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Date.now().toString(36); }
-
-export async function GET(req: NextRequest) {
+export async function POST(req: Request) {
   try {
-    const { searchParams } = new URL(req.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '12');
-    const category = searchParams.get('category');
-    const search = searchParams.get('search');
-    const sort = searchParams.get('sort') || 'newest';
-    const isFree = searchParams.get('isFree');
-    const isTrending = searchParams.get('isTrending');
-    const isFeatured = searchParams.get('isFeatured');
-    const minPrice = searchParams.get('minPrice');
-    const maxPrice = searchParams.get('maxPrice');
-    const sellerId = searchParams.get('sellerId');
-    const tags = searchParams.get('tags');
-    const aiFilter = searchParams.get('ai');
-    const user = await getCurrentUser();
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-    const where: any = { status: 'APPROVED' };
-    if (category) where.categoryId = category;
-    if (isFree === 'true') where.isFree = true;
-    if (isTrending === 'true') where.isTrending = true;
-    if (isFeatured === 'true') where.isFeatured = true;
-    if (sellerId) where.sellerId = sellerId;
-    if (search) where.OR = [
-      { title: { contains: search, mode: 'insensitive' } },
-      { description: { contains: search, mode: 'insensitive' } },
-      { tags: { contains: search, mode: 'insensitive' } },
-    ];
-    if (minPrice) where.price = { ...where.price, gte: parseFloat(minPrice) };
-    if (maxPrice) where.price = { ...where.price, lte: parseFloat(maxPrice) };
-    if (tags) where.tags = { contains: tags };
-    if (aiFilter) where.recommendedAI = { contains: aiFilter };
-
-    const orderBy: any = sort === 'popular' ? { likeCount: 'desc' } : sort === 'views' ? { viewCount: 'desc' } : sort === 'price_low' ? { price: 'asc' } : sort === 'price_high' ? { price: 'desc' } : sort === 'rating' ? { rating: 'desc' } : { createdAt: 'desc' };
-
-    const [prompts, total] = await Promise.all([
-      db.prompt.findMany({ where, orderBy, skip: (page - 1) * limit, take: limit, include: { seller: { select: { id: true, name: true, avatar: true, isVerified: true } }, category: { select: { id: true, name: true, slug: true } } } }),
-      db.prompt.count({ where })
-    ]);
-
-    const responsePrompts = prompts as any[];
-
-
-    const data = {
-      prompts: await sanitizePromptsForUser(responsePrompts, user),
-      total,
-      page,
-      limit,
-      pages: Math.ceil(total / limit),
-    };
-
-    return NextResponse.json({ success: true, data });
-  } catch {  return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 }); }
-}
-
-export async function POST(req: NextRequest) {
-  try {
-    const user = await getCurrentUser();
-    if (!user) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    const body = await req.json();
-    const { title, description, promptText, sampleImages, categoryId, tags, recommendedAI, price, isFree, discount, razorpayPaymentId, razorpayOrderId, razorpaySignature } = body;
-    if (!title || !description || !promptText || !categoryId) return NextResponse.json({ success: false, error: 'Missing required fields' }, { status: 400 });
-    const sanitizedTitle = sanitizeInput(title);
-    const sanitizedDescription = sanitizeInput(description);
-    const sanitizedPromptText = sanitizeInput(promptText);
-
-    const { getFeeConfig, calculateFees } = await import('@/lib/fees');
-    const feeConfig = await getFeeConfig();
-    const finalPrice = isFree ? 0 : price || 0;
-    
-    // Calculate listing fee
-    let listingFee = 0;
-    if (!isFree) {
-      let categoryName: string | undefined = undefined;
-      if (categoryId) {
-        const cat = await db.category.findUnique({ where: { id: categoryId } });
-        if (cat) categoryName = cat.name;
-      }
-      const feeBreakdown = calculateFees(finalPrice, feeConfig, sanitizedPromptText.length, categoryName);
-      listingFee = feeBreakdown.totalFees;
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Bypass fee for admins
-    if (user.role === 'ADMIN') {
-      listingFee = 0;
-    }
-
-    let isDirectRazorpay = false;
-
-    // Check direct Razorpay payment first
-    if (listingFee > 0 && razorpayPaymentId && razorpayOrderId && razorpaySignature) {
-      const { verifyPayment } = await import('@/lib/razorpay');
-      if (verifyPayment(razorpayOrderId, razorpayPaymentId, razorpaySignature)) {
-        isDirectRazorpay = true;
-      } else {
-        return NextResponse.json({ success: false, error: 'Invalid Razorpay payment signature' }, { status: 400 });
-      }
-    }
-
-    const promptResult = await db.$transaction(async (tx) => {
-      // Check balance for sellers if not using direct Razorpay (inside transaction to prevent race conditions)
-      if (listingFee > 0 && !isDirectRazorpay) {
-        const dbUser = await tx.user.findUnique({ where: { id: user.id! } });
-        if (!dbUser || dbUser.currentBalance < listingFee) {
-          return { error: `Insufficient balance. You need ${formatUSD(listingFee)} in your wallet to list this prompt.` };
-        }
-        
-        await tx.user.update({
-          where: { id: user.id! },
-          data: { currentBalance: { decrement: listingFee } }
-        });
-        
-        await tx.walletTransaction.create({
-          data: {
-            userId: user.id!,
-            amount: listingFee,
-            type: 'DEBIT',
-            description: 'Prompt Upload Fee paid via Wallet Balance',
-            status: 'COMPLETED'
-          }
-        });
-      }
-      
-      // Optionally record transaction if it was paid via Razorpay
-      if (listingFee > 0 && isDirectRazorpay) {
-         await tx.walletTransaction.create({
-           data: {
-             userId: user.id!,
-             amount: listingFee,
-             type: 'DEBIT',
-             paymentId: razorpayPaymentId,
-             description: `Prompt Upload Fee paid directly via Razorpay (${razorpayPaymentId})`,
-             status: 'COMPLETED'
-           }
-         });
-      }
-
-      const p = await tx.prompt.create({
-        data: {
-          title: sanitizedTitle, slug: slugify(sanitizedTitle), description: sanitizedDescription, promptText: sanitizedPromptText,
-          sampleImages: JSON.stringify(sampleImages || []), categoryId,
-          tags: JSON.stringify(tags || []), recommendedAI: JSON.stringify(recommendedAI || []),
-          price: finalPrice, isFree: isFree || false,
-          originalPrice: discount && discount > 0 ? finalPrice / (1 - discount / 100) : undefined,
-          discount: discount || 0, platformFee: listingFee, sellerId: user.id!,
-          status: 'APPROVED'
-        }
-      });
-      return { prompt: p };
+    const dbUser = await prisma.user.findUnique({
+      where: { authUserId: user.id },
     });
 
-    if (promptResult.error) {
-      return NextResponse.json({ success: false, error: promptResult.error }, { status: 400 });
+    if (!dbUser) {
+      return NextResponse.json({ error: "User not found in database" }, { status: 404 });
     }
-    const prompt = promptResult.prompt;
 
+    const body = await req.json();
+    const { title, description, promptText, price, recommendedAI, categoryId } = body;
 
+    // Generate slug from title
+    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now().toString().slice(-4);
 
-    return NextResponse.json({ success: true, data: prompt }, { status: 201 });
-  } catch {  return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 }); }
+    const newPrompt = await prisma.prompt.create({
+      data: {
+        title,
+        slug,
+        description,
+        promptText,
+        price,
+        recommendedAI,
+        categoryId,
+        sellerId: dbUser.id,
+        sampleImages: "[]", // Start with empty images, can add upload later
+        tags: "[]",
+        status: "APPROVED", // Auto approve for now
+      },
+    });
+
+    return NextResponse.json(newPrompt, { status: 201 });
+  } catch (error) {
+    console.error("Failed to create prompt:", error);
+    return NextResponse.json({ error: "Failed to create prompt" }, { status: 500 });
+  }
 }

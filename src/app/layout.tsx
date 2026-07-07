@@ -1,80 +1,30 @@
-'use client'
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
 
-import { useEffect } from "react"
-import { Geist, Geist_Mono } from "next/font/google"
-import "./globals.css"
-import { Toaster } from "sonner"
-import { useStore, fetchLiveRates } from "@/store/marketplace"
-import { Navbar } from "@/components/marketplace/Navbar"
-import { Footer } from "@/components/marketplace/Footer"
-import { AuthModal } from "@/components/marketplace/AuthModal"
-import ChatButton from "@/components/marketplace/ChatButton"
-import { BottomNav } from "@/components/marketplace/BottomNav"
-import { AppInitializer } from "@/components/marketplace/AppInitializer"
-import { usePathname } from "next/navigation"
-import { ThemeProvider } from "next-themes"
+const inter = Inter({ subsets: ["latin"] });
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-})
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-})
-
-function AppShell({ children }: { children: React.ReactNode }) {
-  const { fetchMe } = useStore()
-  const pathname = usePathname()
-  const isAdmin = pathname?.startsWith('/admin')
-
-  useEffect(() => {
-    useStore.getState().rehydrate()
-    fetchMe()
-    fetchLiveRates()
-  }, [fetchMe])
-
-  if (isAdmin) {
-    return <>{children}</>
-  }
-
-  return (
-    <div className="min-h-screen flex flex-col relative">
-      <Navbar />
-      <main className="flex-1">{children}</main>
-      <Footer />
-      <BottomNav />
-      <AuthModal />
-      <ChatButton />
-    </div>
-  )
-}
+export const metadata: Metadata = {
+  title: "MAGHGO | The Ultimate AI Prompt Marketplace",
+  description: "Buy, sell, and discover expertly crafted AI prompts for ChatGPT, Midjourney, Claude, and more.",
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <title>MAGHGO — AI Prompt Marketplace</title>
-        <meta name="description" content="Discover, buy and sell premium AI prompts for ChatGPT, Midjourney, DALL-E and more." />
-        <link rel="manifest" href="/manifest.json" />
-      </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased selection:bg-neon-pink/30 selection:text-white bg-background text-foreground`}>
-        <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
-          {/* Animated Universe Background (Conditional) */}
-
-          
-          <AppInitializer />
-          <main className="min-h-screen relative z-10 flex flex-col">
-            <AppShell>{children}</AppShell>
-            <Toaster theme="system" />
-          </main>
-        </ThemeProvider>
+    <html lang="en" className="dark">
+      <body className={`${inter.className} min-h-screen flex flex-col`}>
+        <Navbar />
+        <main className="flex-1 flex flex-col">
+          {children}
+        </main>
+        <Footer />
       </body>
     </html>
-  )
+  );
 }

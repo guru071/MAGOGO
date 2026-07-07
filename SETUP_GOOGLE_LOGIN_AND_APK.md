@@ -342,8 +342,8 @@ Firebase sends push notifications (alerts) to Android phones. We need it for the
 
 **Step 3: Add Android app**
 1. On the project overview page, click the **Android icon** (it says "Add an app to get started")
-2. **Android package name**: Type exactly: `com.maghgo.app`
-   > ⚠️ **This must match exactly!** Check `android/app/build.gradle` → `applicationId "com.maghgo.app"` — it should be the same.
+2. **Android package name**: Type exactly: `com.goatech.maghgo`
+   > ⚠️ **This must match exactly!** Check `android/app/build.gradle` → `applicationId "com.goatech.maghgo"` — it should be the same.
 3. **App nickname**: `MAGHGO Android`
 4. Click **"Register app"**
 
@@ -532,7 +532,7 @@ Here's every file related to Google Login and the Android build, with a simple e
 | `src/components/marketplace/AuthModal.tsx` | The login popup you see on the website — has the Google button |
 | `src/components/marketplace/AppInitializer.tsx` | Runs when the app starts — hides splash screen, sets up push notifications |
 | `src/store/marketplace.ts` | The main data store — contains `signInWithGoogle`, `login`, `register`, `logout` functions |
-| `capacitor.config.ts` | Configures the app name, ID (com.maghgo.app), and Google Auth plugin settings |
+| `capacitor.config.ts` | Configures the app name, ID (com.goatech.maghgo), and Google Auth plugin settings |
 
 ### Android Build Files
 
@@ -578,7 +578,7 @@ Use this checklist to track your progress:
 - [ ] Installed Android SDK (API 34)
 - [ ] Installed Java 17 (or found it in Android Studio)
 - [ ] Created Firebase project
-- [ ] Added Android app (package: com.maghgo.app)
+- [ ] Added Android app (package: com.goatech.maghgo)
 - [ ] Downloaded `google-services.json`
 - [ ] Replaced `android/app/google-services.json`
 - [ ] Set `ANDROID_HOME` environment variable

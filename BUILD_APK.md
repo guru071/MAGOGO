@@ -11,7 +11,7 @@
 ### 1. Firebase Setup (Push Notifications)
 1. Go to [Firebase Console](https://console.firebase.google.com)
 2. Create a new project (or use existing)
-3. Add Android app with package name `com.maghgo.app`
+3. Add Android app with package name `com.goatech.maghgo`
 4. Download `google-services.json` and copy to:
    ```
    android/app/google-services.json
@@ -68,7 +68,7 @@ This opens Android Studio. Connect your device and click Run.
 ## Development Workflow
 1. Run Next.js dev server: `npm run dev`
 2. In another terminal, sync Capacitor: `npm run cap:sync`
-3. The app loads from `http://localhost:3000` (configurable in `capacitor.config.ts`)
+3. The app loads from `https://maghgo.goatecch.tech` (configurable in `capacitor.config.ts`)
 
 ## Project Structure
 ```
@@ -76,7 +76,7 @@ android/              # Native Android project (Capacitor)
   app/
     src/main/
       AndroidManifest.xml
-      java/com/maghgo/app/MainActivity.java
+      java/com/goatech/maghgo/MainActivity.java
       res/              # Icons, splash screen, themes
 public/
   manifest.json         # PWA manifest

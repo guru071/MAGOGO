@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">MAGHGO</string>
-    <string name="title_activity_main">MAGHGO — AI Prompt Marketplace</string>
-    <string name="package_name">com.maghgo.app</string>
-    <string name="custom_url_scheme">com.maghgo.app</string>
-</resources>
