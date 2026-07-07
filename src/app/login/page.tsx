@@ -12,12 +12,13 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     setLoading(true);
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+    // Ignore environment variable and force the current browser origin
+    const origin = window.location.origin;
     
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${siteUrl}/auth/callback`,
+        redirectTo: `${origin}/auth/callback`,
       },
     });
     // signInWithOAuth redirects the window, so no need to setLoading(false) on success
